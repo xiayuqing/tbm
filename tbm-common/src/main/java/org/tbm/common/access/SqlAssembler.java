@@ -27,6 +27,7 @@ public class SqlAssembler {
             columns.add(metaData.getColumnName(i));
         }
 
+
         while (rawSet.next()) {
             Field[] fields = clazz.getDeclaredFields();
             Object instance = clazz.newInstance();

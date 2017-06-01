@@ -23,7 +23,7 @@ public class ServerChannelHandler extends SimpleChannelInboundHandler<String> {
         System.out.println(new Date() + " received msg from:" + ctx.channel().remoteAddress());
         System.out.println("msg content:" + msg);
         System.out.println("===================================================");
-        ctx.channel().writeAndFlush(dispatcher.dispatch(JSON.parseObject(msg, PacketLite.class)) + "\r\n");
+        dispatcher.dispatch(ctx, JSON.parseObject(msg, PacketLite.class));
     }
 
     @Override

@@ -7,5 +7,5 @@ import org.tbm.common.bean.PacketLite;
  */
 public interface Processor {
 
-    PacketLite processor(PacketLite packetLite);
+    PacketLite process(PacketLite packetLite);
 }

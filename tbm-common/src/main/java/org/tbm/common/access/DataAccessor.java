@@ -4,14 +4,12 @@ import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidPooledConnection;
 import org.tbm.common.AppContext;
 import org.tbm.common.MemoryType;
-import org.tbm.common.bean.HostInfo;
 import org.tbm.common.bean.vo.PackageData;
 
 import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,6 +18,7 @@ import java.util.List;
 public class DataAccessor {
 
     private DruidDataSource dataSource;
+    private SqlAssembler sqlAssembler;
 
     public DataAccessor() {
         dataSource = new DruidDataSource();
@@ -40,29 +39,23 @@ public class DataAccessor {
         } catch (SQLException e) {
             throw new IllegalArgumentException(e);
         }
+
+        sqlAssembler = new SqlAssembler();
     }
 
     public static void main(String[] args) throws Exception {
-        DataAccessor instance = DataAccessorFactory.getInstance();
-        instance.select(new HostInfo(1000, "122", 11));
+//        DataAccessor instance = DataAccessorFactory.getInstance();
+//        instance.select(new HostInfo(1000, "122", 11));
     }
 
-    public void insert(PackageData data) throws SQLException {
+    public void insert(String sql, List<Object> args) throws SQLException {
         DruidPooledConnection connection = null;
         try {
             connection = dataSource.getConnection();
             connection.setAutoCommit(false);
-            PreparedStatement ps = connection.prepareStatement(SqlTemplate.INSERT_MEMORY_SUMMARY);
-            List<Object> args = new ArrayList<>();
-            args.add(data.getBindingId());
-            args.add(MemoryType.SUMMARY_HEAP);
-            args.add(data.getMemorySummaryInfo().getHeapInfo().getMax());
-            args.add(data.getMemorySummaryInfo().getHeapInfo().getInit());
-            args.add(data.getMemorySummaryInfo().getHeapInfo().getCommitted());
-            args.add(data.getMemorySummaryInfo().getHeapInfo().getUsed());
-            new SqlAssembler().build(ps, args);
+            PreparedStatement ps = connection.prepareStatement(sql);
+            sqlAssembler.build(ps, args);
             ps.execute();
-            ParameterMetaData parameterMetaData = ps.getParameterMetaData();
             ps.close();
             connection.commit();
         } catch (Exception e) {
@@ -74,7 +67,7 @@ public class DataAccessor {
         }
     }
 
-    public void insert(List<PackageData> data) throws SQLException {
+    public void insertBatch(List<PackageData> data) throws SQLException {
         DruidPooledConnection connection = null;
         try {
             connection = dataSource.getConnection();
@@ -104,21 +97,16 @@ public class DataAccessor {
 
     }
 
-    public List<Object> select(HostInfo hostInfo) throws Exception {
+    public List<Object> select(String sql, List<Object> args, Class resultType) throws Exception {
         DruidPooledConnection connection = null;
+        List<Object> result;
         try {
             connection = dataSource.getConnection();
             connection.setAutoCommit(false);
-            PreparedStatement ps = connection.prepareStatement(SqlTemplate.SELECT_MACHINE_INFO);
-            List<Object> args = new ArrayList<>();
-            args.add(hostInfo.getSystemId());
-            args.add(hostInfo.getIp());
-            args.add(hostInfo.getPort());
-
-            SqlAssembler sqlAssembler = new SqlAssembler();
+            PreparedStatement ps = connection.prepareStatement(sql);
             sqlAssembler.build(ps, args);
             ResultSet resultSet = ps.executeQuery();
-            List<Object> objects = sqlAssembler.convertResult(resultSet, HostInfo.class);
+            result = sqlAssembler.convertResult(resultSet, resultType);
             ps.close();
             connection.commit();
         } catch (Exception e) {
@@ -129,6 +117,6 @@ public class DataAccessor {
             throw e;
         }
 
-        return null;
+        return result;
     }
 }

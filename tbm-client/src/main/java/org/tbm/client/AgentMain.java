@@ -12,19 +12,19 @@ import java.util.List;
  */
 public class AgentMain {
     public static void main(String[] args) throws InterruptedException, SQLException {
-        LocalJvmAccessor accessor = new LocalJvmAccessor();
-        PackageData packageData = accessor.fullPackageData();
-        packageData.setBindingId(10001);
-        DataAccessor jvmStash = new DataAccessor();
-        List<PackageData> list = new ArrayList<>();
-        list.add(accessor.fullPackageData().setBindingId(10001));
-        list.add(accessor.fullPackageData().setBindingId(10001));
-        list.add(accessor.fullPackageData().setBindingId(10001));
-        list.add(accessor.fullPackageData().setBindingId(10001));
+//        LocalJvmAccessor accessor = new LocalJvmAccessor();
+//        PackageData packageData = accessor.fullPackageData();
+//        packageData.setBindingId(10001);
+//        DataAccessor jvmStash = new DataAccessor();
+//        List<PackageData> list = new ArrayList<>();
+//        list.add(accessor.fullPackageData().setBindingId(10001));
+//        list.add(accessor.fullPackageData().setBindingId(10001));
+//        list.add(accessor.fullPackageData().setBindingId(10001));
+//        list.add(accessor.fullPackageData().setBindingId(10001));
 
-        jvmStash.insert(accessor.fullPackageData().setBindingId(10002));
-//        MonitorAgent agent = new MonitorAgent();
-//        agent.start();
+//        jvmStash.insert(accessor.fullPackageData().setBindingId(10002));
+        MonitorAgent agent = new MonitorAgent();
+        agent.start();
 //        ChannelFuture future = agent.getFuture();
 //        int count = 0;
 //        do {
