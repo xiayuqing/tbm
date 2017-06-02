@@ -18,8 +18,8 @@ public class LocalJvmAccessor {
     private static final ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
     private static final OperatingSystemMXBean osMXBean = ManagementFactory.getOperatingSystemMXBean();
 
-    public JvmInfo getJvmInfo() {
-        JvmInfo result = new JvmInfo();
+    public JvmBaseInfo getJvmInfo() {
+        JvmBaseInfo result = new JvmBaseInfo();
         result.setStart(runtimeMXBean.getStartTime());
         result.setUptime(runtimeMXBean.getUptime());
         result.setBootstrap(runtimeMXBean.getBootClassPath());
@@ -107,8 +107,8 @@ public class LocalJvmAccessor {
         return result;
     }
 
-    public PackageData fullPackageData() {
-        PackageData result = new PackageData();
+    public JvmData fullPackageData() {
+        JvmData result = new JvmData();
         result.setMemorySummaryInfo(getMemorySummaryInfo());
         result.setMemoryPoolInfo(getMemoryPoolsInfo());
         result.setClassLoadingInfo(getClassLoadingInfo());

@@ -3,7 +3,7 @@ package org.tbm.common.bean.vo;
 /**
  * Created by Jason.Xia on 16/4/1.
  */
-public class JvmInfo extends BaseInfo {
+public class JvmBaseInfo extends BaseInfo {
     private String os;
     private long start;
     private long uptime;

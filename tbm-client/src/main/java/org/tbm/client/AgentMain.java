@@ -1,11 +1,6 @@
 package org.tbm.client;
 
-import org.tbm.common.access.DataAccessor;
-import org.tbm.common.bean.vo.PackageData;
-
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Jason.Xia on 17/5/24.

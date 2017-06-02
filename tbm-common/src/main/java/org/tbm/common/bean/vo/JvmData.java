@@ -7,17 +7,17 @@ import java.util.List;
 /**
  * Created by Jason.Xia on 17/5/24.
  */
-public class PackageData extends Serialize {
+public class JvmData extends Serialize {
     private long bindingId;
     private MemorySummaryInfo memorySummaryInfo;
     private List<MemoryPoolInfo> memoryPoolInfo;
     private ClassLoadingInfo classLoadingInfo;
     private ThreadInfo threadInfo;
 
-    public PackageData() {
+    public JvmData() {
     }
 
-    public PackageData(long bindingId) {
+    public JvmData(long bindingId) {
         this.bindingId = bindingId;
     }
 
@@ -57,7 +57,7 @@ public class PackageData extends Serialize {
         return bindingId;
     }
 
-    public PackageData setBindingId(long bindingId) {
+    public JvmData setBindingId(long bindingId) {
         this.bindingId = bindingId;
         return this;
     }

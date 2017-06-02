@@ -3,12 +3,11 @@ package org.tbm.server.processor;
 import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tbm.common.Processor;
 import org.tbm.common.access.DataAccessor;
-import org.tbm.common.access.DataAccessorFactory;
 import org.tbm.common.access.SqlTemplate;
 import org.tbm.common.bean.HostInfo;
 import org.tbm.common.bean.PacketLite;
+import org.tbm.server.collect.CollectorPool;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +15,12 @@ import java.util.List;
 /**
  * Created by Jason.Xia on 17/6/1.
  */
-public class HandshakeProcessor implements Processor {
+public class HandshakeProcessor extends AbstractProcessor {
     private static final Logger logger = LoggerFactory.getLogger(HandshakeProcessor.class);
-    private DataAccessor dataAccessor = DataAccessorFactory.getInstance();
+
+    public HandshakeProcessor(DataAccessor dataAccessor, CollectorPool collectorPool) {
+        super(dataAccessor, collectorPool);
+    }
 
     @Override
     public PacketLite process(PacketLite packetLite) {
@@ -37,14 +39,13 @@ public class HandshakeProcessor implements Processor {
             return PacketLite.createException("payload format illegal", packetLite.seq);
         }
 
-
         List<Object> args = new ArrayList<>();
         args.add(hostInfo.getSystemId());
         args.add(hostInfo.getIp());
         args.add(hostInfo.getPort());
         List<Object> select;
         try {
-            select = dataAccessor.select(SqlTemplate.SELECT_MACHINE_INFO, args, HostInfo.class);
+            select = dataAccessor.select(SqlTemplate.SELECT_MACHINE_INFO.sql, args, HostInfo.class);
             if (null != select && 1 < select.size()) {
                 logger.error("duplicate host info with :{}", hostInfo);
                 return PacketLite.createException("duplicate host info with system:" + hostInfo.getSystemId() + ",ip:" +
@@ -58,7 +59,7 @@ public class HandshakeProcessor implements Processor {
                 obj.add(hostInfo.getIp());
                 obj.add(hostInfo.getPort());
                 obj.add(hostInfo.getBindingId());
-                dataAccessor.insert(SqlTemplate.INSERT_MACHINE_INFO, obj);
+                dataAccessor.insert(SqlTemplate.INSERT_MACHINE_INFO.sql, obj);
             } else {
                 hostInfo = (HostInfo) select.get(0);
             }

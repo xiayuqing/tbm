@@ -18,7 +18,7 @@ import java.util.Set;
 public class SqlAssembler {
 
 
-    public List<Object> convertResult(ResultSet rawSet, Class clazz) throws SQLException,
+    public static List<Object> convertResult(ResultSet rawSet, Class clazz) throws SQLException,
             IllegalAccessException, InstantiationException {
         List<Object> result = new ArrayList<>();
         ResultSetMetaData metaData = rawSet.getMetaData();
@@ -51,7 +51,7 @@ public class SqlAssembler {
         return result;
     }
 
-    public PreparedStatement build(PreparedStatement ps, List<Object> values) throws SQLException {
+    public static PreparedStatement build(PreparedStatement ps, List<Object> values) throws SQLException {
         if (null == values || 0 == values.size()) {
             return null;
         }
@@ -63,7 +63,7 @@ public class SqlAssembler {
         return ps;
     }
 
-    private void setValue(int index, PreparedStatement ps, Object value) throws SQLException {
+    private static void setValue(int index, PreparedStatement ps, Object value) throws SQLException {
         if (value instanceof Byte) {
             ps.setByte(index, (byte) value);
         } else if (value instanceof Short) {
@@ -81,5 +81,9 @@ public class SqlAssembler {
         } else {
             throw new IllegalArgumentException("no match type");
         }
+    }
+
+    public static PreparedStatement buildBatch(PreparedStatement ps, List<Object> values) {
+        return null;
     }
 }

@@ -4,12 +4,9 @@ import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidPooledConnection;
 import org.tbm.common.AppContext;
 import org.tbm.common.MemoryType;
-import org.tbm.common.bean.vo.PackageData;
+import org.tbm.common.bean.vo.JvmData;
 
-import java.sql.ParameterMetaData;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 
 /**
@@ -48,6 +45,31 @@ public class DataAccessor {
 //        instance.select(new HostInfo(1000, "122", 11));
     }
 
+    public Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
+    }
+
+//    private <T> T execute(String sql, SqlExecutor<T> executor) {
+//        DruidPooledConnection connection = null;
+//        T result = null;
+//        try {
+//            connection = dataSource.getConnection();
+//            connection.setAutoCommit(false);
+//            PreparedStatement ps = connection.prepareStatement(sql);
+//            result = executor.execute(ps,);
+//            sqlAssembler.build(ps, args);
+//            ps.execute();
+//            ps.close();
+//            connection.commit();
+//        } catch (Exception e) {
+//            if (null != connection) {
+//                connection.rollback();
+//            }
+//
+//            throw e;
+//        }
+//    }
+
     public void insert(String sql, List<Object> args) throws SQLException {
         DruidPooledConnection connection = null;
         try {
@@ -67,13 +89,13 @@ public class DataAccessor {
         }
     }
 
-    public void insertBatch(List<PackageData> data) throws SQLException {
+    public void insertBatch(List<JvmData> data) throws SQLException {
         DruidPooledConnection connection = null;
         try {
             connection = dataSource.getConnection();
             connection.setAutoCommit(false);
-            PreparedStatement ps = connection.prepareStatement(SqlTemplate.INSERT_MEMORY_SUMMARY);
-            for (PackageData item : data) {
+            PreparedStatement ps = connection.prepareStatement(SqlTemplate.INSERT_MEMORY_SUMMARY.sql);
+            for (JvmData item : data) {
                 ps.setLong(1, item.getBindingId());
                 ps.setLong(2, MemoryType.SUMMARY_HEAP);
                 ps.setLong(3, item.getMemorySummaryInfo().getHeapInfo().getMax());
