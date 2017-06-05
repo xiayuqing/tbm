@@ -18,6 +18,10 @@ import java.util.List;
 public class HandshakeProcessor extends AbstractProcessor {
     private static final Logger logger = LoggerFactory.getLogger(HandshakeProcessor.class);
 
+    public HandshakeProcessor(DataAccessor dataAccessor) {
+        super(dataAccessor, null);
+    }
+
     public HandshakeProcessor(DataAccessor dataAccessor, CollectorPool collectorPool) {
         super(dataAccessor, collectorPool);
     }

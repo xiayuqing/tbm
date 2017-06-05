@@ -8,6 +8,7 @@ import java.sql.SQLException;
 public class AgentMain {
     public static void main(String[] args) throws InterruptedException, SQLException {
 //        LocalJvmAccessor accessor = new LocalJvmAccessor();
+//        System.out.println(accessor.fullPackageData());
 //        PackageData packageData = accessor.fullPackageData();
 //        packageData.setBindingId(10001);
 //        DataAccessor jvmStash = new DataAccessor();

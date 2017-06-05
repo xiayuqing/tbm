@@ -24,7 +24,8 @@ public abstract class SqlExecutor<T> {
     public List<T> run() throws Exception {
         connection.setAutoCommit(false);
         PreparedStatement ps = connection.prepareStatement(sqlTemplate.sql);
-        SqlAssembler.build(ps, args);
+        build(ps, sqlTemplate, args);
+//        SqlAssembler.build(ps, sqlTemplate.sql, args);
         try {
             switch (sqlTemplate.type) {
                 case SqlTemplate.SQL_TYPE.CREATE:
@@ -38,7 +39,7 @@ public abstract class SqlExecutor<T> {
                 case SqlTemplate.SQL_TYPE.DELETE:
                     break;
                 default:
-                    throw new SQLException("unknown sql operation");
+                    throw new SQLException("unknown data manipulation language");
             }
 
             ps.close();
@@ -59,6 +60,8 @@ public abstract class SqlExecutor<T> {
      * @param resultSet
      */
     abstract void convertResult(ResultSet resultSet) throws Exception;
+
+    abstract PreparedStatement build(PreparedStatement ps, SqlTemplate sqlTemplate, List<Object> args) throws Exception;
 
     public List<T> getResult() {
         return result;

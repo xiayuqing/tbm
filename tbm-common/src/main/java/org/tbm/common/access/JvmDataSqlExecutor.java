@@ -1,9 +1,10 @@
 package org.tbm.common.access;
 
 import org.tbm.common.bean.vo.JvmData;
-import org.tbm.common.utils.ObjectUtil;
+import org.tbm.common.utils.ObjectUtils;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
 
@@ -18,6 +19,14 @@ public class JvmDataSqlExecutor extends SqlExecutor<JvmData> {
     @Override
     void convertResult(ResultSet resultSet) throws Exception {
         List<Object> objects = SqlAssembler.convertResult(resultSet, JvmData.class);
-        ObjectUtil.convertObject(objects, result);
+        ObjectUtils.convertObject(objects, result);
     }
+
+    @Override
+    PreparedStatement build(PreparedStatement ps, SqlTemplate sqlTemplate, List<Object> args) throws Exception {
+        SqlAssembler.build(ps, sqlTemplate.sql, args);
+        return ps;
+    }
+
+
 }

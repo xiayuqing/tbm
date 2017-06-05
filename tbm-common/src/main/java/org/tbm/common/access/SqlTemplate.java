@@ -5,8 +5,19 @@ package org.tbm.common.access;
  */
 public enum SqlTemplate {
 
-    INSERT_MEMORY_SUMMARY(SQL_TYPE.CREATE, "INSERT INTO `memory_summary` (`binding_id`,`type`,`max`,`init`," +
-            "`committed`,`used`) VALUES (?,?,?,?,?,?)"),
+    INSERT_MEMORY_SUMMARY(SQL_TYPE.CREATE, "INSERT INTO `memory_summary` (`binding_id`,`type`,`timestamp`,`max`," +
+            "`init`," +
+            "`committed`,`used`) VALUES (?,?,?,?,?,?,?)"),
+    INSER_MEMPORY_POOL(SQL_TYPE.CREATE, "INSERT INTO `memory_pool` (`binding_id`,`cate`,`type`,`name`,`timestamp`," +
+            "`peak_max`,`peak_init`,`peak_committed`,`peak_used`,`usage_max`,`usage_init`,`usage_committed`," +
+            "`usage_used`,`usage_threshold`) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)"),
+    INSERT_CLASS_LOAD(SQL_TYPE.CREATE, "INSERT INTO `class_load` (`binding_id`,`timestamp`,`loaded`,`total`,`unload`)" +
+            " VALUES (?,?,?,?,?)"),
+    INSERT_THREAD(SQL_TYPE.CREATE, "INSERT INTO `thread` (`binding_id`,`timestamp`,`active`,`daemon`,`peak`,`locked`)" +
+            " VALUES (?,?,?,?,?,?)"),
+    /**
+     * MACHINE INFO
+     */
     INSERT_MACHINE_INFO(SQL_TYPE.CREATE, "INSERT INTO `machine_info` (`system_id`,`ip`,`port`,`binding_id`) " +
             "VALUES(?,?,?,?)"),
     SELECT_MACHINE_INFO(SQL_TYPE.RETRIEVE, "SELECT * FROM `machine_info` WHERE `system_id`=? AND `ip`=? AND " +
@@ -24,7 +35,8 @@ public enum SqlTemplate {
     interface SQL_TYPE {
         int CREATE = 1;
         int RETRIEVE = 2;
-        int UPDATE = 3;
+        int UPDATE = 30;
+        int UPDATE_BATCH = 31;
         int DELETE = 4;
     }
 }

@@ -51,6 +51,52 @@ public class SqlAssembler {
         return result;
     }
 
+    /**
+     * for insert batch
+     *
+     * @param ps
+     * @param sql
+     * @param values
+     * @return
+     * @throws SQLException
+     */
+    public static PreparedStatement build(PreparedStatement ps, String sql, List<Object> values) throws SQLException {
+        int argNum = 0;
+        for (int i = 0; i < sql.length(); ) {
+
+            int indexOf = sql.indexOf('?', i);
+            if (-1 == indexOf) {
+                break;
+            }
+
+            i = indexOf + 1;
+            argNum++;
+        }
+
+        if (argNum == 0 && (null == values || 0 == values.size())) {
+            return ps;
+        }
+
+        if (argNum == 0 || values.size() % argNum != 0) {
+            throw new SQLException("parameters not match");
+        }
+
+        for (int i = 0; i < values.size(); ) {
+            setValue(i++ % argNum + 1, ps, values.get(i));
+            if (i % argNum == 0 && i != 0) {
+                ps.addBatch();
+            }
+        }
+
+        return ps;
+    }
+
+    /**
+     * @param ps
+     * @param values
+     * @return
+     * @throws SQLException
+     */
     public static PreparedStatement build(PreparedStatement ps, List<Object> values) throws SQLException {
         if (null == values || 0 == values.size()) {
             return null;

@@ -9,7 +9,7 @@ import java.net.UnknownHostException;
 /**
  * Created by Jason.Xia on 17/5/27.
  */
-public class NetUtil {
+public class NetUtils {
 
     public static InetAddress getLocalAddress() {
         try {
