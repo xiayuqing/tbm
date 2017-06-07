@@ -1,6 +1,6 @@
 package org.tbm.common.bean;
 
-import java.util.UUID;
+import org.tbm.common.utils.DigestUtils;
 
 /**
  * Created by Jason.Xia on 17/5/27.
@@ -25,11 +25,17 @@ public class PacketLite extends Serialize {
         this.payload = msg;
     }
 
+    public static PacketLite createJvmDataPackage(String payload) {
+        PacketLite packetLite = new PacketLite(PACKET_TYPE.JVM_DATA, DigestUtils.getUUIDWithoutStrike());
+        packetLite.payload = payload;
+        return packetLite;
+    }
+
     public static PacketLite createHandshake(long systemId, String host, int port) {
         PacketLite packetLite = new PacketLite();
         packetLite.type = PACKET_TYPE.HANDSHAKE;
         packetLite.payload = new HostInfo(systemId, host, port).toString();
-        packetLite.seq = UUID.randomUUID().toString().replace("-", "");
+        packetLite.seq = DigestUtils.getUUIDWithoutStrike();
         return packetLite;
     }
 

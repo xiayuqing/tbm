@@ -82,7 +82,8 @@ public class SqlAssembler {
         }
 
         for (int i = 0; i < values.size(); ) {
-            setValue(i++ % argNum + 1, ps, values.get(i));
+            setValue(i % argNum + 1, ps, values.get(i));
+            i++;
             if (i % argNum == 0 && i != 0) {
                 ps.addBatch();
             }

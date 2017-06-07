@@ -8,7 +8,7 @@ public enum SqlTemplate {
     INSERT_MEMORY_SUMMARY(SQL_TYPE.CREATE, "INSERT INTO `memory_summary` (`binding_id`,`type`,`timestamp`,`max`," +
             "`init`," +
             "`committed`,`used`) VALUES (?,?,?,?,?,?,?)"),
-    INSER_MEMPORY_POOL(SQL_TYPE.CREATE, "INSERT INTO `memory_pool` (`binding_id`,`cate`,`type`,`name`,`timestamp`," +
+    INSERT_MEMORY_POOL(SQL_TYPE.CREATE, "INSERT INTO `memory_pool` (`binding_id`,`cate`,`type`,`name`,`timestamp`," +
             "`peak_max`,`peak_init`,`peak_committed`,`peak_used`,`usage_max`,`usage_init`,`usage_committed`," +
             "`usage_used`,`usage_threshold`) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)"),
     INSERT_CLASS_LOAD(SQL_TYPE.CREATE, "INSERT INTO `class_load` (`binding_id`,`timestamp`,`loaded`,`total`,`unload`)" +

@@ -12,6 +12,8 @@ import org.tbm.common.bean.HostInfo;
 import org.tbm.common.bean.PacketLite;
 import org.tbm.common.utils.NetUtils;
 
+import java.util.Date;
+
 /**
  * Created by Jason.Xia on 17/5/24.
  */
@@ -24,7 +26,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<String> {
     }
 
     protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
-        System.out.println(msg);
+        logger.info("{} msg content:{}", new Date(), msg);
         dispatcher.dispatch(ctx, JSON.parseObject(msg, PacketLite.class));
     }
 

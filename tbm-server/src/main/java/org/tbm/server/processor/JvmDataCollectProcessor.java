@@ -35,6 +35,7 @@ public class JvmDataCollectProcessor extends AbstractProcessor {
             return PacketLite.createAck(packetLite.seq);
         }
 
+        long start = System.currentTimeMillis();
         try {
             Map<String, List<Object>> extract = extract(jvmData);
             List<Object> memorySummary = extract.get(MemoryType.MEMRORY_SUMMARY);
@@ -46,7 +47,7 @@ public class JvmDataCollectProcessor extends AbstractProcessor {
             List<Object> pool = extract.get(MemoryType.MEMORY_POOL);
             if (!CollectionUtils.isEmpty(pool)) {
                 collectorPool.add(new JvmDataSqlExecutor(dataAccessor.getConnection(), SqlTemplate
-                        .INSER_MEMPORY_POOL, pool));
+                        .INSERT_MEMORY_POOL, pool));
             }
 
             List<Object> classLoad = extract.get(MemoryType.CLASS_LOAD);
@@ -61,11 +62,12 @@ public class JvmDataCollectProcessor extends AbstractProcessor {
                         thread));
             }
         } catch (SQLException e) {
-            logger.error("insert jvm statistic data error.errorCode:{],msg:{},trace:{}", e.getErrorCode(), e
+            logger.error("insert jvm statistic data error.seq:{},msg:{},trace:{}", packetLite.seq, e.getErrorCode(), e
                     .getMessage(), e.getStackTrace());
             PacketLite.createError(e.getMessage(), packetLite.seq);
         }
 
+        logger.info("seq:{},takes:{}", packetLite.seq, System.currentTimeMillis() - start);
         return PacketLite.createAck(packetLite.seq);
     }
 

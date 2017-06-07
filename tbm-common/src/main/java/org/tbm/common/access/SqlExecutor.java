@@ -42,14 +42,18 @@ public abstract class SqlExecutor<T> {
                     throw new SQLException("unknown data manipulation language");
             }
 
-            ps.close();
+//            ps.close();
             connection.commit();
+//            connection.close();
         } catch (Exception e) {
             if (null != connection) {
                 connection.rollback();
             }
 
             throw e;
+        } finally {
+            ps.close();
+            connection.close();
         }
 
         return result;

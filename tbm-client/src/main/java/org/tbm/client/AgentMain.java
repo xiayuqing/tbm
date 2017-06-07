@@ -1,5 +1,9 @@
 package org.tbm.client;
 
+import io.netty.channel.ChannelFuture;
+import org.tbm.common.bean.PacketLite;
+import org.tbm.common.utils.ObjectUtils;
+
 import java.sql.SQLException;
 
 /**
@@ -21,6 +25,20 @@ public class AgentMain {
 //        jvmStash.insert(accessor.fullPackageData().setBindingId(10002));
         MonitorAgent agent = new MonitorAgent();
         agent.start();
+        ChannelFuture future = agent.getFuture();
+        LocalJvmAccessor localJvmAccessor = new LocalJvmAccessor();
+
+        do {
+            Thread.sleep(5000);
+            if (0 == ClientContext.BINDING_ID) {
+                continue;
+            }
+
+            PacketLite packetLite = PacketLite.createJvmDataPackage(ObjectUtils.singleObjectConvertToList
+                    (localJvmAccessor.fullPackageData()).toString());
+            future.channel().writeAndFlush(packetLite.toString() + "\r\n");
+
+        } while (true);
 //        ChannelFuture future = agent.getFuture();
 //        int count = 0;
 //        do {

@@ -1,7 +1,7 @@
 package org.tbm.client;
 
-import org.tbm.common.bean.vo.ThreadInfo;
 import org.tbm.common.bean.vo.*;
+import org.tbm.common.bean.vo.ThreadInfo;
 
 import java.lang.management.*;
 import java.util.ArrayList;
@@ -109,6 +109,11 @@ public class LocalJvmAccessor {
 
     public JvmData fullPackageData() {
         JvmData result = new JvmData();
+        if (0 == ClientContext.BINDING_ID) {
+            throw new IllegalStateException("client have no binding id");
+        }
+
+        result.setBindingId(ClientContext.BINDING_ID);
         result.setMemorySummaryInfo(getMemorySummaryInfo());
         result.setMemoryPoolInfo(getMemoryPoolsInfo());
         result.setClassLoadingInfo(getClassLoadingInfo());
