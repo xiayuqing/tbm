@@ -11,7 +11,6 @@ import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tbm.client.node.ClientHandler;
 import org.tbm.common.AppContext;
 import org.tbm.common.State;
 
@@ -21,23 +20,23 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by Jason.Xia on 17/5/24.
  */
-public class MonitorAgent {
-    private static final Logger logger = LoggerFactory.getLogger(MonitorAgent.class);
+public class ClientAgent {
+    private static final Logger logger = LoggerFactory.getLogger(ClientAgent.class);
     private AtomicInteger state = new AtomicInteger(State.STOP);
     private NioEventLoopGroup worker;
     private String host = "127.0.0.1";
     private int port = 9411;
     private ChannelFuture future;
 
-    public void start() {
+    public ChannelFuture start() {
         if (!state.compareAndSet(State.STOP, State.STARTING)) {
             throw new IllegalStateException("client already started.");
         }
 
-        create();
+        return create();
     }
 
-    private void create() {
+    private ChannelFuture create() {
         this.worker = new NioEventLoopGroup();
         worker.setIoRatio(AppContext.getInt("io.ratio ", 70));
         Bootstrap bootstrap = new Bootstrap();
@@ -79,6 +78,8 @@ public class MonitorAgent {
         } catch (InterruptedException e) {
             throw new IllegalStateException(e);
         }
+
+        return future;
     }
 
     public void stop() {

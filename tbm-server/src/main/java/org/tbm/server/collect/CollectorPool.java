@@ -29,7 +29,7 @@ public class CollectorPool {
             return;
         }
 
-        executor = Executors.newFixedThreadPool(AppContext.getInt("executor.size", 30));
+        executor = Executors.newFixedThreadPool(AppContext.getInt("collector.executor.size", 30));
     }
 
     public Future add(final SqlExecutor sqlExecutor) {
@@ -56,7 +56,7 @@ public class CollectorPool {
         }
 
         executor.shutdown();
-        int wait = AppContext.getInt("executor.shutdown.wait", 60000);
+        int wait = AppContext.getInt("collector.executor.shutdown.wait", 60000);
         try {
             if (-1 == wait) {
                 executor.shutdownNow();

@@ -46,6 +46,17 @@
                 <artifactId>mysql-connector-java</artifactId>
                 <version>5.1.6</version>
             </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
+                <version>4.1.5.RELEASE</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <developers>
+        <developer>
+            <email>xiayuqing123@hotmail.com</email>
+        </developer>
+    </developers>
 </project>

@@ -25,13 +25,22 @@ public class AppContext {
 //
     }
 
+
+    public static void setProperties(Properties properties) {
+        config = properties;
+    }
+
     public static void load(String path) {
         if (started.compareAndSet(false, true)) {
             if (null == path || 0 == path.length()) {
                 throw new IllegalArgumentException("Not found config file path :" + path);
             }
 
-            String file = path + CONFIG_FILE_NAME;
+            String file = path;
+            if (!path.endsWith(".cfg")) {
+                file = path + CONFIG_FILE_NAME;
+            }
+
             try {
                 config.load(new FileInputStream(file));
             } catch (IOException e) {
@@ -79,4 +88,5 @@ public class AppContext {
     public static String getString(String key) {
         return config.getProperty(key);
     }
+
 }

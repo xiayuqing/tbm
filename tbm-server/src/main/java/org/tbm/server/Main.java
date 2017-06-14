@@ -9,7 +9,7 @@ public class Main {
     public static void main(String[] args) {
 
         CollectorPoolManager.start();
-        MonitorServer monitorServer = new MonitorServer();
+        ServerAgent monitorServer = new ServerAgent();
         monitorServer.start();
     }
 }

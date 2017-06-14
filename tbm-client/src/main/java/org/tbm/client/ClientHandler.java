@@ -1,12 +1,10 @@
-package org.tbm.client.node;
+package org.tbm.client;
 
 import com.alibaba.fastjson.JSON;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tbm.client.ClientDispatcher;
-import org.tbm.common.AppContext;
 import org.tbm.common.Dispatcher;
 import org.tbm.common.bean.HostInfo;
 import org.tbm.common.bean.PacketLite;
@@ -35,7 +33,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<String> {
         logger.info("connected from :{}", ctx.channel().remoteAddress());
 
         HostInfo hostInfo = NetUtils.convertHostInfo(ctx.channel().localAddress());
-        hostInfo.setSystemId(AppContext.getLong("system.id", 10000L));
+        hostInfo.setSystemId(ClientContext.SYSTEM_ID);
         ctx.channel().writeAndFlush(PacketLite.createHandshake(hostInfo.getSystemId(), hostInfo.getIp(), hostInfo
                 .getPort()) + "\r\n");
     }

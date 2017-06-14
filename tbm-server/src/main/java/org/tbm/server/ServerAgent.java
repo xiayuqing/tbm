@@ -20,8 +20,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by Jason.Xia on 17/5/24.
  */
-public class MonitorServer {
-    private static final Logger logger = LoggerFactory.getLogger(MonitorServer.class);
+public class ServerAgent {
+    private static final Logger logger = LoggerFactory.getLogger(ServerAgent.class);
     private int port = 9411;
     private AtomicInteger state = new AtomicInteger(State.STOP);
     private NioEventLoopGroup boss;
