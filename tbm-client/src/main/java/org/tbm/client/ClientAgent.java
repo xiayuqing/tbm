@@ -9,6 +9,7 @@ import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.Delimiters;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
+import io.netty.util.concurrent.Future;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tbm.common.AppContext;
@@ -28,11 +29,13 @@ public class ClientAgent {
     private int port = 9411;
     private ChannelFuture future;
 
-    public ChannelFuture start() {
+    public ChannelFuture start(String host, int port) {
         if (!state.compareAndSet(State.STOP, State.STARTING)) {
             throw new IllegalStateException("client already started.");
         }
 
+        this.host = host;
+        this.port = port;
         return create();
     }
 
@@ -63,9 +66,9 @@ public class ClientAgent {
             this.future = bootstrap.connect(host, port).sync().addListener(new ChannelFutureListener() {
                 public void operationComplete(ChannelFuture future) throws Exception {
                     if (future.isSuccess()) {
-                        logger.info("tbm client start success.connect to:{}", host + ":" + port);
+                        logger.info("[tbm] Client Start Success. Connect to:{}", host + ":" + port);
                     } else {
-                        logger.error("tbm client start failure.connect to{}, cause:{}", host + ":" + port, future
+                        logger.error("[tbm] Client Start Failure. Connect to{}, cause:{}", host + ":" + port, future
                                 .cause());
                     }
                 }

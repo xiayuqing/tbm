@@ -46,7 +46,7 @@ public class HandshakeProcessor extends AbstractProcessor {
         List<Object> args = new ArrayList<>();
         args.add(hostInfo.getSystemId());
         args.add(hostInfo.getIp());
-        args.add(hostInfo.getPort());
+//        args.add(hostInfo.getPort());
         List<Object> select;
         try {
             select = dataAccessor.select(SqlTemplate.SELECT_MACHINE_INFO.sql, args, HostInfo.class);
@@ -61,7 +61,7 @@ public class HandshakeProcessor extends AbstractProcessor {
                 List<Object> obj = new ArrayList<>();
                 obj.add(hostInfo.getSystemId());
                 obj.add(hostInfo.getIp());
-                obj.add(hostInfo.getPort());
+//                obj.add(hostInfo.getPort());
                 obj.add(hostInfo.getBindingId());
                 dataAccessor.insert(SqlTemplate.INSERT_MACHINE_INFO.sql, obj);
             } else {

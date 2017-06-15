@@ -49,26 +49,27 @@ public class DataAccessor {
         return dataSource.getConnection();
     }
 
-//    private <T> T execute(String sql, SqlExecutor<T> executor) {
-//        DruidPooledConnection connection = null;
-//        T result = null;
-//        try {
-//            connection = dataSource.getConnection();
-//            connection.setAutoCommit(false);
-//            PreparedStatement ps = connection.prepareStatement(sql);
-//            result = executor.execute(ps,);
-//            sqlAssembler.build(ps, args);
-//            ps.execute();
-//            ps.close();
-//            connection.commit();
-//        } catch (Exception e) {
-//            if (null != connection) {
-//                connection.rollback();
-//            }
-//
-//            throw e;
-//        }
-//    }
+    public void createTable(List<String> sqls) throws SQLException {
+
+        DruidPooledConnection connection = dataSource.getConnection();
+        try {
+            connection.setAutoCommit(false);
+            Statement statement = connection.createStatement();
+            for (String item : sqls) {
+                statement.addBatch(item);
+            }
+
+            statement.executeBatch();
+            statement.close();
+            connection.close();
+        } catch (Exception e) {
+            if (null != connection) {
+                connection.rollback();
+            }
+
+            throw e;
+        }
+    }
 
     public void insert(String sql, List<Object> args) throws SQLException {
         DruidPooledConnection connection = null;

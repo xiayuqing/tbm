@@ -46,8 +46,10 @@ public class ClientAgentStartup {
         }
 
         ClientContext.setProperties(properties);
+        String host = null == ClientContext.getString("host") ? "localhost" : ClientContext.getString("host");
+        int port = ClientContext.getInt("port", 9411);
         final ClientAgent clientAgent = new ClientAgent();
-        ChannelFuture channelFuture = clientAgent.start();
+        ChannelFuture channelFuture = clientAgent.start(host, port);
         JvmStatExecutor statExecutor = null;
         if (ClientContext.getBoolean("jvm.stat.enable", true)) {
             statExecutor = new JvmStatExecutor();

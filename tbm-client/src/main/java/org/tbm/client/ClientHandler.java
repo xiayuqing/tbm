@@ -40,7 +40,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<String> {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        logger.info("disconnected from:{}", ctx.channel().remoteAddress());
+        logger.info("[tbm]Disconnected From:{}", ctx.channel().remoteAddress());
     }
 
     @Override
