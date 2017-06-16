@@ -15,7 +15,6 @@ import java.util.List;
 public class DataAccessor {
 
     private DruidDataSource dataSource;
-    private SqlAssembler sqlAssembler;
 
     public DataAccessor() {
         dataSource = new DruidDataSource();
@@ -37,7 +36,6 @@ public class DataAccessor {
             throw new IllegalArgumentException(e);
         }
 
-        sqlAssembler = new SqlAssembler();
     }
 
     public static void main(String[] args) throws Exception {
@@ -77,7 +75,7 @@ public class DataAccessor {
             connection = dataSource.getConnection();
             connection.setAutoCommit(false);
             PreparedStatement ps = connection.prepareStatement(sql);
-            sqlAssembler.build(ps, args);
+            SqlAssembler.build(ps, args);
             ps.execute();
             ps.close();
             connection.commit();
@@ -127,9 +125,9 @@ public class DataAccessor {
             connection = dataSource.getConnection();
             connection.setAutoCommit(false);
             PreparedStatement ps = connection.prepareStatement(sql);
-            sqlAssembler.build(ps, args);
+            SqlAssembler.build(ps, args);
             ResultSet resultSet = ps.executeQuery();
-            result = sqlAssembler.convertResult(resultSet, resultType);
+            result = SqlAssembler.convertResult(resultSet, resultType);
             ps.close();
             connection.commit();
         } catch (Exception e) {
