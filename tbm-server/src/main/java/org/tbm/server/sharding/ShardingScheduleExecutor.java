@@ -5,7 +5,16 @@ import org.slf4j.LoggerFactory;
 import org.tbm.common.State;
 import org.tbm.common.access.DataAccessor;
 import org.tbm.common.access.DataAccessorFactory;
+import org.tbm.common.access.ShardingUnits;
+import org.tbm.common.access.Table;
+import org.tbm.common.utils.ObjectUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -16,6 +25,7 @@ public class ShardingScheduleExecutor {
     private final Logger logger = LoggerFactory.getLogger(ShardingScheduleExecutor.class);
     private final DataAccessor dataAccessor = DataAccessorFactory.getInstance();
     private ShardingConfig shardingConfig;
+    private ScheduledExecutorService executor;
 
     public void start() {
         if (!status.compareAndSet(State.STOP, State.STARTING)) {
@@ -23,9 +33,46 @@ public class ShardingScheduleExecutor {
             return;
         }
 
+        executor = Executors.newScheduledThreadPool(1);
+
         this.shardingConfig = ShardingConfig.getConfig();
+        try {
+            List<String> tables = new ArrayList<>();
+            for (Map.Entry<String, Table> item : shardingConfig.getTableMap().entrySet()) {
+                tables.add(item.getValue().getCurrentSql());
+                long period;
+                if (ShardingUnits.HOUR == item.getValue().getUnits()) {
+                    period = 60 * 60;
+                } else {
+                    period = 60 * 60 * 24;
+                }
 
+                executor.scheduleAtFixedRate(new CreateTableTask(item.getValue()), 0, period, TimeUnit
+                        .SECONDS);
+            }
 
+            dataAccessor.createTable(tables);
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+
+    }
+
+    private class CreateTableTask implements Runnable {
+        private Table table;
+
+        public CreateTableTask(Table table) {
+            this.table = table;
+        }
+
+        @Override
+        public void run() {
+            try {
+                dataAccessor.createTable(ObjectUtils.singleObjectConvertToList(table.getNextSql()));
+            } catch (Exception e) {
+                logger.error("Create Table Failed.table:{},msg:{},trace:{}", table, e.getMessage(), e.getStackTrace());
+            }
+        }
     }
 
 }
