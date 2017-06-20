@@ -30,7 +30,7 @@ public class Table extends Operation {
         this.baseName = baseName;
         this.units = units;
         this.schemaStr = schemaStr;
-        this.ops = DB_OPS.CREATE;
+//        this.ops = DB_OPS.CREATE;
     }
 
 

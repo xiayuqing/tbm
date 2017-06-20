@@ -38,17 +38,11 @@ public class DataAccessor {
 
     }
 
-    public static void main(String[] args) throws Exception {
-//        DataAccessor instance = DataAccessorFactory.getInstance();
-//        instance.select(new HostInfo(1000, "122", 11));
-    }
-
     public Connection getConnection() throws SQLException {
         return dataSource.getConnection();
     }
 
     public void createTable(List<String> sqls) throws SQLException {
-
         DruidPooledConnection connection = dataSource.getConnection();
         try {
             connection.setAutoCommit(false);
@@ -67,77 +61,5 @@ public class DataAccessor {
 
             throw e;
         }
-    }
-
-    public void insert(String sql, List<Object> args) throws SQLException {
-        DruidPooledConnection connection = null;
-        try {
-            connection = dataSource.getConnection();
-            connection.setAutoCommit(false);
-            PreparedStatement ps = connection.prepareStatement(sql);
-            SqlAssembler.build(ps, args);
-            ps.execute();
-            ps.close();
-            connection.commit();
-        } catch (Exception e) {
-            if (null != connection) {
-                connection.rollback();
-            }
-
-            throw e;
-        }
-    }
-
-    public void insertBatch(List<JvmData> data) throws SQLException {
-        DruidPooledConnection connection = null;
-        try {
-            connection = dataSource.getConnection();
-            connection.setAutoCommit(false);
-            PreparedStatement ps = connection.prepareStatement(SqlTemplate.INSERT_MEMORY_SUMMARY.sql);
-            for (JvmData item : data) {
-                ps.setLong(1, item.getBindingId());
-                ps.setLong(2, MemoryType.SUMMARY_HEAP);
-                ps.setLong(3, item.getMemorySummaryInfo().getHeapInfo().getMax());
-                ps.setLong(4, item.getMemorySummaryInfo().getHeapInfo().getInit());
-                ps.setLong(5, item.getMemorySummaryInfo().getHeapInfo().getCommitted());
-                ps.setLong(6, item.getMemorySummaryInfo().getHeapInfo().getUsed());
-                ps.addBatch();
-            }
-
-            ps.executeBatch();
-            ParameterMetaData parameterMetaData = ps.getParameterMetaData();
-            ps.close();
-            connection.commit();
-        } catch (Exception e) {
-            if (null != connection) {
-                connection.rollback();
-            }
-
-            throw e;
-        }
-
-    }
-
-    public List<Object> select(String sql, List<Object> args, Class resultType) throws Exception {
-        DruidPooledConnection connection = null;
-        List<Object> result;
-        try {
-            connection = dataSource.getConnection();
-            connection.setAutoCommit(false);
-            PreparedStatement ps = connection.prepareStatement(sql);
-            SqlAssembler.build(ps, args);
-            ResultSet resultSet = ps.executeQuery();
-            result = SqlAssembler.convertResult(resultSet, resultType);
-            ps.close();
-            connection.commit();
-        } catch (Exception e) {
-            if (null != connection) {
-                connection.rollback();
-            }
-
-            throw e;
-        }
-
-        return result;
     }
 }

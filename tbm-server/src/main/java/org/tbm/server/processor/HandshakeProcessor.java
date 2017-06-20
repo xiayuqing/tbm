@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tbm.common.access.DataAccessor;
+import org.tbm.common.access.OperationManager;
 import org.tbm.common.access.SqlTemplate;
 import org.tbm.common.bean.HostInfo;
 import org.tbm.common.bean.PacketLite;
@@ -19,12 +20,13 @@ import java.util.List;
 public class HandshakeProcessor extends AbstractProcessor {
     private static final Logger logger = LoggerFactory.getLogger(HandshakeProcessor.class);
 
-    public HandshakeProcessor(DataAccessor dataAccessor) {
-        super(dataAccessor, null);
+    public HandshakeProcessor(DataAccessor dataAccessor, OperationManager om) {
+        super(dataAccessor, null, om);
     }
 
-    public HandshakeProcessor(DataAccessor dataAccessor, CollectorPool collectorPool) {
-        super(dataAccessor, collectorPool);
+    public HandshakeProcessor(DataAccessor dataAccessor, CollectorPool collectorPool, OperationManager
+            om) {
+        super(dataAccessor, collectorPool, om);
     }
 
     @Override
@@ -49,7 +51,8 @@ public class HandshakeProcessor extends AbstractProcessor {
         args.add(hostInfo.getIp());
         List<HostInfo> select;
         try {
-            select = new MachineInfoSqlExecutor(dataAccessor.getConnection(), SqlTemplate.SELECT_MACHINE_INFO, args)
+            select = new MachineInfoSqlExecutor(dataAccessor.getConnection(), om.getOperation(SqlTemplate
+                    .SELECT_MACHINE_INFO), args)
                     .run();
 //            select = dataAccessor.select(SqlTemplate.SELECT_MACHINE_INFO.sql, args, HostInfo.class);
             if (null != select && 1 < select.size()) {
@@ -64,8 +67,8 @@ public class HandshakeProcessor extends AbstractProcessor {
                 obj.add(hostInfo.getSystemId());
                 obj.add(hostInfo.getIp());
                 obj.add(hostInfo.getBindingId());
-                new MachineInfoSqlExecutor(dataAccessor.getConnection(), SqlTemplate.INSERT_MACHINE_INFO, obj)
-                        .run();
+                new MachineInfoSqlExecutor(dataAccessor.getConnection(), om.getOperation(SqlTemplate
+                        .INSERT_MACHINE_INFO), obj).run();
 //                dataAccessor.insert(SqlTemplate.INSERT_MACHINE_INFO.sql, obj);
             } else {
                 hostInfo = select.get(0);

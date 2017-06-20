@@ -13,32 +13,41 @@ import java.util.List;
 public abstract class SqlExecutor<T> {
     protected List<T> result;
     private Connection connection;
-    private SqlTemplate sqlTemplate;
+    private Operation operation;
+    private String currentSql;
+    //    private SqlTemplate sqlTemplate;
     private List<Object> args;
 
-    public SqlExecutor(Connection connection, SqlTemplate sqlTemplate, List<Object> args) {
+//    public SqlExecutor(Connection connection, SqlTemplate sqlTemplate, List<Object> args) {
+//        this.connection = connection;
+//        this.sqlTemplate = sqlTemplate;
+//        this.args = args;
+//    }
+
+    public SqlExecutor(Connection connection, Operation operation, List<Object> args) {
         this.connection = connection;
-        this.sqlTemplate = sqlTemplate;
+        this.operation = operation;
         this.args = args;
+        this.currentSql = operation.getCurrentSql();
     }
 
     public List<T> run() throws Exception {
         connection.setAutoCommit(false);
-        PreparedStatement ps = connection.prepareStatement(sqlTemplate.sql);
-        build(ps, sqlTemplate, args);
+        PreparedStatement ps = connection.prepareStatement(currentSql);
+        build(ps, currentSql, args);
 //        SqlAssembler.build(ps, sqlTemplate.sql, args);
         try {
-            switch (sqlTemplate.type) {
-                case SqlTemplate.SQL_TYPE.CREATE:
+            switch (operation.ops) {
+                case CREATE:
                     ps.executeBatch();
                     break;
-                case SqlTemplate.SQL_TYPE.RETRIEVE:
+                case RETRIEVE:
                     result = new ArrayList<>();
                     convertResult(ps.executeQuery());
                     break;
-                case SqlTemplate.SQL_TYPE.UPDATE:
+                case UPDATE:
                     break;
-                case SqlTemplate.SQL_TYPE.DELETE:
+                case DELETE:
                     break;
                 default:
                     throw new SQLException("unknown data manipulation language");
@@ -67,7 +76,7 @@ public abstract class SqlExecutor<T> {
      */
     protected abstract void convertResult(ResultSet resultSet) throws Exception;
 
-    protected abstract PreparedStatement build(PreparedStatement ps, SqlTemplate sqlTemplate, List<Object> args)
+    protected abstract PreparedStatement build(PreparedStatement ps, String sql, List<Object> args)
             throws Exception;
 
     public List<T> getResult() {

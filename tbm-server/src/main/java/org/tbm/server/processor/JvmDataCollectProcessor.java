@@ -5,12 +5,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tbm.common.MemoryType;
 import org.tbm.common.access.DataAccessor;
-import org.tbm.server.collect.JvmDataSqlExecutor;
+import org.tbm.common.access.OperationManager;
 import org.tbm.common.access.SqlTemplate;
 import org.tbm.common.bean.PacketLite;
 import org.tbm.common.bean.vo.*;
 import org.tbm.common.utils.CollectionUtils;
 import org.tbm.server.collect.CollectorPool;
+import org.tbm.server.collect.JvmDataSqlExecutor;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -24,8 +25,8 @@ import java.util.Map;
 public class JvmDataCollectProcessor extends AbstractProcessor {
     private static final Logger logger = LoggerFactory.getLogger(JvmDataCollectProcessor.class);
 
-    public JvmDataCollectProcessor(DataAccessor dataAccessor, CollectorPool collectorPool) {
-        super(dataAccessor, collectorPool);
+    public JvmDataCollectProcessor(DataAccessor dataAccessor, CollectorPool collectorPool, OperationManager om) {
+        super(dataAccessor, collectorPool, om);
     }
 
     @Override
@@ -40,26 +41,26 @@ public class JvmDataCollectProcessor extends AbstractProcessor {
             Map<String, List<Object>> extract = extract(jvmData);
             List<Object> memorySummary = extract.get(MemoryType.MEMRORY_SUMMARY);
             if (!CollectionUtils.isEmpty(memorySummary)) {
-                collectorPool.add(new JvmDataSqlExecutor(dataAccessor.getConnection(), SqlTemplate
-                        .INSERT_MEMORY_SUMMARY, memorySummary));
+                collectorPool.add(new JvmDataSqlExecutor(dataAccessor.getConnection(), om.getOperation(SqlTemplate
+                        .INSERT_MEMORY_SUMMARY), memorySummary));
             }
 
             List<Object> pool = extract.get(MemoryType.MEMORY_POOL);
             if (!CollectionUtils.isEmpty(pool)) {
-                collectorPool.add(new JvmDataSqlExecutor(dataAccessor.getConnection(), SqlTemplate
-                        .INSERT_MEMORY_POOL, pool));
+                collectorPool.add(new JvmDataSqlExecutor(dataAccessor.getConnection(), om.getOperation(SqlTemplate
+                        .INSERT_MEMORY_POOL), pool));
             }
 
             List<Object> classLoad = extract.get(MemoryType.CLASS_LOAD);
             if (!CollectionUtils.isEmpty(classLoad)) {
-                collectorPool.add(new JvmDataSqlExecutor(dataAccessor.getConnection(), SqlTemplate.INSERT_CLASS_LOAD,
-                        classLoad));
+                collectorPool.add(new JvmDataSqlExecutor(dataAccessor.getConnection(), om.getOperation(SqlTemplate
+                        .INSERT_CLASS_LOAD), classLoad));
             }
 
             List<Object> thread = extract.get(MemoryType.THREAD);
             if (!CollectionUtils.isEmpty(thread)) {
-                collectorPool.add(new JvmDataSqlExecutor(dataAccessor.getConnection(), SqlTemplate.INSERT_THREAD,
-                        thread));
+                collectorPool.add(new JvmDataSqlExecutor(dataAccessor.getConnection(), om.getOperation(SqlTemplate
+                        .INSERT_THREAD), thread));
             }
         } catch (SQLException e) {
             logger.error("insert jvm statistic data error.seq:{},msg:{},trace:{}", packetLite.seq, e.getErrorCode(), e

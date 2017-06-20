@@ -35,8 +35,8 @@ public class ShardingScheduleExecutor {
 
         executor = Executors.newScheduledThreadPool(1);
 
-        this.shardingConfig = ShardingConfig.getConfig();
         try {
+            this.shardingConfig = ShardingConfig.getConfig();
             Map<String/*currentName*/, String/*currentSql*/> tables = new HashMap<>();
             for (Map.Entry<String, Table> item : shardingConfig.getTableMap().entrySet()) {
                 tables.put(item.getValue().getCurrentName(), item.getValue().getCurrentSql());
@@ -73,9 +73,9 @@ public class ShardingScheduleExecutor {
         @Override
         public void run() {
             try {
-                logger.info("[tbm] Create Table Task:{}", table.getBaseName());
+                logger.info("[tbm] Run Create Table Task for [{}]", table.getBaseName());
                 dataAccessor.createTable(ObjectUtils.singleObjectConvertToList(table.getNextSql()));
-                logger.info("[tbm] Create Table:{}", table.getNextName());
+                logger.info("[tbm] Success to Create Table: [{}]", table.getNextName());
             } catch (Exception e) {
                 logger.error("Create Table Failed.table:{},msg:{},trace:{}", table, e.getMessage(), e.getStackTrace());
             }

@@ -2,7 +2,7 @@
   "CREATE_MACHINE_INFO": {
     "baseName": "MACHINE_INFO",
     "ops": "CREATE",
-    "units": "DAY",
+    "units": "SINGLETON",
     "schemaStr": "CREATE TABLE IF NOT EXISTS `${tableName}` ( `system_id` bigint(20) NOT NULL DEFAULT '0', `ip` char(15) NOT NULL DEFAULT '127.0.0.1', `port` int(11) NOT NULL DEFAULT '0', `binding_id` bigint(20) NOT NULL DEFAULT '0', `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0:offline;1:online', `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`system_id`,`ip`,`port`), UNIQUE KEY `unique_binding_id` (`binding_id`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8"
   },
   "CREATE_MEMORY_POOL": {

@@ -1,32 +1,38 @@
 {
-  "CREATE_MACHINE_INFO": {
-    "baseName": "MACHINE_INFO",
-    "ops": "CREATE",
-    "units": "DAY",
-    "schemaStr": "CREATE TABLE IF NOT EXISTS `${tableName}` ( `system_id` bigint(20) NOT NULL DEFAULT '0', `ip` char(15) NOT NULL DEFAULT '127.0.0.1', `port` int(11) NOT NULL DEFAULT '0', `binding_id` bigint(20) NOT NULL DEFAULT '0', `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0:offline;1:online', `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`system_id`,`ip`,`port`), UNIQUE KEY `unique_binding_id` (`binding_id`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8"
-  },
-  "CREATE_MEMORY_POOL": {
+  "INSERT_MEMORY_POOL": {
     "baseName": "MEMORY_POOL",
     "ops": "CREATE",
     "units": "DAY",
-    "schemaStr": "CREATE TABLE IF NOT EXISTS `${tableName}` ( `binding_id` bigint(20) NOT NULL, `cate` int(11) NOT NULL, `type` int(11) NOT NULL DEFAULT '0', `name` char(20) NOT NULL DEFAULT 'default', `timestamp` bigint(20) NOT NULL DEFAULT '0', `peak_max` bigint(20) NOT NULL DEFAULT '0', `peak_init` bigint(20) NOT NULL DEFAULT '0', `peak_committed` bigint(20) NOT NULL DEFAULT '0', `peak_used` bigint(20) NOT NULL DEFAULT '0', `usage_max` bigint(20) NOT NULL DEFAULT '0', `usage_init` bigint(20) NOT NULL DEFAULT '0', `usage_committed` bigint(20) NOT NULL DEFAULT '0', `usage_used` bigint(20) NOT NULL DEFAULT '0', `usage_threshold` bigint(20) NOT NULL DEFAULT '0', `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ) ENGINE=InnoDB DEFAULT CHARSET=utf8"
+    "schemaStr": "INSERT INTO `${tableName}` (`binding_id`,`cate`,`type`,`name`,`timestamp`,`peak_max`,`peak_init`,`peak_committed`,`peak_used`,`usage_max`,`usage_init`,`usage_committed`,`usage_used`,`usage_threshold`) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
   },
-  "CREATE_MEMORY_SUMMARY": {
+  "INSERT_MEMORY_SUMMARY": {
     "baseName": "MEMORY_SUMMARY",
     "ops": "CREATE",
     "units": "DAY",
-    "schemaStr": "CREATE TABLE IF NOT EXISTS `${tableName}` ( `binding_id` bigint(20) NOT NULL, `type` int(11) NOT NULL DEFAULT '0' COMMENT '1:heap;2:non-heap', `timestamp` bigint(20) NOT NULL DEFAULT '0', `max` bigint(20) NOT NULL DEFAULT '0', `init` bigint(20) NOT NULL DEFAULT '0', `committed` bigint(20) NOT NULL DEFAULT '0', `used` bigint(20) NOT NULL DEFAULT '0', `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ) ENGINE=InnoDB DEFAULT CHARSET=utf8"
+    "schemaStr": "INSERT INTO `${tableName}` (`binding_id`,`type`,`timestamp`,`max`,`init`,`committed`,`used`) VALUES (?,?,?,?,?,?,?)"
   },
-  "CREATE_THREAD": {
+  "INSERT_THREAD": {
     "baseName": "THREAD",
     "ops": "CREATE",
     "units": "DAY",
-    "schemaStr": "CREATE TABLE IF NOT EXISTS `${tableName}` ( `binding_id` bigint(20) NOT NULL, `timestamp` bigint(20) NOT NULL DEFAULT '0', `active` bigint(20) NOT NULL DEFAULT '0', `daemon` bigint(20) NOT NULL DEFAULT '0', `peak` bigint(20) NOT NULL DEFAULT '0', `locked` bigint(20) NOT NULL DEFAULT '0', `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ) ENGINE=InnoDB DEFAULT CHARSET=utf8"
+    "schemaStr": "INSERT INTO `${tableName}` (`binding_id`,`timestamp`,`active`,`daemon`,`peak`,`locked`) VALUES (?,?,?,?,?,?)"
   },
-  "CREATE_CLASS_LOAD": {
+  "INSERT_CLASS_LOAD": {
     "baseName": "CLASS_LOAD",
     "ops": "CREATE",
     "units": "DAY",
-    "schemaStr": "CREATE TABLE IF NOT EXISTS `${tableName}` ( `binding_id` bigint(20) NOT NULL, `timestamp` bigint(20) NOT NULL DEFAULT '0', `loaded` bigint(20) NOT NULL DEFAULT '0', `total` bigint(20) NOT NULL DEFAULT '0', `unload` bigint(20) NOT NULL DEFAULT '0', `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ) ENGINE=InnoDB DEFAULT CHARSET=utf8"
+    "schemaStr": "INSERT INTO `${tableName}` (`binding_id`,`timestamp`,`loaded`,`total`,`unload`) VALUES (?,?,?,?,?)"
+  },
+  "INSERT_MACHINE_INFO": {
+    "baseName": "MACHINE_INFO",
+    "ops": "CREATE",
+    "units": "SINGLETON",
+    "schemaStr": "INSERT INTO `${tableName}` (`system_id`,`ip`,`binding_id`) VALUES(?,?,?)"
+  },
+  "SELECT_MACHINE_INFO": {
+    "baseName": "MACHINE_INFO",
+    "ops": "RETRIEVE",
+    "units": "SINGLETON",
+    "schemaStr": "SELECT * FROM `${tableName}` WHERE `system_id`=? AND `ip`=?"
   }
 }
