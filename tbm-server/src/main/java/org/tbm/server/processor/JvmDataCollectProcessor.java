@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tbm.common.MemoryType;
 import org.tbm.common.access.DataAccessor;
-import org.tbm.common.access.JvmDataSqlExecutor;
+import org.tbm.server.collect.JvmDataSqlExecutor;
 import org.tbm.common.access.SqlTemplate;
 import org.tbm.common.bean.PacketLite;
 import org.tbm.common.bean.vo.*;

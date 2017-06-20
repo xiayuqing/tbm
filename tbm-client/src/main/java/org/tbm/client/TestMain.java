@@ -11,15 +11,9 @@ import java.sql.SQLException;
  */
 public class TestMain {
     public static void main(String[] args) throws InterruptedException, SQLException {
-//        if (StringUtils.isEmpty(AppContext.getString("system.id"))) {
-//            throw new IllegalArgumentException("not found properties:system.id");
-//        }
-//
-//        ClientContext.SYSTEM_ID = Long.valueOf(AppContext.getString("system.id"));
         ClientContext.SYSTEM_ID = 10000l;
         ClientAgent agent = new ClientAgent();
         ChannelFuture future = agent.start("localhost",9411);
-//        ChannelFuture future = agent.getFuture();
         LocalJvmAccessor localJvmAccessor = new LocalJvmAccessor();
 
         do {

@@ -17,7 +17,7 @@ import java.util.Properties;
 public class ShardingConfig {
     private static ShardingConfig config;
 
-    private Map<String, Table> tableMap = new HashMap<>();
+    private static Map<String, Table> tableMap = new HashMap<>();
 
     public static void load(String path) {
         Properties properties = new Properties();
@@ -27,7 +27,7 @@ public class ShardingConfig {
 
         String file = path;
         if (!path.endsWith(".properties")) {
-            file = path + (path.endsWith("/") ? "schema.properties" : "/schema.properties");
+            file = path + (path.endsWith("/") ? "table.properties" : "/table.properties");
         }
 
         try {
@@ -41,7 +41,7 @@ public class ShardingConfig {
 
     public static ShardingConfig getConfig() {
         if (null == config) {
-            URL resource = ShardingConfig.class.getResource("/schema.properties");
+            URL resource = ShardingConfig.class.getResource("/table.properties");
             load(resource.getFile());
         }
 
@@ -49,31 +49,31 @@ public class ShardingConfig {
     }
 
     private static ShardingConfig createConfig(Properties schema) {
-        ShardingConfig shardingConfig = new ShardingConfig();
+        config = new ShardingConfig();
 
-        shardingConfig.putTableConfig(Table.MACHINE_INFO, new Table(Table.MACHINE_INFO, ShardingUnits.SINGLETON,
+        config.putTableConfig(Table.MACHINE_INFO, new Table(Table.MACHINE_INFO, ShardingUnits.SINGLETON,
                 schema.getProperty("MACHINE_INFO")));
 
         String pool = AppContext.getString("sharding.memory.pool", ShardingUnits.DAY.toString());
-        shardingConfig.putTableConfig(Table.MEMORY_POOL, new Table(Table.MEMORY_POOL, ShardingUnits.valueOf(pool),
+        config.putTableConfig(Table.MEMORY_POOL, new Table(Table.MEMORY_POOL, ShardingUnits.valueOf(pool),
                 schema.getProperty("MEMORY_POOL")));
 
         String summary = AppContext.getString("sharding.memory.summary", ShardingUnits.DAY.toString());
-        shardingConfig.putTableConfig(Table.MEMORY_SUMMARY, new Table(Table.MEMORY_SUMMARY, ShardingUnits.valueOf
+        config.putTableConfig(Table.MEMORY_SUMMARY, new Table(Table.MEMORY_SUMMARY, ShardingUnits.valueOf
                 (summary), schema.getProperty("MEMORY_SUMMARY")));
 
         String thread = AppContext.getString("sharding.thread", ShardingUnits.DAY.toString());
-        shardingConfig.putTableConfig(Table.THREAD, new Table(Table.THREAD, ShardingUnits.valueOf(thread), schema
+        config.putTableConfig(Table.THREAD, new Table(Table.THREAD, ShardingUnits.valueOf(thread), schema
                 .getProperty("THREAD")));
 
         String classload = AppContext.getString("sharing.classload", ShardingUnits.DAY.toString());
-        shardingConfig.putTableConfig(Table.CLASS_LOAD, new Table(Table.CLASS_LOAD, ShardingUnits.valueOf(classload),
+        config.putTableConfig(Table.CLASS_LOAD, new Table(Table.CLASS_LOAD, ShardingUnits.valueOf(classload),
                 schema.getProperty("CLASS_LOAD")));
 
-        String business = AppContext.getString("sharding.business", ShardingUnits.DAY.toString());
-        shardingConfig.putTableConfig(Table.BUSINESS, new Table(Table.BUSINESS, ShardingUnits.valueOf(business),
-                schema.getProperty("BUSINESS")));
-        return shardingConfig;
+//        String business = AppContext.getString("sharding.business", ShardingUnits.DAY.toString());
+//        config.putTableConfig(Table.BUSINESS, new Table(Table.BUSINESS, ShardingUnits.valueOf(business),
+//                schema.getProperty("BUSINESS")));
+        return config;
     }
 
     public void putTableConfig(String table, Table config) {

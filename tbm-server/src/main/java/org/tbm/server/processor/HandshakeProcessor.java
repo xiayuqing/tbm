@@ -8,6 +8,7 @@ import org.tbm.common.access.SqlTemplate;
 import org.tbm.common.bean.HostInfo;
 import org.tbm.common.bean.PacketLite;
 import org.tbm.server.collect.CollectorPool;
+import org.tbm.server.collect.MachineInfoSqlExecutor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,26 +47,28 @@ public class HandshakeProcessor extends AbstractProcessor {
         List<Object> args = new ArrayList<>();
         args.add(hostInfo.getSystemId());
         args.add(hostInfo.getIp());
-//        args.add(hostInfo.getPort());
-        List<Object> select;
+        List<HostInfo> select;
         try {
-            select = dataAccessor.select(SqlTemplate.SELECT_MACHINE_INFO.sql, args, HostInfo.class);
+            select = new MachineInfoSqlExecutor(dataAccessor.getConnection(), SqlTemplate.SELECT_MACHINE_INFO, args)
+                    .run();
+//            select = dataAccessor.select(SqlTemplate.SELECT_MACHINE_INFO.sql, args, HostInfo.class);
             if (null != select && 1 < select.size()) {
                 logger.error("duplicate host info with :{}", hostInfo);
                 return PacketLite.createException("duplicate host info with system:" + hostInfo.getSystemId() + ",ip:" +
                         hostInfo.getIp() + ",port:" + hostInfo.getPort(), packetLite.seq);
             }
 
-            if (null == select || 0 == select.size()) { // 新系统上线,换了机器/端口需要重新添加绑定信息
+            if (null == select || 0 == select.size()) { // 新系统上线/换机器需要重新添加绑定信息
                 hostInfo.setBindingId(System.currentTimeMillis());
                 List<Object> obj = new ArrayList<>();
                 obj.add(hostInfo.getSystemId());
                 obj.add(hostInfo.getIp());
-//                obj.add(hostInfo.getPort());
                 obj.add(hostInfo.getBindingId());
-                dataAccessor.insert(SqlTemplate.INSERT_MACHINE_INFO.sql, obj);
+                new MachineInfoSqlExecutor(dataAccessor.getConnection(), SqlTemplate.INSERT_MACHINE_INFO, obj)
+                        .run();
+//                dataAccessor.insert(SqlTemplate.INSERT_MACHINE_INFO.sql, obj);
             } else {
-                hostInfo = (HostInfo) select.get(0);
+                hostInfo = select.get(0);
             }
 
             return PacketLite.createHandshakeAck(packetLite.seq, hostInfo);

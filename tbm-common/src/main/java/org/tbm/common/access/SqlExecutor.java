@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,6 +33,7 @@ public abstract class SqlExecutor<T> {
                     ps.executeBatch();
                     break;
                 case SqlTemplate.SQL_TYPE.RETRIEVE:
+                    result = new ArrayList<>();
                     convertResult(ps.executeQuery());
                     break;
                 case SqlTemplate.SQL_TYPE.UPDATE:
@@ -63,9 +65,10 @@ public abstract class SqlExecutor<T> {
      * convert result set to object
      * @param resultSet
      */
-    abstract void convertResult(ResultSet resultSet) throws Exception;
+    protected abstract void convertResult(ResultSet resultSet) throws Exception;
 
-    abstract PreparedStatement build(PreparedStatement ps, SqlTemplate sqlTemplate, List<Object> args) throws Exception;
+    protected abstract PreparedStatement build(PreparedStatement ps, SqlTemplate sqlTemplate, List<Object> args)
+            throws Exception;
 
     public List<T> getResult() {
         return result;

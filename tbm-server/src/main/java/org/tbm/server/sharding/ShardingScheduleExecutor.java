@@ -10,7 +10,7 @@ import org.tbm.common.access.Table;
 import org.tbm.common.utils.ObjectUtils;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -37,9 +37,10 @@ public class ShardingScheduleExecutor {
 
         this.shardingConfig = ShardingConfig.getConfig();
         try {
-            List<String> tables = new ArrayList<>();
+            Map<String/*currentName*/, String/*currentSql*/> tables = new HashMap<>();
             for (Map.Entry<String, Table> item : shardingConfig.getTableMap().entrySet()) {
-                tables.add(item.getValue().getCurrentSql());
+                tables.put(item.getValue().getCurrentName(), item.getValue().getCurrentSql());
+
                 long period;
                 if (ShardingUnits.HOUR == item.getValue().getUnits()) {
                     period = 60 * 60;
@@ -47,15 +48,19 @@ public class ShardingScheduleExecutor {
                     period = 60 * 60 * 24;
                 }
 
-                executor.scheduleAtFixedRate(new CreateTableTask(item.getValue()), 0, period, TimeUnit
-                        .SECONDS);
+                if (ShardingUnits.SINGLETON != item.getValue().getUnits()) {
+                    executor.scheduleAtFixedRate(new CreateTableTask(item.getValue()), 0, period, TimeUnit
+                            .SECONDS);
+                }
             }
 
-            dataAccessor.createTable(tables);
+            dataAccessor.createTable(new ArrayList<>(tables.values()));
+            logger.info("[tbm] Initial Table:{}", tables.keySet());
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
 
+        logger.info("[tbm] Sharding Schedule Executor Started");
     }
 
     private class CreateTableTask implements Runnable {
@@ -68,7 +73,9 @@ public class ShardingScheduleExecutor {
         @Override
         public void run() {
             try {
+                logger.info("[tbm] Create Table Task:{}", table.getBaseName());
                 dataAccessor.createTable(ObjectUtils.singleObjectConvertToList(table.getNextSql()));
+                logger.info("[tbm] Create Table:{}", table.getNextName());
             } catch (Exception e) {
                 logger.error("Create Table Failed.table:{},msg:{},trace:{}", table, e.getMessage(), e.getStackTrace());
             }
