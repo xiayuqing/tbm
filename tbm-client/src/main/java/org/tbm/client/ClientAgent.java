@@ -9,9 +9,11 @@ import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.Delimiters;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
-import io.netty.util.concurrent.Future;
+import io.netty.util.HashedWheelTimer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tbm.client.handler.ConnectWatcher;
+import org.tbm.client.handler.DispatchHandler;
 import org.tbm.common.AppContext;
 import org.tbm.common.State;
 
@@ -28,6 +30,7 @@ public class ClientAgent {
     private String host = "127.0.0.1";
     private int port = 9411;
     private ChannelFuture future;
+    private Bootstrap bootstrap;
 
     public ChannelFuture start(String host, int port) {
         if (!state.compareAndSet(State.STOP, State.STARTING)) {
@@ -39,41 +42,76 @@ public class ClientAgent {
         return create();
     }
 
-    private ChannelFuture create() {
-        this.worker = new NioEventLoopGroup();
-        worker.setIoRatio(AppContext.getInt("io.ratio ", 70));
-        Bootstrap bootstrap = new Bootstrap();
-        bootstrap.group(worker)
-                .channel(NioSocketChannel.class)
-                .handler(new ChannelInitializer<SocketChannel>() {
-                    protected void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast("framer", new DelimiterBasedFrameDecoder(8192,
-                                Delimiters.lineDelimiter()));
-                        ch.pipeline().addLast("decoder", new StringDecoder(Charset.forName("utf-8")));
-                        ch.pipeline().addLast("encoder", new StringEncoder(Charset.forName("utf-8")));
+    public ChannelFuture create() {
+        synchronized (this) {
+            if (null == this.worker) {
+                this.worker = new NioEventLoopGroup();
+            }
 
-                        ch.pipeline().addLast(new ClientHandler());
-                    }
-                });
+            worker.setIoRatio(AppContext.getInt("io.ratio ", 70));
+            if (null == bootstrap) {
+                bootstrap = new Bootstrap();
+            }
+        }
 
-        bootstrap.option(ChannelOption.SO_SNDBUF, AppContext.getInt("so.send.buf", 32 * 1024));
-        bootstrap.option(ChannelOption.SO_RCVBUF, AppContext.getInt("so.receive.buf", 32 * 1024));
+        bootstrap.group(worker).channel(NioSocketChannel.class);
 
-        // 限制写缓冲水位
-        bootstrap.option(ChannelOption.WRITE_BUFFER_WATER_MARK, WriteBufferWaterMark.DEFAULT);
+        initialHandler(new ConnectWatcher(new HashedWheelTimer(), bootstrap, host, port) {
 
-        try {
-            this.future = bootstrap.connect(host, port).sync().addListener(new ChannelFutureListener() {
-                public void operationComplete(ChannelFuture future) throws Exception {
-                    if (future.isSuccess()) {
-                        logger.info("[tbm] Client Start Success. Connect to:{}", host + ":" + port);
-                    } else {
-                        logger.error("[tbm] Client Start Failure. Connect to{}, cause:{}", host + ":" + port, future
-                                .cause());
-                    }
+            @Override
+            public ChannelHandler[] getHandlers() {
+                return new ChannelHandler[]{
+                        this,
+                        new DispatchHandler()
+                };
+            }
+        }.getHandlers());
+
+        initialOption(bootstrap);
+
+        connect();
+
+        return future;
+    }
+
+    public void initialHandler(final ChannelHandler[] handlers) {
+        bootstrap.handler(new ChannelInitializer<SocketChannel>() {
+            protected void initChannel(SocketChannel ch) throws Exception {
+                initialDefaultChannel(ch.pipeline());
+                if (null != handlers) {
+                    ch.pipeline().addLast(handlers);
                 }
-            });
 
+//                ch.pipeline().addLast(new DispatchHandler(ClientAgent.this));
+            }
+        });
+    }
+
+    private void initialDefaultChannel(ChannelPipeline pipeline) {
+        pipeline.addLast("framer", new DelimiterBasedFrameDecoder(8192,
+                Delimiters.lineDelimiter()));
+        pipeline.addLast("decoder", new StringDecoder(Charset.forName("utf-8")));
+        pipeline.addLast("encoder", new StringEncoder(Charset.forName("utf-8")));
+    }
+
+    public ChannelFuture connect() {
+        return connect(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+                if (future.isSuccess()) {
+                    logger.info("[tbm] Client Start Success. Connect to:{}", ClientAgent.this.getRemoteAddress());
+                } else {
+                    logger.error("[tbm] Client Start Failure. Connect to{}, cause:{}", ClientAgent.this
+                            .getRemoteAddress(), future.cause());
+                    future.channel().pipeline().fireChannelInactive();
+                }
+            }
+        });
+    }
+
+    public ChannelFuture connect(ChannelFutureListener listener) {
+        try {
+            this.future = bootstrap.connect(host, port).sync().addListener(listener);
             if (future.isSuccess()) {
                 state.set(State.STARTED);
                 future.channel().closeFuture();
@@ -85,6 +123,14 @@ public class ClientAgent {
         return future;
     }
 
+    private void initialOption(Bootstrap bootstrap) {
+        bootstrap.option(ChannelOption.SO_SNDBUF, AppContext.getInt("so.send.buf", 32 * 1024));
+        bootstrap.option(ChannelOption.SO_RCVBUF, AppContext.getInt("so.receive.buf", 32 * 1024));
+
+        // 限制写缓冲水位
+        bootstrap.option(ChannelOption.WRITE_BUFFER_WATER_MARK, WriteBufferWaterMark.DEFAULT);
+    }
+
     public void stop() {
         if (state.compareAndSet(State.STARTED, State.SHUTDOWN)) {
             if (null != worker) {
@@ -93,6 +139,10 @@ public class ClientAgent {
         } else {
             logger.warn("tbm client already shutdown");
         }
+    }
+
+    public String getRemoteAddress() {
+        return host + ":" + port;
     }
 
     public ChannelFuture getFuture() {
