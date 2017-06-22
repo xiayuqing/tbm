@@ -40,6 +40,8 @@ public class JvmStatExecutor {
             @Override
             public void run() {
                 if (0 == ClientContext.BINDING_ID || null == future || !future.channel().isActive()) {
+                    logger.debug("[tbm]Discard jvm stat data.BINDING ID:{},Channel Status:{}", ClientContext
+                            .BINDING_ID, future.channel().isActive());
                     return;
                 }
 
