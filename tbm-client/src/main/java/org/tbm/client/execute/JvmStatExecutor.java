@@ -26,19 +26,20 @@ public class JvmStatExecutor {
 
     private LocalJvmAccessor localJvmAccessor;
 
-    public void initAndStart(final ChannelFuture future) {
+    public void initAndStart() {
         if (!start.compareAndSet(false, true)) {
             logger.info("JvmStatExecutor already started");
             return;
         }
 
-        this.future = future;
+//        this.future = future;
         this.localJvmAccessor = new LocalJvmAccessor();
         executor = Executors.newScheduledThreadPool(ClientContext.getInt("jvm.stat.executor.size", 5));
         long aLong = ClientContext.getLong("jvm.stat.period", 30);
         executor.scheduleWithFixedDelay(new Runnable() {
+            @Override
             public void run() {
-                if (0 == ClientContext.BINDING_ID) {
+                if (0 == ClientContext.BINDING_ID || null == future || !future.channel().isActive()) {
                     return;
                 }
 
@@ -72,4 +73,29 @@ public class JvmStatExecutor {
     public ChannelFuture getFuture() {
         return future;
     }
+
+    public void updateFuture(ChannelFuture future) {
+        this.future = future;
+    }
+
+    class JvmStatRunnable implements Runnable {
+        private ChannelFuture future;
+
+        public JvmStatRunnable(ChannelFuture future) {
+            this.future = future;
+        }
+
+        @Override
+        public void run() {
+            if (0 == ClientContext.BINDING_ID || null == future || !future.channel().isActive()) {
+                return;
+            }
+
+            PacketLite packetLite = PacketLite.createJvmDataPackage(ObjectUtils.singleObjectConvertToList
+                    (localJvmAccessor.fullPackageData()).toString());
+            future.channel().writeAndFlush(packetLite.toString() + "\r\n");
+        }
+    }
 }
+
+

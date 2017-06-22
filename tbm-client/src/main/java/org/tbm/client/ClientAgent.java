@@ -12,6 +12,7 @@ import io.netty.handler.codec.string.StringEncoder;
 import io.netty.util.HashedWheelTimer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tbm.client.execute.JvmStatExecutor;
 import org.tbm.client.handler.ConnectWatcher;
 import org.tbm.client.handler.DispatchHandler;
 import org.tbm.common.AppContext;
@@ -31,15 +32,19 @@ public class ClientAgent {
     private int port = 9411;
     private ChannelFuture future;
     private Bootstrap bootstrap;
+    private JvmStatExecutor jvmStatExecutor;
 
-    public ChannelFuture start(String host, int port) {
+    public ChannelFuture start(String host, int port, JvmStatExecutor jvmStatExecutor) {
         if (!state.compareAndSet(State.STOP, State.STARTING)) {
             throw new IllegalStateException("client already started.");
         }
 
         this.host = host;
         this.port = port;
-        return create();
+        this.jvmStatExecutor = jvmStatExecutor;
+        ChannelFuture future = create();
+        jvmStatExecutor.updateFuture(future);
+        return future;
     }
 
     public ChannelFuture create() {
@@ -56,7 +61,7 @@ public class ClientAgent {
 
         bootstrap.group(worker).channel(NioSocketChannel.class);
 
-        initialHandler(new ConnectWatcher(new HashedWheelTimer(), bootstrap, host, port) {
+        initialHandler(new ConnectWatcher(new HashedWheelTimer(), this, host, port, jvmStatExecutor) {
 
             @Override
             public ChannelHandler[] getHandlers() {
@@ -94,7 +99,7 @@ public class ClientAgent {
         pipeline.addLast("encoder", new StringEncoder(Charset.forName("utf-8")));
     }
 
-    public ChannelFuture connect() {
+    private ChannelFuture connect() {
         return connect(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
@@ -110,14 +115,10 @@ public class ClientAgent {
     }
 
     public ChannelFuture connect(ChannelFutureListener listener) {
-        try {
-            this.future = bootstrap.connect(host, port).sync().addListener(listener);
-            if (future.isSuccess()) {
-                state.set(State.STARTED);
-                future.channel().closeFuture();
-            }
-        } catch (InterruptedException e) {
-            throw new IllegalStateException(e);
+        this.future = bootstrap.connect(host, port).addListener(listener);
+        if (future.isSuccess()) {
+            state.set(State.STARTED);
+            future.channel().closeFuture();
         }
 
         return future;
