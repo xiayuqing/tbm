@@ -8,8 +8,9 @@ import org.slf4j.LoggerFactory;
 import org.tbm.client.ClientContext;
 import org.tbm.client.ClientDispatcher;
 import org.tbm.common.Dispatcher;
-import org.tbm.common.bean.HostInfo;
+import org.tbm.common.bean.MachineInfo;
 import org.tbm.common.bean.PacketLite;
+import org.tbm.common.bean.ValuePair;
 import org.tbm.common.utils.NetUtils;
 
 import java.util.Date;
@@ -17,11 +18,11 @@ import java.util.Date;
 /**
  * Created by Jason.Xia on 17/5/24.
  */
-public class DispatchHandler extends SimpleChannelInboundHandler<String> {
-    private static final Logger logger = LoggerFactory.getLogger(DispatchHandler.class);
+public class ClientHandler extends SimpleChannelInboundHandler<String> {
+    private static final Logger logger = LoggerFactory.getLogger(ClientHandler.class);
     private Dispatcher dispatcher;
 
-    public DispatchHandler() {
+    public ClientHandler() {
         dispatcher = new ClientDispatcher();
     }
 
@@ -32,10 +33,10 @@ public class DispatchHandler extends SimpleChannelInboundHandler<String> {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        HostInfo hostInfo = NetUtils.convertHostInfo(ctx.channel().localAddress());
-        hostInfo.setSystemId(ClientContext.SYSTEM_ID);
-        ctx.channel().writeAndFlush(PacketLite.createHandshake(hostInfo.getSystemId(), hostInfo.getIp(), hostInfo
-                .getPort()) + "\r\n");
+        ValuePair<String/*ip*/, Integer/*port*/> pair = NetUtils.convertHostInfo(ctx.channel().localAddress());
+        MachineInfo machineInfo = ClientContext.getMachineInfo();
+        machineInfo.setAddress(pair.getKey(), pair.getValue());
+        ctx.channel().writeAndFlush(PacketLite.createHandshake(machineInfo) + "\r\n");
     }
 
     @Override

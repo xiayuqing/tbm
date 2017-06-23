@@ -63,14 +63,4 @@ public class DateUtils {
             date.setSeconds(seconds);
         }
     }
-
-    public static void main(String[] args) {
-        Date dateAfter = DateUtils.getDateAfter(new Date(), -2);
-        System.out.println(dateAfter);
-
-        Date yesterday = DateUtils.getDateAfter(new Date(), -1);
-        Date beforeYesDay = DateUtils.getDateAfter(new Date(), -2);
-        setHoursTime(yesterday, 16, 0, 0);
-        System.out.println(yesterday);
-    }
 }

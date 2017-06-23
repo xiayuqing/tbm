@@ -26,12 +26,11 @@ public class LocalJvmAccessor {
         result.setBootstrap(runtimeMXBean.getBootClassPath());
         result.setClassPath(runtimeMXBean.getClassPath());
         result.setLibPath(runtimeMXBean.getLibraryPath());
-//        result.setTimestamp(System.currentTimeMillis());
 
+        result.setOs(osMXBean.getName());
         result.setArch(osMXBean.getArch());
         result.setVersion(osMXBean.getVersion());
         result.setAvailableProcessors(osMXBean.getAvailableProcessors());
-        result.setSystemLoadAverage(osMXBean.getSystemLoadAverage());
         return result;
     }
 
@@ -39,7 +38,6 @@ public class LocalJvmAccessor {
         MemorySummaryInfo result = new MemorySummaryInfo();
         result.setHeapInfo(getHeapInfo());
         result.setNonHeapInfo(getNonHeapInfo());
-//        result.setTimestamp(System.currentTimeMillis());
         return result;
     }
 
@@ -62,7 +60,6 @@ public class LocalJvmAccessor {
             poolInfo.setPeakUsage(new MemoryUsageInfo(peakUsage.getMax(), peakUsage.getInit(), peakUsage.getCommitted
                     (), peakUsage.getUsed()));
 
-//            poolInfo.setTimestamp(System.currentTimeMillis());
             result.add(poolInfo);
         }
 
@@ -74,7 +71,6 @@ public class LocalJvmAccessor {
         result.setLoadedClassCount(classLoadingMXBean.getLoadedClassCount());
         result.setTotalLoadedClassCount(classLoadingMXBean.getTotalLoadedClassCount());
         result.setUnloadedClassCount(classLoadingMXBean.getUnloadedClassCount());
-//        result.setTimestamp(System.currentTimeMillis());
         return result;
     }
 
@@ -84,7 +80,6 @@ public class LocalJvmAccessor {
         result.setDaemonCount(threadMXBean.getDaemonThreadCount());
         result.setPeakCount(threadMXBean.getPeakThreadCount());
         result.setLockedCount(threadMXBean.findDeadlockedThreads());
-//        result.setTimestamp(System.currentTimeMillis());
         return result;
     }
 

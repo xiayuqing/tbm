@@ -1,4 +1,4 @@
-package org.tbm.server.collect;
+package org.tbm.server.executor;
 
 import org.tbm.common.access.Operation;
 import org.tbm.common.access.SqlAssembler;
@@ -15,6 +15,9 @@ import java.util.List;
  * Created by Jason.Xia on 17/6/2.
  */
 public class JvmDataSqlExecutor extends SqlExecutor<JvmData> {
+    public JvmDataSqlExecutor() {
+    }
+
     public JvmDataSqlExecutor(Connection connection, Operation operation, List<Object> args) {
         super(connection, operation, args);
     }

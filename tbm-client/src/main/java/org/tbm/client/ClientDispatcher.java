@@ -5,7 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tbm.common.Dispatcher;
-import org.tbm.common.bean.HostInfo;
+import org.tbm.common.bean.MachineInfo;
 import org.tbm.common.bean.PacketLite;
 
 
@@ -27,7 +27,7 @@ public class ClientDispatcher implements Dispatcher {
         }
 
         if (PacketLite.PACKET_TYPE.HANDSHAKE == packet.type) {
-            HostInfo hostInfo = JSON.parseObject(packet.payload, HostInfo.class);
+            MachineInfo hostInfo = JSON.parseObject(packet.payload, MachineInfo.class);
             if (null == hostInfo) {
                 throw new IllegalStateException("tbm client handshake error.cause:server receive binding info is null");
             }

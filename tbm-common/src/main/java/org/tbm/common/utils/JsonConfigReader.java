@@ -36,10 +36,4 @@ public class JsonConfigReader {
 
         return result;
     }
-
-    public static void main(String[] args) throws FileNotFoundException {
-        URL resource = JsonConfigReader.class.getResource("/operation.json");
-        Map<String, Operation> map = JsonConfigReader.readerObject(resource.getFile(), Operation.class);
-        System.out.println(map);
-    }
 }

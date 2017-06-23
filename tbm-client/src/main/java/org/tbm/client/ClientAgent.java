@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tbm.client.execute.JvmStatExecutor;
 import org.tbm.client.handler.ConnectWatcher;
-import org.tbm.client.handler.DispatchHandler;
+import org.tbm.client.handler.ClientHandler;
 import org.tbm.common.AppContext;
 import org.tbm.common.State;
 
@@ -67,7 +67,7 @@ public class ClientAgent {
             public ChannelHandler[] getHandlers() {
                 return new ChannelHandler[]{
                         this,
-                        new DispatchHandler()
+                        new ClientHandler()
                 };
             }
         }.getHandlers());
@@ -86,8 +86,6 @@ public class ClientAgent {
                 if (null != handlers) {
                     ch.pipeline().addLast(handlers);
                 }
-
-//                ch.pipeline().addLast(new DispatchHandler(ClientAgent.this));
             }
         });
     }

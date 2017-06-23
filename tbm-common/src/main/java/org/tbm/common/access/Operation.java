@@ -11,9 +11,11 @@ import java.util.Date;
  */
 public class Operation extends Serialize {
 
+    protected String name;
+
     protected String baseName;
 
-    protected DB_OPS ops;
+    protected DB_OP_TYPE type;
 
     protected ShardingUnits units;
 
@@ -83,27 +85,38 @@ public class Operation extends Serialize {
         return units;
     }
 
-    public String getBaseName() {
-        return baseName;
+    public void setUnits(ShardingUnits units) {
+        this.units = units;
     }
 
-    public enum DB_OPS {
-        CREATE,
-        RETRIEVE,
-        UPDATE,
-        DELETE
+    public String getBaseName() {
+        return baseName;
     }
 
     public void setBaseName(String baseName) {
         this.baseName = baseName;
     }
-    public void setOps(DB_OPS ops) {
-        this.ops = ops;
+
+    public void setOps(DB_OP_TYPE ops) {
+        this.type = type;
     }
-    public void setUnits(ShardingUnits units) {
-        this.units = units;
-    }
+
     public void setSchemaStr(String schemaStr) {
         this.schemaStr = schemaStr;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public enum DB_OP_TYPE {
+        CREATE,
+        RETRIEVE,
+        UPDATE,
+        DELETE
     }
 }

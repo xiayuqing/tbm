@@ -11,7 +11,7 @@ import org.tbm.common.bean.PacketLite;
 import org.tbm.common.bean.vo.*;
 import org.tbm.common.utils.CollectionUtils;
 import org.tbm.server.collect.CollectorPool;
-import org.tbm.server.collect.JvmDataSqlExecutor;
+import org.tbm.server.executor.JvmDataSqlExecutor;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

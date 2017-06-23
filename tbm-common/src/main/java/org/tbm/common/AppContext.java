@@ -15,7 +15,6 @@ public class AppContext {
     private static Properties config = new Properties();
     private static AtomicBoolean started = new AtomicBoolean(false);
 
-    private static Map<String, Processor> processorMap = new HashMap<>();
 
     public static void init(String path) {
         load(path);

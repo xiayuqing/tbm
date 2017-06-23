@@ -4,6 +4,7 @@ import org.tbm.common.utils.JsonConfigReader;
 
 import java.io.FileNotFoundException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -15,6 +16,7 @@ public class OperationManager {
     private static AtomicBoolean initialized = new AtomicBoolean(false);
 
     private Map<String, Operation> operationMap = new HashMap<>();
+    private Map<String/*baseTableName*/, List<Operation>> tableOperations = new HashMap<>();
 
     public static OperationManager getOperationManager() {
         if (null == operationManager) {

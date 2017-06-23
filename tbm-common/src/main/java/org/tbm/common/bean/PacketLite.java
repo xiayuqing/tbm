@@ -31,15 +31,15 @@ public class PacketLite extends Serialize {
         return packetLite;
     }
 
-    public static PacketLite createHandshake(long systemId, String host, int port) {
+    public static PacketLite createHandshake(MachineInfo machineInfo) {
         PacketLite packetLite = new PacketLite();
         packetLite.type = PACKET_TYPE.HANDSHAKE;
-        packetLite.payload = new HostInfo(systemId, host, port).toString();
+        packetLite.payload = machineInfo.toString();
         packetLite.seq = DigestUtils.getUUIDWithoutStrike();
         return packetLite;
     }
 
-    public static PacketLite createHandshakeAck(String seq, HostInfo hostInfo) {
+    public static PacketLite createHandshakeAck(String seq, MachineInfo hostInfo) {
         PacketLite packetLite = new PacketLite();
         packetLite.type = PACKET_TYPE.HANDSHAKE;
         packetLite.payload = hostInfo.toString();

@@ -26,14 +26,15 @@ public class JvmStatExecutor {
 
     private LocalJvmAccessor localJvmAccessor;
 
-    public void initAndStart() {
+    public void initAndStart(final LocalJvmAccessor localJvmAccessor) {
         if (!start.compareAndSet(false, true)) {
             logger.info("JvmStatExecutor already started");
             return;
         }
 
 //        this.future = future;
-        this.localJvmAccessor = new LocalJvmAccessor();
+        this.localJvmAccessor = localJvmAccessor;
+
         executor = Executors.newScheduledThreadPool(ClientContext.getInt("jvm.stat.executor.size", 5));
         long aLong = ClientContext.getLong("jvm.stat.period", 30);
         executor.scheduleWithFixedDelay(new Runnable() {

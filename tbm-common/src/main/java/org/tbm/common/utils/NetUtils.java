@@ -1,6 +1,6 @@
 package org.tbm.common.utils;
 
-import org.tbm.common.bean.HostInfo;
+import org.tbm.common.bean.ValuePair;
 
 import java.net.InetAddress;
 import java.net.SocketAddress;
@@ -19,19 +19,20 @@ public class NetUtils {
         }
     }
 
-    public static HostInfo convertHostInfo(SocketAddress socketAddress) {
+    /***
+     * key:ip
+     * value:port
+     * @param socketAddress
+     * @return
+     */
+    public static ValuePair<String, Integer> convertHostInfo(SocketAddress socketAddress) {
         String substring = socketAddress.toString().substring(1);
-        HostInfo result = new HostInfo();
         int indexOf = substring.indexOf(":");
         if (-1 != indexOf) {
             String[] split = substring.split(":");
-            result.setIp(split[0]);
-            result.setPort(Integer.valueOf(split[1]));
+            return new ValuePair<>(split[0], Integer.valueOf(split[1]));
         } else {
-            result.setIp(substring);
-            result.setPort(0);
+            return new ValuePair<>(substring, 0);
         }
-
-        return result;
     }
 }

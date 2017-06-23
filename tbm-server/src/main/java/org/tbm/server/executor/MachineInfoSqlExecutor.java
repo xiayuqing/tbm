@@ -1,9 +1,9 @@
-package org.tbm.server.collect;
+package org.tbm.server.executor;
 
 import org.tbm.common.access.Operation;
 import org.tbm.common.access.SqlAssembler;
 import org.tbm.common.access.SqlExecutor;
-import org.tbm.common.bean.HostInfo;
+import org.tbm.common.bean.MachineInfo;
 import org.tbm.common.utils.ObjectUtils;
 
 import java.sql.Connection;
@@ -14,14 +14,22 @@ import java.util.List;
 /**
  * Created by Jason.Xia on 17/6/20.
  */
-public class MachineInfoSqlExecutor extends SqlExecutor<HostInfo> {
+public class MachineInfoSqlExecutor extends SqlExecutor<MachineInfo> {
+
+    public MachineInfoSqlExecutor() {
+    }
+
+    public MachineInfoSqlExecutor(Connection connection, Operation operation) {
+        super(connection, operation, null);
+    }
+
     public MachineInfoSqlExecutor(Connection connection, Operation operation, List<Object> args) {
         super(connection, operation, args);
     }
 
     @Override
     protected void convertResult(ResultSet resultSet) throws Exception {
-        List<Object> objects = SqlAssembler.convertResult(resultSet, HostInfo.class);
+        List<Object> objects = SqlAssembler.convertResult(resultSet, MachineInfo.class);
         ObjectUtils.convertObject(objects, result);
     }
 

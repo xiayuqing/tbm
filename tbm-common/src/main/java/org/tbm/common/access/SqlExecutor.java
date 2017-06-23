@@ -15,14 +15,10 @@ public abstract class SqlExecutor<T> {
     private Connection connection;
     private Operation operation;
     private String currentSql;
-    //    private SqlTemplate sqlTemplate;
     private List<Object> args;
 
-//    public SqlExecutor(Connection connection, SqlTemplate sqlTemplate, List<Object> args) {
-//        this.connection = connection;
-//        this.sqlTemplate = sqlTemplate;
-//        this.args = args;
-//    }
+    public SqlExecutor() {
+    }
 
     public SqlExecutor(Connection connection, Operation operation, List<Object> args) {
         this.connection = connection;
@@ -32,12 +28,19 @@ public abstract class SqlExecutor<T> {
     }
 
     public List<T> run() throws Exception {
+        if (null == connection) {
+            throw new NullPointerException("connection not be null");
+        }
+
+        if (null == operation) {
+            throw new NullPointerException("operation not be null");
+        }
+
         connection.setAutoCommit(false);
         PreparedStatement ps = connection.prepareStatement(currentSql);
         build(ps, currentSql, args);
-//        SqlAssembler.build(ps, sqlTemplate.sql, args);
         try {
-            switch (operation.ops) {
+            switch (operation.type) {
                 case CREATE:
                     ps.executeBatch();
                     break;
@@ -53,9 +56,7 @@ public abstract class SqlExecutor<T> {
                     throw new SQLException("unknown data manipulation language");
             }
 
-//            ps.close();
             connection.commit();
-//            connection.close();
         } catch (Exception e) {
             if (null != connection) {
                 connection.rollback();
@@ -81,5 +82,31 @@ public abstract class SqlExecutor<T> {
 
     public List<T> getResult() {
         return result;
+    }
+
+    public void setArguments(List<Object> args, Operation operation) {
+        this.args = args;
+        this.operation = operation;
+    }
+
+    public void setConnection(Connection connection) {
+        this.connection = connection;
+    }
+
+    /**
+     * safe method
+     *
+     * @param args
+     * @param operation
+     * @return
+     */
+    public List<T> setAndRun(List<Object> args, Operation operation, Connection connection) throws Exception {
+        synchronized (this) {
+            this.connection = connection;
+            this.args = args;
+            this.operation = operation;
+            this.currentSql = operation.getCurrentSql();
+            return run();
+        }
     }
 }

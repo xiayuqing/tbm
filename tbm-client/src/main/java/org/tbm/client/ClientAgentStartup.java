@@ -6,6 +6,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.EncodedResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.tbm.client.execute.JvmStatExecutor;
+import org.tbm.client.execute.LocalJvmAccessor;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -51,12 +52,15 @@ public class ClientAgentStartup {
         }
 
         ClientContext.setProperties(properties);
+
         JvmStatExecutor statExecutor = null;
+        final LocalJvmAccessor localJvmAccessor = new LocalJvmAccessor();
         if (ClientContext.getBoolean("jvm.stat.enable", true)) {
             statExecutor = new JvmStatExecutor();
-            statExecutor.initAndStart();
+            statExecutor.initAndStart(localJvmAccessor);
         }
 
+        ClientContext.initJvmBaseInfo(localJvmAccessor.getJvmInfo());
         String host = null == ClientContext.getString("host") ? "localhost" : ClientContext.getString("host");
         int port = ClientContext.getInt("port", 9411);
         final ClientAgent clientAgent = new ClientAgent();

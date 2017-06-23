@@ -6,10 +6,10 @@ import org.slf4j.LoggerFactory;
 import org.tbm.common.access.DataAccessor;
 import org.tbm.common.access.OperationManager;
 import org.tbm.common.access.SqlTemplate;
-import org.tbm.common.bean.HostInfo;
+import org.tbm.common.bean.MachineInfo;
 import org.tbm.common.bean.PacketLite;
 import org.tbm.server.collect.CollectorPool;
-import org.tbm.server.collect.MachineInfoSqlExecutor;
+import org.tbm.server.executor.MachineInfoSqlExecutor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +35,9 @@ public class HandshakeProcessor extends AbstractProcessor {
             return PacketLite.createException("payload no data", packetLite.seq);
         }
 
-        HostInfo hostInfo;
+        MachineInfo machineInfo;
         try {
-            hostInfo = JSON.parseObject(packetLite.payload, HostInfo.class);
+            machineInfo = JSON.parseObject(packetLite.payload, MachineInfo.class);
         } catch (Exception e) {
             if (logger.isDebugEnabled()) {
                 logger.error("handshake json parse error.{}", e);
@@ -46,35 +46,31 @@ public class HandshakeProcessor extends AbstractProcessor {
             return PacketLite.createException("payload format illegal", packetLite.seq);
         }
 
-        List<Object> args = new ArrayList<>();
-        args.add(hostInfo.getSystemId());
-        args.add(hostInfo.getIp());
-        List<HostInfo> select;
+
+        List<MachineInfo> select;
         try {
             select = new MachineInfoSqlExecutor(dataAccessor.getConnection(), om.getOperation(SqlTemplate
-                    .SELECT_MACHINE_INFO), args)
+                    .SELECT_MACHINE_BINDING), args)
                     .run();
-//            select = dataAccessor.select(SqlTemplate.SELECT_MACHINE_INFO.sql, args, HostInfo.class);
             if (null != select && 1 < select.size()) {
-                logger.error("duplicate host info with :{}", hostInfo);
-                return PacketLite.createException("duplicate host info with system:" + hostInfo.getSystemId() + ",ip:" +
-                        hostInfo.getIp() + ",port:" + hostInfo.getPort(), packetLite.seq);
+                logger.error("duplicate host info with :{}", machineInfo);
+                return PacketLite.createException("duplicate host info with system:" + machineInfo.getSystemId() + ",ip:" +
+                        machineInfo.getIp() + ",port:" + machineInfo.getPort(), packetLite.seq);
             }
 
             if (null == select || 0 == select.size()) { // 新系统上线/换机器需要重新添加绑定信息
-                hostInfo.setBindingId(System.currentTimeMillis());
+                machineInfo.setBindingId(System.currentTimeMillis());
                 List<Object> obj = new ArrayList<>();
-                obj.add(hostInfo.getSystemId());
-                obj.add(hostInfo.getIp());
-                obj.add(hostInfo.getBindingId());
+                obj.add(machineInfo.getSystemId());
+                obj.add(machineInfo.getIp());
+                obj.add(machineInfo.getBindingId());
                 new MachineInfoSqlExecutor(dataAccessor.getConnection(), om.getOperation(SqlTemplate
-                        .INSERT_MACHINE_INFO), obj).run();
-//                dataAccessor.insert(SqlTemplate.INSERT_MACHINE_INFO.sql, obj);
+                        .INSERT_MACHINE_BINDING), obj).run();
             } else {
-                hostInfo = select.get(0);
+                machineInfo = select.get(0);
             }
 
-            return PacketLite.createHandshakeAck(packetLite.seq, hostInfo);
+            return PacketLite.createHandshakeAck(packetLite.seq, machineInfo);
         } catch (Exception e) {
             logger.error("select machine info error.msg:{},trace:{}", e.getMessage(), e.getStackTrace());
 

@@ -4,7 +4,6 @@ package org.tbm.common.bean.vo;
  * Created by Jason.Xia on 16/4/1.
  */
 public class JvmBaseInfo extends BaseInfo {
-    private String os;
     private long start;
     private long uptime;
     private String bootstrap;
@@ -12,10 +11,10 @@ public class JvmBaseInfo extends BaseInfo {
     private String libPath;
 
     // os info
+    private String os;
     private String arch;
     private String version;
     private int availableProcessors;
-    private double systemLoadAverage;
 
     public long getUptime() {
         return uptime;
@@ -89,11 +88,4 @@ public class JvmBaseInfo extends BaseInfo {
         this.availableProcessors = availableProcessors;
     }
 
-    public double getSystemLoadAverage() {
-        return systemLoadAverage;
-    }
-
-    public void setSystemLoadAverage(double systemLoadAverage) {
-        this.systemLoadAverage = systemLoadAverage;
-    }
 }
