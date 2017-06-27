@@ -1,7 +1,7 @@
 package org.tbm.client;
 
 import org.tbm.common.AppContext;
-import org.tbm.common.bean.MachineInfo;
+import org.tbm.common.bean.MachineBinding;
 import org.tbm.common.bean.vo.JvmBaseInfo;
 import org.tbm.common.utils.StringUtils;
 
@@ -74,8 +74,8 @@ public class ClientContext extends AppContext {
         JVM_LIB_PATH = jvmBaseInfo.getLibPath();
     }
 
-    public static MachineInfo getMachineInfo() {
-        MachineInfo info = new MachineInfo(SYSTEM_ID, IP, PORT);
+    public static MachineBinding getMachineInfo() {
+        MachineBinding info = new MachineBinding(SYSTEM_ID, IP, PORT);
         info.setBindingId(BINDING_ID);
         info.setOs(OS);
         info.setVersion(VERSION);

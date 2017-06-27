@@ -31,7 +31,7 @@ public class PacketLite extends Serialize {
         return packetLite;
     }
 
-    public static PacketLite createHandshake(MachineInfo machineInfo) {
+    public static PacketLite createHandshake(MachineBinding machineInfo) {
         PacketLite packetLite = new PacketLite();
         packetLite.type = PACKET_TYPE.HANDSHAKE;
         packetLite.payload = machineInfo.toString();
@@ -39,7 +39,7 @@ public class PacketLite extends Serialize {
         return packetLite;
     }
 
-    public static PacketLite createHandshakeAck(String seq, MachineInfo hostInfo) {
+    public static PacketLite createHandshakeAck(String seq, MachineBinding hostInfo) {
         PacketLite packetLite = new PacketLite();
         packetLite.type = PACKET_TYPE.HANDSHAKE;
         packetLite.payload = hostInfo.toString();

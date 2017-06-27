@@ -15,8 +15,8 @@ public class OperationManager {
     private static OperationManager operationManager;
     private static AtomicBoolean initialized = new AtomicBoolean(false);
 
-    private Map<String, Operation> operationMap = new HashMap<>();
-    private Map<String/*baseTableName*/, List<Operation>> tableOperations = new HashMap<>();
+    //    private Map<String, Operation> operationMap = new HashMap<>();
+    private Map<String/*baseTableName*/, Map<String/*operationName*/, Operation>> tableOperations = new HashMap<>();
 
     public static OperationManager getOperationManager() {
         if (null == operationManager) {
@@ -26,9 +26,9 @@ public class OperationManager {
         return operationManager;
     }
 
-    public static void init(String path) {
+    public static OperationManager init(String path) {
         if (!initialized.compareAndSet(false, true)) {
-            return;
+            return operationManager;
         }
 
         operationManager = new OperationManager();
@@ -42,18 +42,33 @@ public class OperationManager {
         }
 
         try {
-            operationManager.operationMap = JsonConfigReader.readerObject(file, Operation.class);
+            List<Operation> list = JsonConfigReader.readerArray(file, Operation.class);
+            for (Operation item : list) {
+                Map<String, Operation> operations = operationManager.tableOperations.get(item.getBaseName());
+                if (null == operations) {
+                    Map<String, Operation> map = new HashMap<>();
+                    map.put(item.getName(), item);
+                    operationManager.tableOperations.put(item.getBaseName(), map);
+                } else {
+                    operations.put(item.getName(), item);
+                }
+            }
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
             throw new IllegalStateException(e);
         }
+
+        return operationManager;
     }
 
-    public Operation getOperation(SqlTemplate key) {
-        return this.operationMap.get(key.toString());
+    public Map<String/*operationName*/, Operation> getOperations(String baseName) {
+        return tableOperations.get(baseName);
     }
 
-    public Operation getOperation(String key) {
-        return this.operationMap.get(key);
-    }
+//    public Operation getOperation(SqlTemplate key) {
+//        return this.operationMap.get(key.toString());
+//    }
+//
+//    public Operation getOperation(String key) {
+//        return this.operationMap.get(key);
+//    }
 }

@@ -3,7 +3,7 @@ package org.tbm.common.access;
 /**
  * Created by Jason.Xia on 17/5/27.
  */
-public enum SqlTemplate {
+public enum SqlOperations {
     INSERT_MEMORY_POOL,
 
     INSERT_MEMORY_SUMMARY,

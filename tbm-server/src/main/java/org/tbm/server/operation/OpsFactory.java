@@ -1,5 +1,11 @@
 package org.tbm.server.operation;
 
+import org.tbm.common.access.DataAccessor;
+import org.tbm.common.access.DataAccessorFactory;
+import org.tbm.common.access.OperationManager;
+import org.tbm.common.access.Table;
+import org.tbm.common.bean.MachineBinding;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -13,18 +19,33 @@ public class OpsFactory {
 
     private Map<Class, Object> opsPool = new HashMap<>();
 
-    private static void init() {
+    public static OpsFactory getInstance() {
+        return initAndGet();
+    }
+
+    public static Object get(Class key) {
+        return opsFactory.getOpsPool().get(key);
+    }
+
+    public static void init() {
         if (!initialized.compareAndSet(false, true)) {
             return;
         }
 
-
+        opsFactory = new OpsFactory();
+        OperationManager om = OperationManager.init(OpsFactory.class.getResource("/operation.json").getFile());
+        DataAccessor dataAccessor = DataAccessorFactory.getInstance();
+        Map<Class, Object> opsPool = opsFactory.getOpsPool();
+        opsPool.put(MachineBinding.class, new MachineBindingOp(dataAccessor, om.getOperations(Table.MACHINE_BINDING)));
+        // TODO
     }
 
-    private static OpsFactory initAndGet() {
+    public static OpsFactory initAndGet() {
         init();
         return opsFactory;
     }
 
-
+    private Map<Class, Object> getOpsPool() {
+        return opsPool;
+    }
 }

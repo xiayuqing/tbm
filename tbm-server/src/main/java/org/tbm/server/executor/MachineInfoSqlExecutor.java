@@ -3,7 +3,7 @@ package org.tbm.server.executor;
 import org.tbm.common.access.Operation;
 import org.tbm.common.access.SqlAssembler;
 import org.tbm.common.access.SqlExecutor;
-import org.tbm.common.bean.MachineInfo;
+import org.tbm.common.bean.MachineBinding;
 import org.tbm.common.utils.ObjectUtils;
 
 import java.sql.Connection;
@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Created by Jason.Xia on 17/6/20.
  */
-public class MachineInfoSqlExecutor extends SqlExecutor<MachineInfo> {
+public class MachineInfoSqlExecutor extends SqlExecutor<MachineBinding> {
 
     public MachineInfoSqlExecutor() {
     }
@@ -29,7 +29,7 @@ public class MachineInfoSqlExecutor extends SqlExecutor<MachineInfo> {
 
     @Override
     protected void convertResult(ResultSet resultSet) throws Exception {
-        List<Object> objects = SqlAssembler.convertResult(resultSet, MachineInfo.class);
+        List<Object> objects = SqlAssembler.convertResult(resultSet, MachineBinding.class);
         ObjectUtils.convertObject(objects, result);
     }
 

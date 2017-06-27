@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.tbm.client.ClientContext;
 import org.tbm.client.ClientDispatcher;
 import org.tbm.common.Dispatcher;
-import org.tbm.common.bean.MachineInfo;
+import org.tbm.common.bean.MachineBinding;
 import org.tbm.common.bean.PacketLite;
 import org.tbm.common.bean.ValuePair;
 import org.tbm.common.utils.NetUtils;
@@ -34,7 +34,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<String> {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         ValuePair<String/*ip*/, Integer/*port*/> pair = NetUtils.convertHostInfo(ctx.channel().localAddress());
-        MachineInfo machineInfo = ClientContext.getMachineInfo();
+        MachineBinding machineInfo = ClientContext.getMachineInfo();
         machineInfo.setAddress(pair.getKey(), pair.getValue());
         ctx.channel().writeAndFlush(PacketLite.createHandshake(machineInfo) + "\r\n");
     }

@@ -5,7 +5,7 @@ import org.tbm.common.annotation.Column;
 /**
  * Created by Jason.Xia on 17/5/27.
  */
-public class MachineInfo extends Serialize {
+public class MachineBinding extends Serialize {
     @Column("system_id")
     private long systemId;
 
@@ -45,16 +45,16 @@ public class MachineInfo extends Serialize {
     @Column("jvm_libpath")
     private String libPath;
 
-    public MachineInfo() {
+    public MachineBinding() {
     }
 
-    public MachineInfo(long systemId) {
+    public MachineBinding(long systemId) {
         this.systemId = systemId;
         this.ip = ip;
         this.port = port;
     }
 
-    public MachineInfo(long systemId, String ip, int port) {
+    public MachineBinding(long systemId, String ip, int port) {
         this.systemId = systemId;
         this.ip = ip;
         this.port = port;

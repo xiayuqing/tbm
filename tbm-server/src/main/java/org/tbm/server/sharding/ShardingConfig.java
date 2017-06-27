@@ -5,6 +5,7 @@ import org.tbm.common.utils.JsonConfigReader;
 
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,7 +42,12 @@ public class ShardingConfig {
         config = new ShardingConfig();
 
         try {
-            Map<String, Table> map = JsonConfigReader.readerObject(file, Table.class);
+            Map<String, Table> map = new HashMap<>();
+            List<Table> list = JsonConfigReader.readerArray(file, Table.class);
+            for (Table item : list) {
+                map.put(item.getName(), item);
+            }
+            
             config.setTableMap(map);
         } catch (Exception e) {
             throw new IllegalStateException(e);

@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.tbm.common.MemoryType;
 import org.tbm.common.access.DataAccessor;
 import org.tbm.common.access.OperationManager;
-import org.tbm.common.access.SqlTemplate;
+import org.tbm.common.access.SqlOperations;
 import org.tbm.common.bean.PacketLite;
 import org.tbm.common.bean.vo.*;
 import org.tbm.common.utils.CollectionUtils;
@@ -41,25 +41,25 @@ public class JvmDataCollectProcessor extends AbstractProcessor {
             Map<String, List<Object>> extract = extract(jvmData);
             List<Object> memorySummary = extract.get(MemoryType.MEMRORY_SUMMARY);
             if (!CollectionUtils.isEmpty(memorySummary)) {
-                collectorPool.add(new JvmDataSqlExecutor(dataAccessor.getConnection(), om.getOperation(SqlTemplate
+                collectorPool.add(new JvmDataSqlExecutor(dataAccessor.getConnection(), om.getOperation(SqlOperations
                         .INSERT_MEMORY_SUMMARY), memorySummary));
             }
 
             List<Object> pool = extract.get(MemoryType.MEMORY_POOL);
             if (!CollectionUtils.isEmpty(pool)) {
-                collectorPool.add(new JvmDataSqlExecutor(dataAccessor.getConnection(), om.getOperation(SqlTemplate
+                collectorPool.add(new JvmDataSqlExecutor(dataAccessor.getConnection(), om.getOperation(SqlOperations
                         .INSERT_MEMORY_POOL), pool));
             }
 
             List<Object> classLoad = extract.get(MemoryType.CLASS_LOAD);
             if (!CollectionUtils.isEmpty(classLoad)) {
-                collectorPool.add(new JvmDataSqlExecutor(dataAccessor.getConnection(), om.getOperation(SqlTemplate
+                collectorPool.add(new JvmDataSqlExecutor(dataAccessor.getConnection(), om.getOperation(SqlOperations
                         .INSERT_CLASS_LOAD), classLoad));
             }
 
             List<Object> thread = extract.get(MemoryType.THREAD);
             if (!CollectionUtils.isEmpty(thread)) {
-                collectorPool.add(new JvmDataSqlExecutor(dataAccessor.getConnection(), om.getOperation(SqlTemplate
+                collectorPool.add(new JvmDataSqlExecutor(dataAccessor.getConnection(), om.getOperation(SqlOperations
                         .INSERT_THREAD), thread));
             }
         } catch (SQLException e) {

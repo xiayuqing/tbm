@@ -2,13 +2,13 @@ package org.tbm.common.utils;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONReader;
-import org.tbm.common.access.Operation;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.lang.reflect.Type;
-import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,6 +34,20 @@ public class JsonConfigReader {
 
         reader.endObject();
 
+        return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> List<T> readerArray(String path, Type clazz) throws FileNotFoundException {
+        JSONReader reader = new JSONReader(new FileReader(path));
+        List<T> result = new ArrayList<>();
+
+        reader.startArray();
+        while (reader.hasNext()) {
+            result.add((T) JSONObject.parseObject(reader.readObject().toString(), clazz));
+        }
+
+        reader.endArray();
         return result;
     }
 }
