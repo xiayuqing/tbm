@@ -35,6 +35,14 @@ public class MachineBindingOp extends AbstractOp {
         return executor.setAndRun(args, getOp(SqlOperations.SELECT_MACHINE_BINDING), dataAccessor.getConnection());
     }
 
+    public void UPDATE_MACHINE_BINDING_STATUS(long systemId, String ip) throws Exception {
+        List<Object> args = new ArrayList<>();
+        args.add(systemId);
+        args.add(ip);
+
+        executor.setAndRun(args, getOp(SqlOperations.UPDATE_MACHINE_BINDING_STATUS), dataAccessor.getConnection());
+    }
+
     public void INSERT_MACHINE_BINDING(MachineBinding info) throws Exception {
         List<Object> args = new ArrayList<>();
         args.add(info.getSystemId());

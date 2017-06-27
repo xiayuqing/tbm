@@ -40,5 +40,12 @@
     "type": "RETRIEVE",
     "units": "SINGLETON",
     "schemaStr": "SELECT * FROM `${tableName}` WHERE `system_id`=? AND `ip`=?"
+  },
+  {
+    "name": "UPDATE_MACHINE_BINDING_STATUS",
+    "baseName": "MACHINE_BINDING",
+    "type": "RETRIEVE",
+    "units": "SINGLETON",
+    "schemaStr": "UPDATE `${tableName}` SET `status`= ABS(`status`-1) WHERE `system_id`=? AND `ip`=?"
   }
 ]

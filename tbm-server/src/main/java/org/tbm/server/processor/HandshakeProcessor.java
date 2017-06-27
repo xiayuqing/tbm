@@ -4,10 +4,8 @@ import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tbm.common.Processor;
-import org.tbm.common.access.SqlOperations;
 import org.tbm.common.bean.MachineBinding;
 import org.tbm.common.bean.PacketLite;
-import org.tbm.server.executor.MachineInfoSqlExecutor;
 import org.tbm.server.operation.MachineBindingOp;
 import org.tbm.server.operation.OpsFactory;
 
@@ -43,8 +41,6 @@ public class HandshakeProcessor implements Processor {
         List<MachineBinding> select;
         try {
             select = machineBindingOp.SELECT_MACHINE_BINDING(machineInfo.getSystemId(), machineInfo.getIp());
-//            select = new MachineInfoSqlExecutor(dataAccessor.getConnection(), om.getOperation(SqlOperations
-//                    .SELECT_MACHINE_BINDING), args).run();
             if (null != select && 1 < select.size()) {
                 logger.error("duplicate host info with :{}", machineInfo);
                 return PacketLite.createException("duplicate host info with system:" + machineInfo.getSystemId() + "," +
@@ -54,14 +50,10 @@ public class HandshakeProcessor implements Processor {
 
             if (null == select || 0 == select.size()) { // 新系统上线/换机器需要重新添加绑定信息
                 machineInfo.setBindingId(System.currentTimeMillis());
-                List<Object> obj = new ArrayList<>();
-                obj.add(machineInfo.getSystemId());
-                obj.add(machineInfo.getIp());
-                obj.add(machineInfo.getBindingId());
-                new MachineInfoSqlExecutor(dataAccessor.getConnection(), om.getOperation(SqlOperations
-                        .INSERT_MACHINE_BINDING), obj).run();
+                machineBindingOp.INSERT_MACHINE_BINDING(machineInfo);
             } else {
                 machineInfo = select.get(0);
+                machineBindingOp.UPDATE_MACHINE_BINDING_STATUS(machineInfo.getSystemId(), machineInfo.getIp());
             }
 
             return PacketLite.createHandshakeAck(packetLite.seq, machineInfo);
