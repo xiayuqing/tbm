@@ -23,7 +23,7 @@ public class ServerDispatcher implements Dispatcher {
 
     public ServerDispatcher(DataAccessor dataAccessor, CollectorPool collectorPool) {
         OperationManager om = OperationManager.getOperationManager();
-        processors.put(PacketLite.PACKET_TYPE.HANDSHAKE, new HandshakeProcessor(dataAccessor, om));
+        processors.put(PacketLite.PACKET_TYPE.HANDSHAKE, new HandshakeProcessor());
         processors.put(PacketLite.PACKET_TYPE.JVM_DATA, new JvmDataCollectProcessor(dataAccessor, collectorPool, om));
         processors.put(PacketLite.PACKET_TYPE.BIZ_DATA, new BizDataCollectProcessor(dataAccessor, collectorPool, om));
 

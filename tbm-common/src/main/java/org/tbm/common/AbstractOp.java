@@ -13,8 +13,9 @@ public abstract class AbstractOp {
     protected final DataAccessor dataAccessor;
     protected Map<String/*operationName*/, Operation> operationMap;
 
-    public AbstractOp(DataAccessor dataAccessor) {
+    public AbstractOp(DataAccessor dataAccessor, Map<String, Operation> operationMap) {
         this.dataAccessor = dataAccessor;
+        this.operationMap = operationMap;
     }
 
     public Operation getOp(SqlOperations operation) {

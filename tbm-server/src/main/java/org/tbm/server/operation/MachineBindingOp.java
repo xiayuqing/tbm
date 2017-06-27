@@ -22,9 +22,8 @@ public class MachineBindingOp extends AbstractOp {
 
 
     public MachineBindingOp(DataAccessor dataAccessor, Map<String, Operation> ops) {
-        super(dataAccessor);
+        super(dataAccessor, ops);
         executor = new MachineInfoSqlExecutor();
-        operationMap = ops;
     }
 
     public List<MachineBinding> SELECT_MACHINE_BINDING(long systemId, String ip) throws Exception {

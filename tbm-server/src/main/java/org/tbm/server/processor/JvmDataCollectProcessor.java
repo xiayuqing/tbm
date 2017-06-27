@@ -12,6 +12,8 @@ import org.tbm.common.bean.vo.*;
 import org.tbm.common.utils.CollectionUtils;
 import org.tbm.server.collect.CollectorPool;
 import org.tbm.server.executor.JvmDataSqlExecutor;
+import org.tbm.server.operation.MemoryPoolOp;
+import org.tbm.server.operation.OpsFactory;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -24,6 +26,8 @@ import java.util.Map;
  */
 public class JvmDataCollectProcessor extends AbstractProcessor {
     private static final Logger logger = LoggerFactory.getLogger(JvmDataCollectProcessor.class);
+
+    private MemoryPoolOp memoryPoolOp = (MemoryPoolOp) OpsFactory.get(MemoryPoolOp.class);
 
     public JvmDataCollectProcessor(DataAccessor dataAccessor, CollectorPool collectorPool, OperationManager om) {
         super(dataAccessor, collectorPool, om);

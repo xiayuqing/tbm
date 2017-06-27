@@ -9,7 +9,6 @@ import org.tbm.common.bean.PacketLite;
 import org.tbm.server.operation.MachineBindingOp;
 import org.tbm.server.operation.OpsFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,7 +17,7 @@ import java.util.List;
 public class HandshakeProcessor implements Processor {
     private static final Logger logger = LoggerFactory.getLogger(HandshakeProcessor.class);
 
-    private MachineBindingOp machineBindingOp = (MachineBindingOp) OpsFactory.get(MachineBinding.class);
+    private MachineBindingOp machineBindingOp = (MachineBindingOp) OpsFactory.get(MachineBindingOp.class);
 
     @Override
     public PacketLite process(PacketLite packetLite) {
