@@ -4,18 +4,12 @@ import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tbm.common.MemoryType;
-import org.tbm.common.access.DataAccessor;
-import org.tbm.common.access.OperationManager;
-import org.tbm.common.access.SqlOperations;
+import org.tbm.common.Processor;
 import org.tbm.common.bean.PacketLite;
 import org.tbm.common.bean.vo.*;
 import org.tbm.common.utils.CollectionUtils;
-import org.tbm.server.collect.CollectorPool;
-import org.tbm.server.executor.JvmDataSqlExecutor;
-import org.tbm.server.operation.MemoryPoolOp;
-import org.tbm.server.operation.OpsFactory;
+import org.tbm.server.operation.*;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,13 +18,18 @@ import java.util.Map;
 /**
  * Created by Jason.Xia on 17/6/1.
  */
-public class JvmDataCollectProcessor extends AbstractProcessor {
+public class JvmDataCollectProcessor implements Processor {
     private static final Logger logger = LoggerFactory.getLogger(JvmDataCollectProcessor.class);
 
     private MemoryPoolOp memoryPoolOp = (MemoryPoolOp) OpsFactory.get(MemoryPoolOp.class);
 
-    public JvmDataCollectProcessor(DataAccessor dataAccessor, CollectorPool collectorPool, OperationManager om) {
-        super(dataAccessor, collectorPool, om);
+    private MemorySummaryOp memorySummaryOp = (MemorySummaryOp) OpsFactory.get(MemorySummaryOp.class);
+
+    private ThreadOp threadOp = (ThreadOp) OpsFactory.get(ThreadOp.class);
+
+    private ClassLoadOp classLoadOp = (ClassLoadOp) OpsFactory.get(ClassLoadOp.class);
+
+    public JvmDataCollectProcessor() {
     }
 
     @Override
@@ -40,39 +39,33 @@ public class JvmDataCollectProcessor extends AbstractProcessor {
             return PacketLite.createAck(packetLite.seq);
         }
 
-        long start = System.currentTimeMillis();
         try {
             Map<String, List<Object>> extract = extract(jvmData);
-            List<Object> memorySummary = extract.get(MemoryType.MEMRORY_SUMMARY);
-            if (!CollectionUtils.isEmpty(memorySummary)) {
-                collectorPool.add(new JvmDataSqlExecutor(dataAccessor.getConnection(), om.getOperation(SqlOperations
-                        .INSERT_MEMORY_SUMMARY), memorySummary));
+            List<Object> summary = extract.get(MemoryType.MEMRORY_SUMMARY);
+            if (!CollectionUtils.isEmpty(summary)) {
+                memorySummaryOp.INSERT_MEMORY_SUMMARY(summary);
             }
 
             List<Object> pool = extract.get(MemoryType.MEMORY_POOL);
             if (!CollectionUtils.isEmpty(pool)) {
-                collectorPool.add(new JvmDataSqlExecutor(dataAccessor.getConnection(), om.getOperation(SqlOperations
-                        .INSERT_MEMORY_POOL), pool));
+                memoryPoolOp.INSERT_MEMORY_POOL(pool);
             }
 
             List<Object> classLoad = extract.get(MemoryType.CLASS_LOAD);
             if (!CollectionUtils.isEmpty(classLoad)) {
-                collectorPool.add(new JvmDataSqlExecutor(dataAccessor.getConnection(), om.getOperation(SqlOperations
-                        .INSERT_CLASS_LOAD), classLoad));
+                classLoadOp.INSERT_CLASS_LOAD(classLoad);
             }
 
             List<Object> thread = extract.get(MemoryType.THREAD);
             if (!CollectionUtils.isEmpty(thread)) {
-                collectorPool.add(new JvmDataSqlExecutor(dataAccessor.getConnection(), om.getOperation(SqlOperations
-                        .INSERT_THREAD), thread));
+                threadOp.INSERT_THREAD(thread);
             }
-        } catch (SQLException e) {
-            logger.error("insert jvm statistic data error.seq:{},msg:{},trace:{}", packetLite.seq, e.getErrorCode(), e
+        } catch (Exception e) {
+            logger.error("insert jvm statistic data error.seq:{},msg:{},trace:{}", packetLite.seq, e
                     .getMessage(), e.getStackTrace());
             PacketLite.createError(e.getMessage(), packetLite.seq);
         }
 
-        logger.info("seq:{},takes:{}", packetLite.seq, System.currentTimeMillis() - start);
         return PacketLite.createAck(packetLite.seq);
     }
 

@@ -10,20 +10,22 @@ import java.util.Map;
  * Created by Jason.Xia on 17/6/23.
  */
 public abstract class AbstractOp {
+
     protected final DataAccessor dataAccessor;
-    protected Map<String/*operationName*/, Operation> operationMap;
+
+    private final Map<String/*operationName*/, Operation> om;
 
     public AbstractOp(DataAccessor dataAccessor, Map<String, Operation> operationMap) {
         this.dataAccessor = dataAccessor;
-        this.operationMap = operationMap;
+        this.om = operationMap;
     }
 
-    public Operation getOp(SqlOperations operation) {
+    protected Operation getOp(SqlOperations operation) {
         return getOp(operation.name());
     }
 
-    public Operation getOp(String operation) {
-        Operation op = operationMap.get(operation);
+    private Operation getOp(String operation) {
+        Operation op = om.get(operation);
         if (null == op) {
             throw new IllegalStateException("Not Found Match Operation for:" + operation);
         }

@@ -6,10 +6,8 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tbm.common.Dispatcher;
-import org.tbm.common.access.DataAccessorFactory;
 import org.tbm.common.bean.PacketLite;
 import org.tbm.common.utils.DigestUtils;
-import org.tbm.server.collect.CollectorPoolManager;
 
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -23,7 +21,7 @@ public class ServerChannelHandler extends SimpleChannelInboundHandler<String> {
     private AtomicInteger count = new AtomicInteger(0);
 
     public ServerChannelHandler() {
-        dispatcher = new ServerDispatcher(DataAccessorFactory.getInstance(), CollectorPoolManager.getTaskPool());
+        dispatcher = new ServerDispatcher();
     }
 
     protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {

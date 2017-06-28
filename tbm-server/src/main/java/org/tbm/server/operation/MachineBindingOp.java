@@ -7,8 +7,6 @@ import org.tbm.common.access.SqlOperations;
 import org.tbm.common.bean.MachineBinding;
 import org.tbm.server.executor.MachineInfoSqlExecutor;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,26 +45,14 @@ public class MachineBindingOp extends AbstractOp {
         args.add(info.getSystemId());
         args.add(info.getBindingId());
         args.add(info.getIp());
-        args.add(info.getPort());
         args.add(info.getOs());
         args.add(info.getVersion());
         args.add(info.getArch());
         args.add(info.getAvailableProcessors());
         args.add(info.getJvmStart());
-        args.add(info.getJvmUptime());
-        args.add(info.getBootstrap());
-        args.add(info.getClasspath());
-        args.add(info.getLibPath());
         // status = online
         args.add(1);
 
         executor.setAndRun(args, getOp(SqlOperations.INSERT_MACHINE_BINDING), dataAccessor.getConnection());
-    }
-
-    public List<MachineBinding> run(String operation) throws NoSuchMethodException, InvocationTargetException,
-            IllegalAccessException {
-        Method method = MachineBinding.class.getMethod(operation);
-        Object invoke = method.invoke(this, null);
-        return null;
     }
 }

@@ -50,4 +50,5 @@ public class JsonConfigReader {
         reader.endArray();
         return result;
     }
+
 }

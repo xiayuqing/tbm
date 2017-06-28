@@ -49,6 +49,7 @@ public abstract class SqlExecutor<T> {
                     convertResult(ps.executeQuery());
                     break;
                 case UPDATE:
+                    ps.executeBatch();
                     break;
                 case DELETE:
                     break;
@@ -62,6 +63,7 @@ public abstract class SqlExecutor<T> {
                 connection.rollback();
             }
 
+            e.printStackTrace();
             throw e;
         } finally {
             ps.close();

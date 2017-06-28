@@ -64,11 +64,4 @@ public class OperationManager {
         return tableOperations.get(baseName);
     }
 
-//    public Operation getOperation(SqlTemplate key) {
-//        return this.operationMap.get(key.toString());
-//    }
-//
-//    public Operation getOperation(String key) {
-//        return this.operationMap.get(key);
-//    }
 }

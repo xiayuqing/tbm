@@ -3,10 +3,7 @@ package org.tbm.server;
 import io.netty.channel.ChannelHandlerContext;
 import org.tbm.common.Dispatcher;
 import org.tbm.common.Processor;
-import org.tbm.common.access.DataAccessor;
-import org.tbm.common.access.OperationManager;
 import org.tbm.common.bean.PacketLite;
-import org.tbm.server.collect.CollectorPool;
 import org.tbm.server.processor.BizDataCollectProcessor;
 import org.tbm.server.processor.HandshakeProcessor;
 import org.tbm.server.processor.JvmDataCollectProcessor;
@@ -21,12 +18,10 @@ public class ServerDispatcher implements Dispatcher {
 
     private Map<Integer, Processor> processors = new HashMap<>();
 
-    public ServerDispatcher(DataAccessor dataAccessor, CollectorPool collectorPool) {
-        OperationManager om = OperationManager.getOperationManager();
+    public ServerDispatcher() {
         processors.put(PacketLite.PACKET_TYPE.HANDSHAKE, new HandshakeProcessor());
-        processors.put(PacketLite.PACKET_TYPE.JVM_DATA, new JvmDataCollectProcessor(dataAccessor, collectorPool, om));
-        processors.put(PacketLite.PACKET_TYPE.BIZ_DATA, new BizDataCollectProcessor(dataAccessor, collectorPool, om));
-
+        processors.put(PacketLite.PACKET_TYPE.JVM_DATA, new JvmDataCollectProcessor());
+        processors.put(PacketLite.PACKET_TYPE.BIZ_DATA, new BizDataCollectProcessor());
     }
 
     public void dispatch(ChannelHandlerContext ctx, PacketLite packet) {

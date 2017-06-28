@@ -32,7 +32,7 @@
     "baseName": "MACHINE_BINDING",
     "type": "CREATE",
     "units": "SINGLETON",
-    "schemaStr": "INSERT INTO `${tableName}` (`system_id`,`binding_id`,`ip`,`port`,`os`,`version`,`arch`,`available_processors`,`jvm_start`,`jvm_uptime`,`jvm_bootstrap`,`jvm_classpath`,`jvm_libpath`,`status`) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+    "schemaStr": "INSERT INTO `${tableName}` (`system_id`,`binding_id`,`ip`,`os`,`version`,`arch`,`available_processors`,`jvm_start`,`status`) VALUES(?,?,?,?,?,?,?,?,?)"
   },
   {
     "name": "SELECT_MACHINE_BINDING",
@@ -44,7 +44,7 @@
   {
     "name": "UPDATE_MACHINE_BINDING_STATUS",
     "baseName": "MACHINE_BINDING",
-    "type": "RETRIEVE",
+    "type": "UPDATE",
     "units": "SINGLETON",
     "schemaStr": "UPDATE `${tableName}` SET `status`= ABS(`status`-1) WHERE `system_id`=? AND `ip`=?"
   }

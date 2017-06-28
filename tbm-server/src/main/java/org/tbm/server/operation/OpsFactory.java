@@ -4,6 +4,8 @@ import org.tbm.common.access.DataAccessor;
 import org.tbm.common.access.DataAccessorFactory;
 import org.tbm.common.access.OperationManager;
 import org.tbm.common.access.Table;
+import org.tbm.server.collect.CollectorPool;
+import org.tbm.server.collect.CollectorPoolManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,10 +36,15 @@ public class OpsFactory {
         opsFactory = new OpsFactory();
         OperationManager om = OperationManager.init(OpsFactory.class.getResource("/operation.json").getFile());
         DataAccessor dataAccessor = DataAccessorFactory.getInstance();
+        CollectorPool taskPool = CollectorPoolManager.getTaskPool();
         Map<Class, Object> opsPool = opsFactory.getOpsPool();
         opsPool.put(MachineBindingOp.class, new MachineBindingOp(dataAccessor, om.getOperations(Table
                 .MACHINE_BINDING)));
-        opsPool.put(MemoryPoolOp.class, new MemoryPoolOp(dataAccessor, om.getOperations(Table.MEMORY_POOL)));
+        opsPool.put(MemoryPoolOp.class, new MemoryPoolOp(taskPool, dataAccessor, om.getOperations(Table.MEMORY_POOL)));
+        opsPool.put(MemorySummaryOp.class, new MemorySummaryOp(taskPool, dataAccessor, om.getOperations(Table
+                .MEMORY_SUMMARY)));
+        opsPool.put(ClassLoadOp.class, new ClassLoadOp(taskPool, dataAccessor, om.getOperations(Table.CLASS_LOAD)));
+        opsPool.put(ThreadOp.class, new ThreadOp(taskPool, dataAccessor, om.getOperations(Table.THREAD)));
 
         // TODO
     }

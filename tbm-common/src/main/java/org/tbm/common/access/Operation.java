@@ -85,12 +85,12 @@ public class Operation extends Serialize {
         return units;
     }
 
-    public void setUnits(ShardingUnits units) {
-        this.units = units;
-    }
-
     public String getBaseName() {
         return baseName;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void setBaseName(String baseName) {
@@ -105,12 +105,16 @@ public class Operation extends Serialize {
         this.schemaStr = schemaStr;
     }
 
-    public String getName() {
-        return name;
+    public void setUnits(ShardingUnits units) {
+        this.units = units;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setType(DB_OP_TYPE type) {
+        this.type = type;
     }
 
     public enum DB_OP_TYPE {

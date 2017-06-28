@@ -4,21 +4,21 @@
     "baseName": "MACHINE_BINDING",
     "type": "CREATE",
     "units": "SINGLETON",
-    "schemaStr": "CREATE TABLE `${tableName}` ( `system_id` bigint(20) NOT NULL DEFAULT '0', `binding_id` bigint(20) NOT NULL DEFAULT '0', `ip` char(15) NOT NULL DEFAULT '127.0.0.1', `port` int(11) NOT NULL DEFAULT '0', `os` varchar(100) NOT NULL DEFAULT '0', `version` varchar(50) NOT NULL DEFAULT '0', `arch` varchar(100) NOT NULL DEFAULT '0', `available_processors` int(11) NOT NULL DEFAULT '0', `jvm_start` bigint(20) NOT NULL DEFAULT '0', `jvm_uptime` bigint(20) NOT NULL DEFAULT '0', `jvm_bootstrap` varchar(500) NOT NULL DEFAULT '0', `jvm_classpath` varchar(500) NOT NULL DEFAULT '0', `jvm_libpath` varchar(500) NOT NULL DEFAULT '0', `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0:offline;1:online', `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`system_id`,`ip`,`port`), UNIQUE KEY `unique_binding_id` (`binding_id`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8"
+    "schemaStr": "CREATE TABLE IF NOT EXISTS `${tableName}` ( `system_id` bigint(20) NOT NULL DEFAULT '0', `binding_id` bigint(20) NOT NULL DEFAULT '0', `ip` char(15) NOT NULL DEFAULT '127.0.0.1', `os` varchar(100) NOT NULL DEFAULT '0', `version` varchar(50) NOT NULL DEFAULT '0', `arch` varchar(100) NOT NULL DEFAULT '0', `available_processors` int(11) NOT NULL DEFAULT '0', `jvm_start` bigint(20) NOT NULL DEFAULT '0', `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0:offline;1:online', `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`system_id`,`ip`), UNIQUE KEY `unique_binding_id` (`binding_id`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8"
   },
   {
     "name": "CREATE_SYSTEM_INFO",
     "baseName": "SYSTEM_INFO",
     "type": "CREATE",
     "units": "SINGLETON",
-    "schemaStr": "CREATE TABLE `${tableName}` ( `id` bigint(20) NOT NULL DEFAULT '0', `name` varchar(100) NOT NULL DEFAULT '0', `group` varchar(100) NOT NULL DEFAULT '0', `env` tinyint(4) NOT NULL DEFAULT '0' COMMENT '1:beta;2:prod', `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8"
+    "schemaStr": "CREATE TABLE IF NOT EXISTS `${tableName}` ( `id` bigint(20) NOT NULL DEFAULT '0', `name` varchar(100) NOT NULL DEFAULT '0', `group` varchar(100) NOT NULL DEFAULT '0', `env` tinyint(4) NOT NULL DEFAULT '0' COMMENT '1:beta;2:prod', `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8"
   },
   {
     "name": "CREATE_MACHINE_LOG",
     "baseName": "MACHINE_LOG",
     "type": "CREATE",
     "units": "SINGLETON",
-    "schemaStr": "CREATE TABLE `${tableName}` ( `binding_id` bigint(20) NOT NULL DEFAULT '0', `status` tinyint(4) NOT NULL DEFAULT '0', `time` bigint(20) NOT NULL DEFAULT '0', `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ) ENGINE=InnoDB DEFAULT CHARSET=utf8"
+    "schemaStr": "CREATE TABLE IF NOT EXISTS `${tableName}` ( `binding_id` bigint(20) NOT NULL DEFAULT '0', `status` tinyint(4) NOT NULL DEFAULT '0', `time` bigint(20) NOT NULL DEFAULT '0', `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ) ENGINE=InnoDB DEFAULT CHARSET=utf8"
   },
   {
     "name": "CREATE_MEMORY_POOL",
