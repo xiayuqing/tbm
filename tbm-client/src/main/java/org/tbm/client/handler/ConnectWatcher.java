@@ -63,7 +63,9 @@ public abstract class ConnectWatcher extends ChannelInboundHandlerAdapter implem
                 if (future.isSuccess()) {
                     logger.info("[tbm] Reconnect Success. Connect to:{}", host + ":" + port);
                     ConnectWatcher.this.state.set(ConnectionState.CONNECTED);
-                    ConnectWatcher.this.jvmStatExecutor.updateFuture(future);
+                    if (null != jvmStatExecutor) {
+                        ConnectWatcher.this.jvmStatExecutor.updateFuture(future);
+                    }
                 } else {
                     logger.error("[tbm] Reconnect Failure. Connect to{}, cause:{}", host + ":" + port, future.cause
                             ());

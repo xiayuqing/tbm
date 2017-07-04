@@ -6,6 +6,7 @@ import org.tbm.common.Processor;
 import org.tbm.common.bean.PacketLite;
 import org.tbm.server.processor.BizDataCollectProcessor;
 import org.tbm.server.processor.HandshakeProcessor;
+import org.tbm.server.processor.HeartbeatProcessor;
 import org.tbm.server.processor.JvmDataCollectProcessor;
 
 import java.util.HashMap;
@@ -19,6 +20,7 @@ public class ServerDispatcher implements Dispatcher {
     private Map<Integer, Processor> processors = new HashMap<>();
 
     public ServerDispatcher() {
+        processors.put(PacketLite.PACKET_TYPE.HEARTBEAT, new HeartbeatProcessor());
         processors.put(PacketLite.PACKET_TYPE.HANDSHAKE, new HandshakeProcessor());
         processors.put(PacketLite.PACKET_TYPE.JVM_DATA, new JvmDataCollectProcessor());
         processors.put(PacketLite.PACKET_TYPE.BIZ_DATA, new BizDataCollectProcessor());

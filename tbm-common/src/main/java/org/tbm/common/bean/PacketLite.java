@@ -1,15 +1,23 @@
 package org.tbm.common.bean;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.util.CharsetUtil;
+import org.tbm.common.AppContext;
 import org.tbm.common.utils.DigestUtils;
+import org.tbm.common.utils.NetUtils;
 
 /**
  * Created by Jason.Xia on 17/5/27.
  */
 public class PacketLite extends Serialize {
+    public static final ByteBuf HEARTBEAT_PACKET = Unpooled.unreleasableBuffer(Unpooled.copiedBuffer(new PacketLite
+            (PACKET_TYPE.HEARTBEAT, NetUtils.getLocalAddress().toString() + AppContext.SYSTEM_ID, DigestUtils
+                    .getUUIDWithoutStrike()).toString() + "\r\n", CharsetUtil.UTF_8));
+
     public int type;
     public String seq;
     public String payload;
-
 
     private PacketLite() {
     }
@@ -60,6 +68,7 @@ public class PacketLite extends Serialize {
     }
 
     public interface PACKET_TYPE {
+        int HEARTBEAT = -1;
         int HANDSHAKE = 1;
         int ACK = 2;
         int EXCEPTION = 3;

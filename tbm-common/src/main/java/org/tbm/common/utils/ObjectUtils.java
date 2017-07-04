@@ -40,7 +40,6 @@ public class ObjectUtils {
     }
 
     /**
-     * 方便批量接口兼容单对象操作.
      *
      * @param object
      * @param <T>

@@ -12,13 +12,9 @@ import java.util.Properties;
  */
 public class ClientContext extends AppContext {
 
-    public static long BINDING_ID;
+    protected static String IP;
 
-    public static long SYSTEM_ID;
-
-    public static String IP;
-
-    public static int PORT;
+    protected static int PORT;
 
     public static String OS;
 

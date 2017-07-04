@@ -9,16 +9,19 @@ import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.Delimiters;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
+import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.HashedWheelTimer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tbm.client.execute.JvmStatExecutor;
-import org.tbm.client.handler.ConnectWatcher;
 import org.tbm.client.handler.ClientHandler;
+import org.tbm.client.handler.ClientIdleStateTrigger;
+import org.tbm.client.handler.ConnectWatcher;
 import org.tbm.common.AppContext;
 import org.tbm.common.State;
 
 import java.nio.charset.Charset;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -43,7 +46,10 @@ public class ClientAgent {
         this.port = port;
         this.jvmStatExecutor = jvmStatExecutor;
         ChannelFuture future = create();
-        jvmStatExecutor.updateFuture(future);
+        if (null != jvmStatExecutor) {
+            jvmStatExecutor.updateFuture(future);
+        }
+
         return future;
     }
 
@@ -67,6 +73,8 @@ public class ClientAgent {
             public ChannelHandler[] getHandlers() {
                 return new ChannelHandler[]{
                         this,
+                        new IdleStateHandler(0, ClientContext.getInt("idle.write.time", 30), 0, TimeUnit.SECONDS),
+                        new ClientIdleStateTrigger(host, port),
                         new ClientHandler()
                 };
             }

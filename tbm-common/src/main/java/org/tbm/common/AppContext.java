@@ -2,8 +2,6 @@ package org.tbm.common;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -12,16 +10,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class AppContext {
     private static final String CONFIG_FILE_NAME = "tbm-config.cfg";
-    private static Properties config = new Properties();
-    private static AtomicBoolean started = new AtomicBoolean(false);
 
+    public static long BINDING_ID = 10000;
+
+    public static long SYSTEM_ID;
+
+    private static Properties config = new Properties();
+
+    private static AtomicBoolean started = new AtomicBoolean(false);
 
     public static void init(String path) {
         load(path);
-//        if (config.contains("filters")) {
-//            String[] processors = config.getProperty("filters").split(",");
-//        }
-//
     }
 
 
@@ -66,6 +65,10 @@ public class AppContext {
         return Integer.valueOf(p);
     }
 
+    public static int getInt(String key) {
+        return getInt(key, 0);
+    }
+
     public static long getLong(String key, long defaultValue) {
         String p = config.getProperty(key);
         if (null == p || 0 == p.length()) {
@@ -87,5 +90,4 @@ public class AppContext {
     public static String getString(String key) {
         return config.getProperty(key);
     }
-
 }
