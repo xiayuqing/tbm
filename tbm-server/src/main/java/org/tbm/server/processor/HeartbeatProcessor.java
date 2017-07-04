@@ -13,7 +13,7 @@ public class HeartbeatProcessor implements Processor {
 
     @Override
     public PacketLite process(PacketLite packetLite) {
-        logger.info("received heartbeat from {}", packetLite.payload);
+        logger.debug("received heartbeat from {}", packetLite.payload);
         return null;
     }
 }

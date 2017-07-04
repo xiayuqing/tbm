@@ -48,11 +48,11 @@ public class ServerAgent {
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast("framer", new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter
                                 ()));
-                        ch.pipeline().addLast(new IdleStateHandler(AppContext.getInt("idle.read.time", 5), 0, 0,
-                                TimeUnit.SECONDS));
                         ch.pipeline().addLast("decoder", new StringDecoder(Charset.forName("utf-8")));
                         ch.pipeline().addLast("encoder", new StringEncoder(Charset.forName("utf-8")));
-
+                        ch.pipeline().addLast(new IdleStateHandler(AppContext.getInt("idle.read.time", 40), 0, 0,
+                                TimeUnit.SECONDS));
+                        ch.pipeline().addLast(new ServerIdleStateTriger());
                         ch.pipeline().addLast(new ServerChannelHandler());
                     }
                 });

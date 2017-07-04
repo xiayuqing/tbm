@@ -30,7 +30,7 @@ public class ClientIdleStateTrigger extends ChannelInboundHandlerAdapter {
         if (evt instanceof IdleStateEvent) {
             IdleState state = ((IdleStateEvent) evt).state();
             if (IdleState.WRITER_IDLE == state) {
-                logger.info("heartbeat to server -> {}", host + ":" + port);
+                logger.debug("heartbeat to server -> {}", host + ":" + port);
                 ctx.writeAndFlush(PacketLite.HEARTBEAT_PACKET.duplicate());
             }
         } else {
