@@ -52,7 +52,7 @@ public class ServerAgent {
                         ch.pipeline().addLast("encoder", new StringEncoder(Charset.forName("utf-8")));
                         ch.pipeline().addLast(new IdleStateHandler(AppContext.getInt("idle.read.time", 40), 0, 0,
                                 TimeUnit.SECONDS));
-                        ch.pipeline().addLast(new ServerIdleStateTriger());
+                        ch.pipeline().addLast(new ServerIdleStateTrigger());
                         ch.pipeline().addLast(new ServerChannelHandler());
                     }
                 });

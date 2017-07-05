@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by Jason.Xia on 17/7/4.
  */
-public class ServerIdleStateTriger extends ChannelInboundHandlerAdapter {
-    private static final Logger logger = LoggerFactory.getLogger(ServerIdleStateTriger.class);
+public class ServerIdleStateTrigger extends ChannelInboundHandlerAdapter {
+    private static final Logger logger = LoggerFactory.getLogger(ServerIdleStateTrigger.class);
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {

@@ -18,8 +18,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class JvmStatExecutor {
     private static AtomicBoolean start = new AtomicBoolean(false);
 
-    private final Logger logger = LoggerFactory.getLogger(JvmStatExecutor.class);
-
     private ChannelFuture future;
 
     private ScheduledExecutorService executor;
@@ -28,11 +26,9 @@ public class JvmStatExecutor {
 
     public void initAndStart(final LocalJvmAccessor localJvmAccessor) {
         if (!start.compareAndSet(false, true)) {
-            logger.info("JvmStatExecutor already started");
             return;
         }
 
-//        this.future = future;
         this.localJvmAccessor = localJvmAccessor;
 
         executor = Executors.newScheduledThreadPool(ClientContext.getInt("jvm.stat.executor.size", 5));
@@ -40,9 +36,7 @@ public class JvmStatExecutor {
         executor.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
-                if (0 == ClientContext.BINDING_ID || null == future || !future.channel().isActive()) {
-                    logger.debug("[tbm]Discard jvm stat data.BINDING ID:{},Channel Status:{}", ClientContext
-                            .BINDING_ID, future.channel().isActive());
+                if (0 == ClientContext.BINDING_ID || !future.channel().isActive()) {
                     return;
                 }
 
@@ -63,7 +57,7 @@ public class JvmStatExecutor {
             if (!executor.awaitTermination(0, TimeUnit.MILLISECONDS)) {
                 executor.shutdownNow();
                 if (!executor.awaitTermination(0, TimeUnit.MILLISECONDS)) {
-                    logger.error("JvmStatExecutor did not terminate");
+                    System.err.print("JvmStatExecutor did not terminate");
                 }
             }
 

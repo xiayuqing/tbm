@@ -41,7 +41,7 @@ public class JvmDataCollectProcessor implements Processor {
 
         try {
             Map<String, List<Object>> extract = extract(jvmData);
-            List<Object> summary = extract.get(MemoryType.MEMRORY_SUMMARY);
+            List<Object> summary = extract.get(MemoryType.MEMORY_SUMMARY);
             if (!CollectionUtils.isEmpty(summary)) {
                 memorySummaryOp.INSERT_MEMORY_SUMMARY(summary);
             }
@@ -100,7 +100,7 @@ public class JvmDataCollectProcessor implements Processor {
             threadData.addAll(getThread(item.getThreadInfo(), item.getBindingId()));
         }
 
-        map.put(MemoryType.MEMRORY_SUMMARY, memorySummaryData);
+        map.put(MemoryType.MEMORY_SUMMARY, memorySummaryData);
         map.put(MemoryType.MEMORY_POOL, memoryPoolData);
         map.put(MemoryType.CLASS_LOAD, classLoadData);
         map.put(MemoryType.THREAD, threadData);

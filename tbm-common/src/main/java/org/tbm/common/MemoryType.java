@@ -20,7 +20,7 @@ public interface MemoryType {
     String STR_POOL_HEAP_PS_SURVIVOR_SPACE = "PS Survivor Space";
     String STR_POOL_HEAP_PS_OLD_GEN = "PS Old Gen";
 
-    String MEMRORY_SUMMARY = "memory summary";
+    String MEMORY_SUMMARY = "memory summary";
     String MEMORY_POOL = "memory pool";
     String CLASS_LOAD = "class load";
     String THREAD = "thread";

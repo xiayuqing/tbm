@@ -13,6 +13,7 @@
         <module>tbm-common</module>
         <module>tbm-startup</module>
         <module>tbm-admin</module>
+        <module>tbm-log4tbm</module>
     </modules>
     <packaging>pom</packaging>
 
