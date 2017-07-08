@@ -10,11 +10,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class AppContext {
     private static final String CONFIG_FILE_NAME = "tbm-config.cfg";
-
-    public static long BINDING_ID = 10000;
-
     public static long SYSTEM_ID;
-
+    private static long BINDING_ID;
+    private static boolean contextEnable = false;
     private static Properties config = new Properties();
 
     private static AtomicBoolean started = new AtomicBoolean(false);
@@ -22,7 +20,6 @@ public class AppContext {
     public static void init(String path) {
         load(path);
     }
-
 
     public static void setProperties(Properties properties) {
         config = properties;
@@ -89,5 +86,18 @@ public class AppContext {
 
     public static String getString(String key) {
         return config.getProperty(key);
+    }
+
+    public static long getBindingId() {
+        return BINDING_ID;
+    }
+
+    public static boolean isContextEnable() {
+        return contextEnable;
+    }
+
+    public static void updateBindingId(long bindingId) {
+        BINDING_ID = bindingId;
+        contextEnable = true;
     }
 }

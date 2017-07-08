@@ -11,32 +11,22 @@ import java.util.Properties;
  * Created by Jason.Xia on 17/6/1.
  */
 public class ClientContext extends AppContext {
-
-    protected static String IP;
-
-    protected static int PORT;
-
     public static String OS;
-
     public static String ARCH;
-
     public static String VERSION;
-
     public static int AVAILABLE_PROCESSORS;
-
     public static long JVM_START;
-
     public static long JVM_UPTIME;
-
     public static String JVM_BOOTSTRAP;
-
     public static String JVM_CLASS_PATH;
-
     public static String JVM_LIB_PATH;
+    protected static String IP;
+    protected static int PORT;
 
     public ClientContext() {
     }
 
+    @Deprecated
     public static void load(String path) {
         AppContext.load(path);
 
@@ -72,7 +62,7 @@ public class ClientContext extends AppContext {
 
     public static MachineBinding getMachineInfo() {
         MachineBinding info = new MachineBinding(SYSTEM_ID, IP, PORT);
-        info.setBindingId(BINDING_ID);
+        info.setBindingId(AppContext.getBindingId());
         info.setOs(OS);
         info.setVersion(VERSION);
         info.setArch(ARCH);

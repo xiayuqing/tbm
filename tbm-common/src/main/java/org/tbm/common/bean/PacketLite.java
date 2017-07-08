@@ -4,8 +4,12 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.util.CharsetUtil;
 import org.tbm.common.AppContext;
+import org.tbm.common.bean.vo.BizData;
+import org.tbm.common.bean.vo.JvmData;
 import org.tbm.common.utils.DigestUtils;
 import org.tbm.common.utils.NetUtils;
+
+import java.util.List;
 
 /**
  * Created by Jason.Xia on 17/5/27.
@@ -33,9 +37,9 @@ public class PacketLite extends Serialize {
         this.payload = msg;
     }
 
-    public static PacketLite createJvmDataPackage(String payload) {
+    public static PacketLite createJvmDataPackage(List<JvmData> data) {
         PacketLite packetLite = new PacketLite(PACKET_TYPE.JVM_DATA, DigestUtils.getUUIDWithoutStrike());
-        packetLite.payload = payload;
+        packetLite.payload = data.toString();
         return packetLite;
     }
 
@@ -53,6 +57,12 @@ public class PacketLite extends Serialize {
         packetLite.payload = hostInfo.toString();
         packetLite.seq = seq;
         return packetLite;
+    }
+
+    public static PacketLite createBizDataPackage(BizData data) {
+        PacketLite lite = new PacketLite(PACKET_TYPE.BIZ_DATA, DigestUtils.getUUIDWithoutStrike());
+        lite.payload = data.toString();
+        return lite;
     }
 
     public static PacketLite createAck(String seq) {

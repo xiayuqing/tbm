@@ -13,7 +13,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.HashedWheelTimer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tbm.client.execute.JvmStatExecutor;
+import org.tbm.client.execute.LogExecutor;
 import org.tbm.client.handler.ClientHandler;
 import org.tbm.client.handler.ClientIdleStateTrigger;
 import org.tbm.client.handler.ConnectWatcher;
@@ -35,9 +35,9 @@ public class ClientAgent {
     private int port = 9411;
     private ChannelFuture future;
     private Bootstrap bootstrap;
-    private JvmStatExecutor jvmStatExecutor;
+    private LogExecutor jvmStatExecutor;
 
-    public ChannelFuture start(String host, int port, JvmStatExecutor jvmStatExecutor) {
+    public ChannelFuture start(String host, int port, LogExecutor jvmStatExecutor) {
         if (!state.compareAndSet(State.STOP, State.STARTING)) {
             throw new IllegalStateException("client already started.");
         }

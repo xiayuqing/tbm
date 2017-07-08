@@ -7,7 +7,7 @@ import io.netty.util.TimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tbm.client.ClientAgent;
-import org.tbm.client.execute.JvmStatExecutor;
+import org.tbm.client.execute.LogExecutor;
 import org.tbm.common.ConnectionState;
 
 import java.util.concurrent.TimeUnit;
@@ -21,12 +21,12 @@ public abstract class ConnectWatcher extends ChannelInboundHandlerAdapter implem
     private static final Logger logger = LoggerFactory.getLogger(ConnectWatcher.class);
     private final Timer timer;
     private final ClientAgent clientAgent;
-    private final JvmStatExecutor jvmStatExecutor;
+    private final LogExecutor jvmStatExecutor;
     private String host;
     private int port;
     private AtomicInteger state = new AtomicInteger(ConnectionState.DISCONNECT);
 
-    public ConnectWatcher(Timer timer, ClientAgent clientAgent, String host, int port, JvmStatExecutor executor) {
+    public ConnectWatcher(Timer timer, ClientAgent clientAgent, String host, int port, LogExecutor executor) {
         this.timer = timer;
         this.clientAgent = clientAgent;
         this.host = host;

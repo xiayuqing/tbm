@@ -32,7 +32,7 @@ public class ClientDispatcher implements Dispatcher {
                 throw new IllegalStateException("tbm client handshake error.cause:server receive binding info is null");
             }
 
-            ClientContext.BINDING_ID = hostInfo.getBindingId();
+            ClientContext.updateBindingId(hostInfo.getBindingId());
             return;
         }
 

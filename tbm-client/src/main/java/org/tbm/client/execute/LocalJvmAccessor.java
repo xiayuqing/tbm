@@ -105,11 +105,11 @@ public class LocalJvmAccessor {
 
     public JvmData fullPackageData() {
         JvmData result = new JvmData();
-        if (0 == ClientContext.BINDING_ID) {
+        if (0 == ClientContext.getBindingId()) {
             throw new IllegalStateException("client have no binding id");
         }
 
-        result.setBindingId(ClientContext.BINDING_ID);
+        result.setBindingId(ClientContext.getBindingId());
         result.setMemorySummaryInfo(getMemorySummaryInfo());
         result.setMemoryPoolInfo(getMemoryPoolsInfo());
         result.setClassLoadingInfo(getClassLoadingInfo());

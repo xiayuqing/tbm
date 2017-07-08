@@ -25,11 +25,11 @@ public class ServerChannelHandler extends SimpleChannelInboundHandler<String> {
     }
 
     protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
-//        if (logger.isDebugEnabled()) {
-        logger.info("{} received msg from:{}", new Date(), ctx.channel().remoteAddress());
-        logger.info("msg content:{}", msg);
-        logger.info("{}===================================================", count.getAndIncrement());
-//        }
+        if (logger.isDebugEnabled()) {
+            logger.debug("{} received msg from:{}", new Date(), ctx.channel().remoteAddress());
+            logger.debug("msg content:{}", msg);
+            logger.debug("{}===================================================", count.getAndIncrement());
+        }
 
         PacketLite lite = null;
         try {
