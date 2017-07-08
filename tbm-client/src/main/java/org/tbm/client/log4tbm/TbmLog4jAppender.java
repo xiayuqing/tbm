@@ -1,6 +1,7 @@
 package org.tbm.client.log4tbm;
 
 import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.spi.ErrorCode;
 import org.apache.log4j.spi.LocationInfo;
 import org.apache.log4j.spi.LoggingEvent;
 import org.tbm.client.ClientContext;
@@ -38,7 +39,11 @@ public class TbmLog4jAppender extends AppenderSkeleton {
         bizData.setClazz(location.getClassName());
         bizData.setMethod(location.getMethodName());
         bizData.setContent(event.getMessage().toString());
-        logExecutor.write(bizData);
+        try {
+            logExecutor.write(bizData);
+        } catch (Exception e) {
+            errorHandler.error("Failed to insert BizData to Tbm", e, ErrorCode.WRITE_FAILURE);
+        }
     }
 
     @Override

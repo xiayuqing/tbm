@@ -9,6 +9,6 @@
 
    增加ConnectionManager
 
-   lo4jTbmAppender写本地,格式化器,BizDataCollectProcessor完善
+   log4jTbmAppender写本地,格式化器,BizDataCollectProcessor完善
 
 
