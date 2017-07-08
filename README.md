@@ -8,4 +8,6 @@
 
    增加ConnectionManager
 
-    
+    lo4jTbmAppender写本地,BizDataCollectProcessor
+
+
