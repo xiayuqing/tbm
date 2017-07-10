@@ -59,7 +59,7 @@ public class PacketLite extends Serialize {
         return packetLite;
     }
 
-    public static PacketLite createBizDataPackage(BizData data) {
+    public static PacketLite createBizDataPackage(List<BizData> data) {
         PacketLite lite = new PacketLite(PACKET_TYPE.BIZ_DATA, DigestUtils.getUUIDWithoutStrike());
         lite.payload = data.toString();
         return lite;

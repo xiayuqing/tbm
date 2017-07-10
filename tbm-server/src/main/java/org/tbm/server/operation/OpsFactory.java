@@ -45,8 +45,7 @@ public class OpsFactory {
                 .MEMORY_SUMMARY)));
         opsPool.put(ClassLoadOp.class, new ClassLoadOp(taskPool, dataAccessor, om.getOperations(Table.CLASS_LOAD)));
         opsPool.put(ThreadOp.class, new ThreadOp(taskPool, dataAccessor, om.getOperations(Table.THREAD)));
-
-        // TODO
+        opsPool.put(BizOp.class, new BizOp(taskPool, dataAccessor, om.getOperations(Table.BIZ)));
     }
 
     public static OpsFactory initAndGet() {

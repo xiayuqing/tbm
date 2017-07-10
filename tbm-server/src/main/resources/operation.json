@@ -47,5 +47,12 @@
     "type": "UPDATE",
     "units": "SINGLETON",
     "schemaStr": "UPDATE `${tableName}` SET `status`= ABS(`status`-1) WHERE `system_id`=? AND `ip`=?"
+  },
+  {
+    "name": "INSERT_BIZ",
+    "baseName": "BIZ",
+    "type": "CREATE",
+    "units": "DAY",
+    "schemaStr": "INSERT INTO `${tableName}` (`binding_id`,`time`,`level`,`trace`,`clazz`,`method`,`line`,`content`) VALUES (?,?,?,?,?,?,?,?)"
   }
 ]

@@ -6,6 +6,7 @@ import org.tbm.common.bean.PacketLite;
 import org.tbm.common.bean.vo.BizData;
 import org.tbm.common.utils.ObjectUtils;
 
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -48,6 +49,10 @@ public class LogExecutor {
     }
 
     public ChannelFuture write(BizData data) {
+        return write(ObjectUtils.singleObjectConvertToList(data));
+    }
+
+    public ChannelFuture write(List<BizData> data) {
         if (unWritable()) {
             return null;
         }

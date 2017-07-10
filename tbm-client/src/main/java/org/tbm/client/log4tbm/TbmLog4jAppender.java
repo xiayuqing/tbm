@@ -35,9 +35,9 @@ public class TbmLog4jAppender extends AppenderSkeleton {
         bizData.setLevel(event.getLevel().toInt());
         Object traceId = event.getMDC("traceId");
         bizData.setTraceId(null == traceId ? "0" : traceId.toString());
-        System.out.println("当前日志所在类:" + location.getClassName());
         bizData.setClazz(location.getClassName());
         bizData.setMethod(location.getMethodName());
+        bizData.setLine(Integer.valueOf(location.getLineNumber()));
         bizData.setContent(event.getMessage().toString());
         try {
             logExecutor.write(bizData);

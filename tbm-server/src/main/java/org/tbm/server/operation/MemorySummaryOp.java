@@ -5,7 +5,7 @@ import org.tbm.common.access.DataAccessor;
 import org.tbm.common.access.Operation;
 import org.tbm.common.access.SqlOperations;
 import org.tbm.server.collect.CollectorPool;
-import org.tbm.server.executor.JvmDataSqlExecutor;
+import org.tbm.server.executor.LogDataSqlExecutor;
 
 import java.util.List;
 import java.util.Map;
@@ -24,7 +24,7 @@ public class MemorySummaryOp extends AbstractOp {
     }
 
     public Future INSERT_MEMORY_SUMMARY(List<Object> args) throws Exception {
-        return collectorPool.add(new JvmDataSqlExecutor(dataAccessor.getConnection(), getOp(SqlOperations
+        return collectorPool.add(new LogDataSqlExecutor(dataAccessor.getConnection(), getOp(SqlOperations
                 .INSERT_MEMORY_SUMMARY), args));
     }
 }

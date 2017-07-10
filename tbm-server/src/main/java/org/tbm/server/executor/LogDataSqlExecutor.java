@@ -14,9 +14,9 @@ import java.util.List;
 /**
  * Created by Jason.Xia on 17/6/2.
  */
-public class JvmDataSqlExecutor extends SqlExecutor<JvmData> {
+public class LogDataSqlExecutor extends SqlExecutor<JvmData> {
     
-    public JvmDataSqlExecutor(Connection connection, Operation operation, List<Object> args) {
+    public LogDataSqlExecutor(Connection connection, Operation operation, List<Object> args) {
         super(connection, operation, args);
     }
 

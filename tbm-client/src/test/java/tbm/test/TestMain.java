@@ -17,7 +17,10 @@ public class TestMain {
 
         Logger testClass = LoggerFactory.getLogger(TestMain.class);
         while (true) {
-            testClass.info(System.currentTimeMillis() + " a log message");
+            testClass.debug(System.currentTimeMillis() + " a DEBUG log message");
+            testClass.info(System.currentTimeMillis() + " a INFO log message");
+            testClass.warn(System.currentTimeMillis() + " a WARN log message");
+            testClass.error(System.currentTimeMillis() + " a ERROR log message");
             Thread.sleep(5000);
         }
     }

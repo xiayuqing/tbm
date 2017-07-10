@@ -18,6 +18,7 @@ public class Table extends Operation {
 
     public static final String CLASS_LOAD = "CLASS_LOAD";
 
+    public static final String BIZ = "BIZ";
 
     public Table() {
     }

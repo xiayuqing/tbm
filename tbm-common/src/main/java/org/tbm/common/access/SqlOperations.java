@@ -16,8 +16,7 @@ public enum SqlOperations {
     
     SELECT_MACHINE_BINDING,
 
-    UPDATE_MACHINE_BINDING_STATUS
+    UPDATE_MACHINE_BINDING_STATUS,
 
-
-
+    INSERT_BIZ
 }
