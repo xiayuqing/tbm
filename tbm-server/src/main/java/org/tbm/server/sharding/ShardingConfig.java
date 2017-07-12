@@ -3,7 +3,6 @@ package org.tbm.server.sharding;
 import org.tbm.common.access.Table;
 import org.tbm.common.utils.JsonConfigReader;
 
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,10 +28,9 @@ public class ShardingConfig {
         createConfig(file);
     }
 
-    static ShardingConfig getConfig() {
+    static ShardingConfig getConfig(String cfgPath) {
         if (null == config) {
-            URL resource = ShardingConfig.class.getResource("/table.json");
-            load(resource.getFile());
+            load(cfgPath);
         }
 
         return config;
@@ -47,7 +45,7 @@ public class ShardingConfig {
             for (Table item : list) {
                 map.put(item.getName(), item);
             }
-            
+
             config.setTableMap(map);
         } catch (Exception e) {
             throw new IllegalStateException(e);

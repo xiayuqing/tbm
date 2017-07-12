@@ -33,7 +33,7 @@ public class AppContext {
 
             String file = path;
             if (!path.endsWith(".cfg")) {
-                file = path + CONFIG_FILE_NAME;
+                file = path + (path.endsWith("/") ? CONFIG_FILE_NAME : "/" + CONFIG_FILE_NAME);
             }
 
             try {

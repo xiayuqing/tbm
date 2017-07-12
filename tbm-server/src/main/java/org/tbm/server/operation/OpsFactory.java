@@ -20,21 +20,17 @@ public class OpsFactory {
 
     private Map<Class, Object> opsPool = new HashMap<>();
 
-    public static OpsFactory getInstance() {
-        return initAndGet();
-    }
-
     public static Object get(Class key) {
         return opsFactory.getOpsPool().get(key);
     }
 
-    public static void init() {
+    public static void init(String opsPath) {
         if (!initialized.compareAndSet(false, true)) {
             return;
         }
 
         opsFactory = new OpsFactory();
-        OperationManager om = OperationManager.init(OpsFactory.class.getResource("/operation.json").getFile());
+        OperationManager om = OperationManager.init(opsPath);
         DataAccessor dataAccessor = DataAccessorFactory.getInstance();
         CollectorPool taskPool = CollectorPoolManager.getTaskPool();
         Map<Class, Object> opsPool = opsFactory.getOpsPool();
@@ -48,8 +44,8 @@ public class OpsFactory {
         opsPool.put(BizOp.class, new BizOp(taskPool, dataAccessor, om.getOperations(Table.BIZ)));
     }
 
-    public static OpsFactory initAndGet() {
-        init();
+    public static OpsFactory initAndGet(String opsPath) {
+        init(opsPath);
         return opsFactory;
     }
 

@@ -9,6 +9,10 @@
             <directory>${project.basedir}/src/main/resources/bin</directory>
             <outputDirectory>bin</outputDirectory>
         </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/src/main/resources/conf</directory>
+            <outputDirectory>conf</outputDirectory>
+        </fileSet>
     </fileSets>
 
     <dependencySets>

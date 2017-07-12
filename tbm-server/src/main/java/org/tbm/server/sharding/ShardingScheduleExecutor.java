@@ -27,7 +27,7 @@ public class ShardingScheduleExecutor {
     private ShardingConfig shardingConfig;
     private ScheduledExecutorService executor;
 
-    public void start() {
+    public void start(String cfgPath) {
         if (!status.compareAndSet(State.STOP, State.STARTING)) {
             logger.info("[tbm] ShardingScheduleExecutor is already started");
             return;
@@ -36,7 +36,7 @@ public class ShardingScheduleExecutor {
         executor = Executors.newScheduledThreadPool(1);
 
         try {
-            this.shardingConfig = ShardingConfig.getConfig();
+            this.shardingConfig = ShardingConfig.getConfig(cfgPath);
             Map<String/*currentName*/, String/*currentSql*/> tables = new HashMap<>();
             for (Map.Entry<String, Table> item : shardingConfig.getTableMap().entrySet()) {
                 tables.put(item.getValue().getCurrentName(), item.getValue().getCurrentSql());

@@ -15,16 +15,7 @@ public class OperationManager {
     private static OperationManager operationManager;
     private static AtomicBoolean initialized = new AtomicBoolean(false);
 
-    //    private Map<String, Operation> operationMap = new HashMap<>();
     private Map<String/*baseTableName*/, Map<String/*operationName*/, Operation>> tableOperations = new HashMap<>();
-
-    public static OperationManager getOperationManager() {
-        if (null == operationManager) {
-            init(OperationManager.class.getResource("/operation.json").getFile());
-        }
-
-        return operationManager;
-    }
 
     public static OperationManager init(String path) {
         if (!initialized.compareAndSet(false, true)) {
