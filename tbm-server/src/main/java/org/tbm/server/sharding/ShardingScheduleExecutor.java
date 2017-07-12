@@ -66,7 +66,7 @@ public class ShardingScheduleExecutor {
     private class CreateTableTask implements Runnable {
         private Table table;
 
-        public CreateTableTask(Table table) {
+        CreateTableTask(Table table) {
             this.table = table;
         }
 

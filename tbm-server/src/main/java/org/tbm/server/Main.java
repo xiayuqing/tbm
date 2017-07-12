@@ -17,4 +17,12 @@ public class Main {
         ServerAgent monitorServer = new ServerAgent();
         monitorServer.start();
     }
+
+    public static void main(String[] args) {
+        OpsFactory opsFactory = OpsFactory.initAndGet(Main.class.getResource("/operation.json").getFile());
+        new ShardingScheduleExecutor().start(Main.class.getResource("/table.json").getFile());
+        CollectorPoolManager.start();
+        ServerAgent monitorServer = new ServerAgent();
+        monitorServer.start();
+    }
 }
