@@ -17,10 +17,11 @@ public class TestMain {
 
         Logger testClass = LoggerFactory.getLogger(TestMain.class);
         while (true) {
-            testClass.debug(System.currentTimeMillis() + " a DEBUG log message");
-            testClass.info(System.currentTimeMillis() + " a INFO log message");
-            testClass.warn(System.currentTimeMillis() + " a WARN log message");
-            testClass.error(System.currentTimeMillis() + " a ERROR log message");
+            testClass.debug(" a DEBUG log message");
+            testClass.info(" a INFO log message");
+            testClass.warn(" a WARN log message");
+            testClass.error(System.currentTimeMillis() + " a ERROR log message", new IllegalArgumentException("error " +
+                    "args"));
             Thread.sleep(5000);
         }
     }

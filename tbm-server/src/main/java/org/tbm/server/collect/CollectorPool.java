@@ -4,8 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tbm.common.AppContext;
 import org.tbm.common.TaskResult;
-import org.tbm.common.access.DataAccessor;
-import org.tbm.common.access.DataAccessorFactory;
 import org.tbm.common.access.SqlExecutor;
 
 import java.util.concurrent.*;
@@ -43,6 +41,7 @@ public class CollectorPool {
                 } catch (Exception e) {
                     result.setSuccess(false);
                     result.setCause(e);
+                    e.printStackTrace();
                 }
 
                 return result;

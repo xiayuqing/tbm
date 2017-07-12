@@ -8,6 +8,9 @@ import org.tbm.client.ClientContext;
 import org.tbm.client.execute.ExecutorFactory;
 import org.tbm.client.execute.LogExecutor;
 import org.tbm.common.bean.vo.BizData;
+import org.tbm.common.utils.CollectionUtils;
+
+import java.util.List;
 
 /**
  * Created by Jason.Xia on 17/7/5.
@@ -15,6 +18,7 @@ import org.tbm.common.bean.vo.BizData;
 public class TbmLog4jAppender extends AppenderSkeleton {
     private boolean initialized = false;
     private volatile LogExecutor logExecutor;
+    private Shaper shaper = new Shaper();
 
     @Override
     protected void append(LoggingEvent event) {
@@ -30,17 +34,13 @@ public class TbmLog4jAppender extends AppenderSkeleton {
             return;
         }
 
-        BizData bizData = new BizData(ClientContext.getBindingId());
-        bizData.setTime(event.getTimeStamp());
-        bizData.setLevel(event.getLevel().toInt());
-        Object traceId = event.getMDC("traceId");
-        bizData.setTraceId(null == traceId ? "0" : traceId.toString());
-        bizData.setClazz(location.getClassName());
-        bizData.setMethod(location.getMethodName());
-        bizData.setLine(Integer.valueOf(location.getLineNumber()));
-        bizData.setContent(event.getMessage().toString());
+        List<BizData> shaping = shaper.shaping(event);
+        if (CollectionUtils.isEmpty(shaping)) {
+            return;
+        }
+
         try {
-            logExecutor.write(bizData);
+            logExecutor.write(shaping);
         } catch (Exception e) {
             errorHandler.error("Failed to insert BizData to Tbm", e, ErrorCode.WRITE_FAILURE);
         }
