@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.tbm.admin.access.SystemInfoMapper">
+    <resultMap id="BaseResultMap" type="org.tbm.common.bean.SystemInfo">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="group" property="group" jdbcType="VARCHAR"/>
+        <result column="env" property="env" jdbcType="TINYINT"/>
+    </resultMap>
+    <sql id="BASE_COLUMN_LIST">
+        id,`name`,`group`,env
+    </sql>
+    <sql id="INSERT_COLUMN_LIST">
+        id,`name`,`group`,env
+    </sql>
+    <insert id="insert">
+        INSERT INTO `SYSTEM_INFO`
+        <include refid="INSERT_COLUMN_LIST"/>
+        VALUE (#{info.id},#{info.name},#{info.group},#{info.env})
+    </insert>
+
+    <delete id="remove">
+        DELETE FROM `SYSTEM_INFO` WHERE id=#{id}
+    </delete>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT * FROM `SYSTEM_INFO`
+    </select>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM `SYSTEM_INFO` WHERE id=#{id}
+    </select>
+
+
+</mapper>

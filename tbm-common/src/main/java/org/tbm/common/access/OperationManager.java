@@ -17,6 +17,14 @@ public class OperationManager {
 
     private Map<String/*baseTableName*/, Map<String/*operationName*/, Operation>> tableOperations = new HashMap<>();
 
+    public static OperationManager getInstance() {
+        if (null == operationManager) {
+            throw new IllegalStateException("instance uninitialized");
+        }
+
+        return operationManager;
+    }
+
     public static OperationManager init(String path) {
         if (!initialized.compareAndSet(false, true)) {
             return operationManager;

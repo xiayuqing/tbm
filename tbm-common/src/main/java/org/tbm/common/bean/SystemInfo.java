@@ -18,6 +18,16 @@ public class SystemInfo extends Serialize {
     @Column("env")
     private int env;
 
+    public SystemInfo() {
+    }
+
+    public SystemInfo(long id, String name, String group, int env) {
+        this.id = id;
+        this.name = name;
+        this.group = group;
+        this.env = env;
+    }
+
     public long getId() {
         return id;
     }

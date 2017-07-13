@@ -19,23 +19,8 @@
         <property name="prefix" value="/view/"/>
         <property name="suffix" value=".jsp"/>
     </bean>
+    <mvc:view-controller path="/" view-name="index"/>
 
     <mvc:resources mapping="/res/**" location="/res/"/>
 
-    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-        <property name="defaultEncoding" value="utf-8"/>
-        <!-- 10MB -->
-        <property name="maxUploadSize" value="10485760"/>
-        <!-- 40KB -->
-        <property name="maxInMemorySize" value="40960"/>
-    </bean>
-
-    <bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
-        <property name="statusCodes">
-            <props>
-                <prop key="error/404">404</prop>
-                <prop key="error/500">500</prop>
-            </props>
-        </property>
-    </bean>
 </beans>

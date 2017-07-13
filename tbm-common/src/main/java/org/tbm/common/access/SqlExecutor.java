@@ -52,6 +52,7 @@ public abstract class SqlExecutor<T> {
                     ps.executeBatch();
                     break;
                 case DELETE:
+                    ps.execute();
                     break;
                 default:
                     throw new SQLException("unknown data manipulation language");

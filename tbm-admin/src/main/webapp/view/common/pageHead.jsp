@@ -3,8 +3,8 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title>后台管理 | TBM</title>
-<meta name="description" content="管理后台">
+<title>Admin | TBM</title>
+<meta name="description" content="tbm admin">
 <meta name="author" content="Jason.Xia">
 <meta name="keywords" content="index">
 <meta name="viewport" content="width=device-width, initial-scale=1">
