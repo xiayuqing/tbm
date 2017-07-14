@@ -34,6 +34,7 @@ public class ServerAgent {
             throw new IllegalStateException("server already started.");
         }
 
+        this.port = AppContext.getInt("port", 9411);
         create();
     }
 
@@ -46,8 +47,8 @@ public class ServerAgent {
                 .channel(NioServerSocketChannel.class)
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     protected void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast("framer", new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter
-                                ()));
+                        ch.pipeline().addLast("framer", new DelimiterBasedFrameDecoder(AppContext.getInt("frame" +
+                                ".length.max", 8192), Delimiters.lineDelimiter()));
                         ch.pipeline().addLast("decoder", new StringDecoder(Charset.forName("utf-8")));
                         ch.pipeline().addLast("encoder", new StringEncoder(Charset.forName("utf-8")));
                         ch.pipeline().addLast(new IdleStateHandler(AppContext.getInt("idle.read.time", 40), 0, 0,
