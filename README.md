@@ -44,7 +44,7 @@ log4j.appender.tbm=org.tbm.client.log4tbm.TbmLog4jAppender
 
 add client config file:tbm-config.cfg
 ```properties
-### 一台物理机只能部署一个system.id,否则会造成日志收集器无法区分日志来源
+### 一台物理机同一system.id只能部署一份,否则会造成日志收集器无法区分日志来源
 system.id=123
 host=127.0.0.1
 port=9411
