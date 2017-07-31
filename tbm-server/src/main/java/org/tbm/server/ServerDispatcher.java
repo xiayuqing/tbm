@@ -1,6 +1,7 @@
 package org.tbm.server;
 
 import io.netty.channel.ChannelHandlerContext;
+import org.tbm.common.AppContext;
 import org.tbm.common.Dispatcher;
 import org.tbm.common.Processor;
 import org.tbm.common.bean.PacketLite;
@@ -23,7 +24,8 @@ public class ServerDispatcher implements Dispatcher {
         processors.put(PacketLite.PACKET_TYPE.HEARTBEAT, new HeartbeatProcessor());
         processors.put(PacketLite.PACKET_TYPE.HANDSHAKE, new HandshakeProcessor());
         processors.put(PacketLite.PACKET_TYPE.JVM_DATA, new JvmDataCollectProcessor());
-        processors.put(PacketLite.PACKET_TYPE.BIZ_DATA, new BizDataCollectProcessor());
+        processors.put(PacketLite.PACKET_TYPE.BIZ_DATA, new BizDataCollectProcessor(AppContext.getBoolean("redis" +
+                ".enable", true)));
     }
 
     public void dispatch(ChannelHandlerContext ctx, PacketLite packet) {

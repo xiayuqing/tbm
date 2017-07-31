@@ -9,8 +9,9 @@
 
    增加ConnectionManager
 
-   log4jTbmAppender写本地,格式化器,BizDataCollectProcessor完善
+   ~~log4jTbmAppender写本地,格式化器,BizDataCollectProcessor完善~~
    
+   log相关表改用archive引擎,取消索引,增加redis队列缓存
 
 ### Usage
 

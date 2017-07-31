@@ -20,6 +20,12 @@ public class BizDataCollectProcessor implements Processor {
 
     private BizOp bizOp = (BizOp) OpsFactory.get(BizOp.class);
 
+    private boolean redisEnable = true;
+
+    public BizDataCollectProcessor(boolean redisEnable) {
+        this.redisEnable = redisEnable;
+    }
+
     @Override
     public PacketLite process(PacketLite packetLite) {
         List<BizData> bizData = JSON.parseArray(packetLite.payload, BizData.class);
@@ -28,7 +34,11 @@ public class BizDataCollectProcessor implements Processor {
         }
 
         try {
-            bizOp.INSERT_BIZ(bizData);
+            if (redisEnable) {
+                bizOp.INSERT_INTO_CACHE(bizData);
+            }else {
+                bizOp.INSERT_BIZ(bizData);
+            }
         } catch (Exception e) {
             logger.error("insert biz data error.seq:{},msg:{},trace:{}", packetLite.seq, e.getMessage(), e
                     .getStackTrace());

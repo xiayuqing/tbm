@@ -11,6 +11,7 @@ import org.tbm.server.sharding.ShardingScheduleExecutor;
 public class Main {
     public static void run(String cfgPath) {
         AppContext.init(cfgPath);
+        RedisPoolManager.init();
         OpsFactory opsFactory = OpsFactory.initAndGet(cfgPath);
         new ShardingScheduleExecutor().start(cfgPath);
         CollectorPoolManager.start();
@@ -19,6 +20,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        RedisPoolManager.init();
         OpsFactory opsFactory = OpsFactory.initAndGet(Main.class.getResource("/operation.json").getFile());
         new ShardingScheduleExecutor().start(Main.class.getResource("/table.json").getFile());
         CollectorPoolManager.start();

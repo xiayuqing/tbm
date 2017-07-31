@@ -4,10 +4,13 @@ import org.tbm.common.AbstractOp;
 import org.tbm.common.access.DataAccessor;
 import org.tbm.common.access.Operation;
 import org.tbm.common.access.SqlOperations;
+import org.tbm.common.access.Table;
 import org.tbm.common.bean.vo.BizData;
 import org.tbm.common.utils.CollectionUtils;
+import org.tbm.server.RedisPoolManager;
 import org.tbm.server.collect.CollectorPool;
 import org.tbm.server.executor.LogDataSqlExecutor;
+import redis.clients.jedis.Jedis;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +26,17 @@ public class BizOp extends AbstractOp {
     public BizOp(CollectorPool collectorPool, DataAccessor dataAccessor, Map<String, Operation> operationMap) {
         super(dataAccessor, operationMap);
         this.collectorPool = collectorPool;
+    }
+
+    public void INSERT_INTO_CACHE(List<BizData> data) {
+        Jedis jedis = RedisPoolManager.getJedis();
+        String[] arr = new String[data.size()];
+        for (int i = 0; i < data.size(); i++) {
+            arr[0] = data.get(i).toString();
+        }
+
+        jedis.rpush(Table.BIZ, arr);
+        RedisPoolManager.returnJedis(jedis);
     }
 
     public Future INSERT_BIZ(List<BizData> data) throws Exception {
