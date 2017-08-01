@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tbm.common.Connection;
 import org.tbm.common.Dispatcher;
 import org.tbm.common.bean.MachineBinding;
 import org.tbm.common.bean.PacketLite;
@@ -16,7 +17,7 @@ public class ClientDispatcher implements Dispatcher {
     private static final Logger logger = LoggerFactory.getLogger(ClientDispatcher.class);
 
     @Override
-    public void dispatch(ChannelHandlerContext ctx, PacketLite packet) {
+    public void dispatch(Connection connection, PacketLite packet) {
         if (PacketLite.PACKET_TYPE.ACK == packet.type) {
             // nothing to do
             if (logger.isDebugEnabled()) {

@@ -1,14 +1,13 @@
 package org.tbm.server.operation;
 
 import org.tbm.common.AbstractOp;
+import org.tbm.common.CollectorPool;
+import org.tbm.common.RedisPoolManager;
 import org.tbm.common.access.DataAccessor;
 import org.tbm.common.access.Operation;
 import org.tbm.common.access.SqlOperations;
-import org.tbm.common.access.Table;
 import org.tbm.common.bean.vo.BizData;
 import org.tbm.common.utils.CollectionUtils;
-import org.tbm.server.RedisPoolManager;
-import org.tbm.server.collect.CollectorPool;
 import org.tbm.server.executor.LogDataSqlExecutor;
 import redis.clients.jedis.Jedis;
 
@@ -35,7 +34,8 @@ public class BizOp extends AbstractOp {
             arr[0] = data.get(i).toString();
         }
 
-        jedis.rpush(Table.BIZ, arr);
+
+        jedis.rpush(String.valueOf(data.get(0).getBindingId()), arr);
         RedisPoolManager.returnJedis(jedis);
     }
 

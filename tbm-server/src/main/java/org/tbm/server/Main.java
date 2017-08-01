@@ -1,8 +1,8 @@
 package org.tbm.server;
 
 import org.tbm.common.AppContext;
+import org.tbm.common.RedisPoolManager;
 import org.tbm.server.collect.CollectorPoolManager;
-import org.tbm.server.operation.OpsFactory;
 import org.tbm.server.sharding.ShardingScheduleExecutor;
 
 /**

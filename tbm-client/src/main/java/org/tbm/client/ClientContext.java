@@ -61,17 +61,13 @@ public class ClientContext extends AppContext {
     }
 
     public static MachineBinding getMachineInfo() {
-        MachineBinding info = new MachineBinding(SYSTEM_ID, IP, PORT);
+        MachineBinding info = new MachineBinding(SYSTEM_ID);
         info.setBindingId(AppContext.getBindingId());
         info.setOs(OS);
         info.setVersion(VERSION);
         info.setArch(ARCH);
         info.setAvailableProcessors(AVAILABLE_PROCESSORS);
         info.setJvmStart(JVM_START);
-        info.setJvmUptime(JVM_UPTIME);
-        info.setBootstrap(JVM_BOOTSTRAP);
-        info.setClasspath(JVM_CLASS_PATH);
-        info.setLibPath(JVM_LIB_PATH);
         return info;
     }
 }

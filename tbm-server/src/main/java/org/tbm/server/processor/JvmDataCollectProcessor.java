@@ -3,12 +3,17 @@ package org.tbm.server.processor;
 import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tbm.common.Connection;
 import org.tbm.common.MemoryType;
 import org.tbm.common.Processor;
+import org.tbm.server.operation.ClassLoadOp;
+import org.tbm.server.operation.MemoryPoolOp;
+import org.tbm.server.operation.MemorySummaryOp;
+import org.tbm.server.operation.ThreadOp;
 import org.tbm.common.bean.PacketLite;
 import org.tbm.common.bean.vo.*;
 import org.tbm.common.utils.CollectionUtils;
-import org.tbm.server.operation.*;
+import org.tbm.server.OpsFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,7 +38,8 @@ public class JvmDataCollectProcessor implements Processor {
     }
 
     @Override
-    public PacketLite process(PacketLite packetLite) {
+    public PacketLite process(PacketLite packetLite, Connection connection) {
+        connection.updateLastReadTime();
         List<JvmData> jvmData = JSON.parseArray(packetLite.payload, JvmData.class);
         if (null == jvmData || 0 == jvmData.size()) {
             return PacketLite.createAck(packetLite.seq);

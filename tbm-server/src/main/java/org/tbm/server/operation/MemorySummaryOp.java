@@ -1,10 +1,11 @@
 package org.tbm.server.operation;
 
 import org.tbm.common.AbstractOp;
+import org.tbm.common.CollectorPool;
 import org.tbm.common.access.DataAccessor;
 import org.tbm.common.access.Operation;
 import org.tbm.common.access.SqlOperations;
-import org.tbm.server.collect.CollectorPool;
+import org.tbm.server.collect.BaseCollectorPool;
 import org.tbm.server.executor.LogDataSqlExecutor;
 
 import java.util.List;

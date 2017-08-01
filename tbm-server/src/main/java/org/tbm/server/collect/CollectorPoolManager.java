@@ -1,10 +1,13 @@
 package org.tbm.server.collect;
 
+import org.tbm.common.CollectorPool;
+
 /**
  * Created by Jason.Xia on 17/6/2.
  */
 public class CollectorPoolManager {
-    private static final CollectorPool taskPool = new CollectorPool();
+    private static final CollectorPool taskPool = new BaseCollectorPool();
+    private static boolean started = false;
 
     public static void start() {
         taskPool.run();
@@ -18,6 +21,10 @@ public class CollectorPoolManager {
     }
 
     public static CollectorPool getTaskPool() {
+        if (!started) {
+            start();
+        }
+
         return taskPool;
     }
 }

@@ -1,4 +1,4 @@
-package org.tbm.server;
+package org.tbm.common;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;

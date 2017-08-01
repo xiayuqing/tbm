@@ -1,12 +1,9 @@
-package org.tbm.server;
+package org.tbm.common;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tbm.common.AppContext;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-
-import java.util.Map;
 
 /**
  * Created by Jason.Xia on 17/2/22.

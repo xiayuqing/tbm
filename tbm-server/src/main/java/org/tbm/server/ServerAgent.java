@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tbm.common.AppContext;
 import org.tbm.common.State;
+import org.tbm.server.collect.CollectorPoolManager;
+import org.tbm.server.connection.ConnectionManager;
 
 import java.nio.charset.Charset;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +30,7 @@ public class ServerAgent {
     private AtomicInteger state = new AtomicInteger(State.STOP);
     private NioEventLoopGroup boss;
     private NioEventLoopGroup worker;
+    private ConnectionManager connectionManager;
 
     public void start() {
         if (!state.compareAndSet(State.STOP, State.STARTING)) {
@@ -39,6 +42,11 @@ public class ServerAgent {
     }
 
     private void create() {
+        if (null == connectionManager) {
+            connectionManager = new ConnectionManager();
+            connectionManager.init(CollectorPoolManager.getTaskPool());
+        }
+
         this.boss = new NioEventLoopGroup();
         this.worker = new NioEventLoopGroup();
         worker.setIoRatio(AppContext.getInt("io.ratio ", 70));
@@ -48,13 +56,13 @@ public class ServerAgent {
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast("framer", new DelimiterBasedFrameDecoder(AppContext.getInt("frame" +
-                                ".length.max", 8192), Delimiters.lineDelimiter()));
+                                ".length.max", 32768), Delimiters.lineDelimiter()));
                         ch.pipeline().addLast("decoder", new StringDecoder(Charset.forName("utf-8")));
                         ch.pipeline().addLast("encoder", new StringEncoder(Charset.forName("utf-8")));
                         ch.pipeline().addLast(new IdleStateHandler(AppContext.getInt("idle.read.time", 40), 0, 0,
                                 TimeUnit.SECONDS));
                         ch.pipeline().addLast(new ServerIdleStateTrigger());
-                        ch.pipeline().addLast(new ServerChannelHandler());
+                        ch.pipeline().addLast(new ServerChannelHandler(connectionManager));
                     }
                 });
 

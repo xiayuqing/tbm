@@ -28,7 +28,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<String> {
 
     protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
         logger.debug("{} msg content:{}", new Date(), msg);
-        dispatcher.dispatch(ctx, JSON.parseObject(msg, PacketLite.class));
+        dispatcher.dispatch(null, JSON.parseObject(msg, PacketLite.class));
     }
 
     @Override

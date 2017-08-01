@@ -100,7 +100,7 @@ public class ClientAgent {
 
     private void initialDefaultChannel(ChannelPipeline pipeline) {
         pipeline.addLast("framer", new DelimiterBasedFrameDecoder(AppContext.getInt("frame" +
-                ".length.max", 8192), Delimiters.lineDelimiter()));
+                ".length.max", 32768), Delimiters.lineDelimiter()));
         pipeline.addLast("decoder", new StringDecoder(Charset.forName("utf-8")));
         pipeline.addLast("encoder", new StringEncoder(Charset.forName("utf-8")));
     }

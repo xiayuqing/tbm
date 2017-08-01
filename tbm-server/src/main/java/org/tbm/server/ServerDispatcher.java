@@ -2,6 +2,7 @@ package org.tbm.server;
 
 import io.netty.channel.ChannelHandlerContext;
 import org.tbm.common.AppContext;
+import org.tbm.common.Connection;
 import org.tbm.common.Dispatcher;
 import org.tbm.common.Processor;
 import org.tbm.common.bean.PacketLite;
@@ -28,15 +29,16 @@ public class ServerDispatcher implements Dispatcher {
                 ".enable", true)));
     }
 
-    public void dispatch(ChannelHandlerContext ctx, PacketLite packet) {
+    public void dispatch(Connection connection, PacketLite packet) {
         Processor processor = processors.get(packet.type);
         if (null == processor) {
             return;
         }
 
-        PacketLite lite = processor.process(packet);
+
+        PacketLite lite = processor.process(packet, connection);
         if (null != lite) {
-            ctx.channel().writeAndFlush(lite.toString() + "\r\n");
+            connection.getChannel().writeAndFlush(lite.toString() + "\r\n");
         }
     }
 }

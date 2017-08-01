@@ -3,11 +3,12 @@ package org.tbm.server.processor;
 import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tbm.common.Connection;
 import org.tbm.common.Processor;
 import org.tbm.common.bean.PacketLite;
 import org.tbm.common.bean.vo.BizData;
 import org.tbm.server.operation.BizOp;
-import org.tbm.server.operation.OpsFactory;
+import org.tbm.server.OpsFactory;
 
 import java.util.List;
 
@@ -27,7 +28,8 @@ public class BizDataCollectProcessor implements Processor {
     }
 
     @Override
-    public PacketLite process(PacketLite packetLite) {
+    public PacketLite process(PacketLite packetLite, Connection connection) {
+        connection.updateLastReadTime();
         List<BizData> bizData = JSON.parseArray(packetLite.payload, BizData.class);
         if (null == bizData || 0 == bizData.size()) {
             return PacketLite.createAck(packetLite.seq);
@@ -36,7 +38,7 @@ public class BizDataCollectProcessor implements Processor {
         try {
             if (redisEnable) {
                 bizOp.INSERT_INTO_CACHE(bizData);
-            }else {
+            } else {
                 bizOp.INSERT_BIZ(bizData);
             }
         } catch (Exception e) {

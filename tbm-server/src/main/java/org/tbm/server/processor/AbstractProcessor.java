@@ -1,15 +1,16 @@
 package org.tbm.server.processor;
 
 import org.tbm.common.Processor;
-import org.tbm.server.collect.CollectorPool;
+import org.tbm.server.collect.BaseCollectorPool;
 
 /**
  * Created by Jason.Xia on 17/6/2.
  */
+@Deprecated
 public abstract class AbstractProcessor implements Processor {
-    protected final CollectorPool collectorPool;
+    protected final BaseCollectorPool collectorPool;
 
-    public AbstractProcessor(CollectorPool collectorPool) {
+    public AbstractProcessor(BaseCollectorPool collectorPool) {
         this.collectorPool = collectorPool;
     }
 }

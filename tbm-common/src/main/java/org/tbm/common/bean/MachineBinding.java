@@ -15,9 +15,6 @@ public class MachineBinding extends Serialize {
     @Column("ip")
     private String ip;
 
-    @Column("port")
-    private int port;
-
     @Column("os")
     private String os;
 
@@ -33,36 +30,15 @@ public class MachineBinding extends Serialize {
     @Column("jvm_start")
     private long jvmStart;
 
-    @Column("jvm_uptime")
-    private long jvmUptime;
-
-    @Column("jvm_bootstrap")
-    private String bootstrap;
-
-    @Column("jvm_classpath")
-    private String classpath;
-
-    @Column("jvm_libpath")
-    private String libPath;
-
     public MachineBinding() {
     }
 
     public MachineBinding(long systemId) {
         this.systemId = systemId;
-        this.ip = ip;
-        this.port = port;
-    }
-
-    public MachineBinding(long systemId, String ip, int port) {
-        this.systemId = systemId;
-        this.ip = ip;
-        this.port = port;
     }
 
     public void setAddress(String ip, int port) {
         this.ip = ip;
-        this.port = port;
     }
 
     public long getSystemId() {
@@ -79,14 +55,6 @@ public class MachineBinding extends Serialize {
 
     public void setIp(String ip) {
         this.ip = ip;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
     }
 
     public long getBindingId() {
@@ -137,35 +105,4 @@ public class MachineBinding extends Serialize {
         this.jvmStart = jvmStart;
     }
 
-    public long getJvmUptime() {
-        return jvmUptime;
-    }
-
-    public void setJvmUptime(long jvmUptime) {
-        this.jvmUptime = jvmUptime;
-    }
-
-    public String getBootstrap() {
-        return bootstrap;
-    }
-
-    public void setBootstrap(String bootstrap) {
-        this.bootstrap = bootstrap;
-    }
-
-    public String getClasspath() {
-        return classpath;
-    }
-
-    public void setClasspath(String classpath) {
-        this.classpath = classpath;
-    }
-
-    public String getLibPath() {
-        return libPath;
-    }
-
-    public void setLibPath(String libPath) {
-        this.libPath = libPath;
-    }
 }

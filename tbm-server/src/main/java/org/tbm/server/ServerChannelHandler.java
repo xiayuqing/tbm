@@ -8,6 +8,9 @@ import org.slf4j.LoggerFactory;
 import org.tbm.common.Dispatcher;
 import org.tbm.common.bean.PacketLite;
 import org.tbm.common.utils.DigestUtils;
+import org.tbm.common.Connection;
+import org.tbm.server.connection.ConnectionManager;
+import org.tbm.server.connection.ServerConnection;
 
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -17,10 +20,15 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ServerChannelHandler extends SimpleChannelInboundHandler<String> {
     private static final Logger logger = LoggerFactory.getLogger(ServerChannelHandler.class);
+
     private Dispatcher dispatcher;
+
     private AtomicInteger count = new AtomicInteger(0);
 
-    public ServerChannelHandler() {
+    private ConnectionManager connectionManager;
+
+    public ServerChannelHandler(ConnectionManager connectionManager) {
+        this.connectionManager = connectionManager;
         dispatcher = new ServerDispatcher();
     }
 
@@ -43,17 +51,20 @@ public class ServerChannelHandler extends SimpleChannelInboundHandler<String> {
             return;
         }
 
-        dispatcher.dispatch(ctx, lite);
+        dispatcher.dispatch(connectionManager.get(ctx.channel()), lite);
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         logger.info("connected from :{}", ctx.channel().remoteAddress());
+        Connection conn = new ServerConnection(ctx.channel());
+        connectionManager.add(conn);
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         logger.info("disconnected from:{}", ctx.channel().remoteAddress());
+        connectionManager.removeAndClose(ctx.channel());
     }
 
     @Override
