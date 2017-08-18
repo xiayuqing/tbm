@@ -73,6 +73,7 @@ public class ClientAgentStartup {
         }));
     }
 
+
     public Resource getLocation() {
         return location;
     }

@@ -11,13 +11,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by Jason.Xia on 17/6/28.
  */
 public class ConnectionManager {
-    private static final ConcurrentHashMap<String/*bindingId*/, String/*channelShortId*/> machines = new
+    private static final ConcurrentHashMap<String/*bindingId*/, String/*channelShortId*/> bundles = new
             ConcurrentHashMap<>();
     private ConcurrentHashMap<String/*channelId*/, Connection> connections = new ConcurrentHashMap<>();
     private CollectorPool collectorPool;
 
     public static void bind(String bindingId, Connection connection) {
-        machines.putIfAbsent(bindingId, connection.getChannel().id().asShortText());
+        bundles.putIfAbsent(bindingId, connection.getChannel().id().asShortText());
     }
 
     public void init(CollectorPool collectorPool) {
@@ -30,7 +30,7 @@ public class ConnectionManager {
     }
 
     public Connection get(String bindingId) {
-        String s = machines.get(bindingId);
+        String s = bundles.get(bindingId);
         if (StringUtils.isEmpty(s)) {
             return null;
         }
@@ -46,7 +46,7 @@ public class ConnectionManager {
         Connection connection = this.connections.remove(channel.id().asShortText());
         if (null != connection) {
             connection.close();
-            machines.remove(String.valueOf(connection.getMachineBinding().getBindingId()));
+            bundles.remove(String.valueOf(connection.getMachineBinding().getBindingId()));
         }
 
         return connection;

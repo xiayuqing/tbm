@@ -67,7 +67,7 @@ public abstract class ConnectWatcher extends ChannelInboundHandlerAdapter implem
                         ConnectWatcher.this.jvmStatExecutor.updateFuture(future);
                     }
                 } else {
-                    logger.error("[tbm] Reconnect Failure. Connect to{}, cause:{}", host + ":" + port, future.cause
+                    logger.error("[tbm] Reconnect Failure. Connect to {}, cause:{}", host + ":" + port, future.cause
                             ());
                     future.channel().pipeline().fireChannelInactive();
                 }

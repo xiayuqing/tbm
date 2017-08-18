@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Created by Jason.Xia on 17/6/2.
  */
-public class BaseCollectorPool implements CollectorPool{
+public class BaseCollectorPool implements CollectorPool {
     private static final Logger logger = LoggerFactory.getLogger(BaseCollectorPool.class);
 
     private ExecutorService executor;
@@ -134,12 +134,14 @@ public class BaseCollectorPool implements CollectorPool{
                 int step = AppContext.getInt("cache.flush.batch", 300);
                 int unitSize = 0;
 
-                do {
-                    List<String> lrange = jedis.lrange(listKey, 0, step);
+                while (true) {
+
+                    List<String> lrange = jedis.lrange(listKey, 0, step - 1);
                     if (CollectionUtils.isEmpty(lrange)) {
                         break;
                     }
 
+                    logger.info("lrange num:{}", lrange.size());
                     unitSize = lrange.size();
                     List<BizData> data = new ArrayList<>();
                     for (String item : lrange) {
@@ -147,12 +149,8 @@ public class BaseCollectorPool implements CollectorPool{
                     }
 
                     op.INSERT_BIZ(data);
-                    if (unitSize < step) {
-                        jedis.ltrim(listKey, 1, 0);
-                    } else {
-                        jedis.ltrim(listKey, unitSize, -1);
-                    }
-                } while (unitSize == step);
+                    jedis.ltrim(listKey, unitSize, -1);
+                }
 
             } catch (Exception e) {
                 logger.error("flush cache error", e);

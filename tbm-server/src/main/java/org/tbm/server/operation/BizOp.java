@@ -31,9 +31,8 @@ public class BizOp extends AbstractOp {
         Jedis jedis = RedisPoolManager.getJedis();
         String[] arr = new String[data.size()];
         for (int i = 0; i < data.size(); i++) {
-            arr[0] = data.get(i).toString();
+            arr[i] = data.get(i).toString();
         }
-
 
         jedis.rpush(String.valueOf(data.get(0).getBindingId()), arr);
         RedisPoolManager.returnJedis(jedis);

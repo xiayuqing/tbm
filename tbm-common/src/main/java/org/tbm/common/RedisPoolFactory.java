@@ -24,8 +24,9 @@ public class RedisPoolFactory {
         config.setTestOnReturn(AppContext.getBoolean("redis.pool.testOnReturn", true));
         String host = AppContext.getString("redis.ip", "localhost");
         int port = AppContext.getInt("redis.port", 6379);
-        logger.info("Initialized JedisPool success! host:{},config:{}", host + ":" + port, config.toString());
-        return new JedisPool(config, host, port, 10, AppContext.getString("redis.password","123"),AppContext.getInt("redis.database.index",0));
+        logger.info("Initialized JedisPool success! host:{},config:{}", host + ":" + port, config);
+        return new JedisPool(config, host, port, 10, AppContext.getString("redis.password"), AppContext.getInt("redis" +
+                ".database.index", 0));
     }
 
 

@@ -18,13 +18,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class LogExecutor {
     private static AtomicBoolean start = new AtomicBoolean(false);
-
+    private static int count = 0;
     private ChannelFuture future;
-
     private ScheduledExecutorService executor;
-
     private ExecutorService bizLogExecutor;
-
     private LocalJvmAccessor localJvmAccessor;
 
     public void initAndStart() {
@@ -57,6 +54,8 @@ public class LogExecutor {
             return null;
         }
 
+        count += data.size();
+        System.out.println("count=" + count);
         return future.channel().writeAndFlush(PacketLite.createBizDataPackage(data).toString() + "\r\n");
     }
 
