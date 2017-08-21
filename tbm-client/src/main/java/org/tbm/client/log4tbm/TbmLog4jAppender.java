@@ -29,7 +29,7 @@ public class TbmLog4jAppender extends AppenderSkeleton {
         }
 
         LocationInfo location = event.getLocationInformation();
-        // 本体的日志不上传
+        // 自身的日志不上传
         if (location.getClassName().startsWith("org.tbm")) {
             return;
         }

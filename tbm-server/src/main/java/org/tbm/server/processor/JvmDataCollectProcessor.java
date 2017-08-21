@@ -6,14 +6,14 @@ import org.slf4j.LoggerFactory;
 import org.tbm.common.Connection;
 import org.tbm.common.MemoryType;
 import org.tbm.common.Processor;
-import org.tbm.server.operation.ClassLoadOp;
-import org.tbm.server.operation.MemoryPoolOp;
-import org.tbm.server.operation.MemorySummaryOp;
-import org.tbm.server.operation.ThreadOp;
 import org.tbm.common.bean.PacketLite;
 import org.tbm.common.bean.vo.*;
 import org.tbm.common.utils.CollectionUtils;
 import org.tbm.server.OpsFactory;
+import org.tbm.server.operation.ClassLoadOp;
+import org.tbm.server.operation.MemoryPoolOp;
+import org.tbm.server.operation.MemorySummaryOp;
+import org.tbm.server.operation.ThreadOp;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +33,8 @@ public class JvmDataCollectProcessor implements Processor {
     private ThreadOp threadOp = (ThreadOp) OpsFactory.get(ThreadOp.class);
 
     private ClassLoadOp classLoadOp = (ClassLoadOp) OpsFactory.get(ClassLoadOp.class);
+
+    private boolean jvmDataCollectorEnable;
 
     public JvmDataCollectProcessor() {
     }

@@ -1,6 +1,5 @@
 package org.tbm.server;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.tbm.common.AppContext;
 import org.tbm.common.Connection;
 import org.tbm.common.Dispatcher;

@@ -51,6 +51,7 @@ public class LogExecutor {
 
     public ChannelFuture write(List<BizData> data) {
         if (unWritable()) {
+            System.out.println("discard size:" + data.size());
             return null;
         }
 

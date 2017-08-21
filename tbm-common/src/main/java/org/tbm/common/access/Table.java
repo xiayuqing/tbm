@@ -20,6 +20,8 @@ public class Table extends Operation {
 
     public static final String BIZ = "BIZ";
 
+    private boolean enable = true;
+
     public Table() {
     }
 
@@ -31,4 +33,11 @@ public class Table extends Operation {
     }
 
 
+    public boolean isEnable() {
+        return enable;
+    }
+
+    public void setEnable(boolean enable) {
+        this.enable = enable;
+    }
 }

@@ -3,10 +3,11 @@ package org.tbm.common.access;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidPooledConnection;
 import org.tbm.common.AppContext;
-import org.tbm.common.MemoryType;
-import org.tbm.common.bean.vo.JvmData;
+import org.tbm.common.utils.CollectionUtils;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 /**
@@ -43,6 +44,10 @@ public class DataAccessor {
     }
 
     public void createTable(List<String> sqls) throws SQLException {
+        if (CollectionUtils.isEmpty(sqls)) {
+            return;
+        }
+
         DruidPooledConnection connection = dataSource.getConnection();
         try {
             connection.setAutoCommit(false);

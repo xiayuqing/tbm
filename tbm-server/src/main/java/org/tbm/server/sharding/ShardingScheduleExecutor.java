@@ -39,6 +39,10 @@ public class ShardingScheduleExecutor {
             this.shardingConfig = ShardingConfig.getConfig(cfgPath);
             Map<String/*currentName*/, String/*currentSql*/> tables = new HashMap<>();
             for (Map.Entry<String, Table> item : shardingConfig.getTableMap().entrySet()) {
+                if (!item.getValue().isEnable()) {
+                    continue;
+                }
+
                 tables.put(item.getValue().getCurrentName(), item.getValue().getCurrentSql());
 
                 long period;

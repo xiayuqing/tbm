@@ -17,19 +17,27 @@ public class TestMain {
 
         Logger testClass = LoggerFactory.getLogger(TestMain.class);
         int count = 0;
-        while (true) {
-//            testClass.debug(" a DEBUG log message");
-            testClass.info(++count+" a INFO log message");
-            testClass.warn(++count+" a WARN log message");
-            testClass.info(++count+" a INFO log message");
-            testClass.warn(++count+" a WARN log message");
-//            testClass.error(System.currentTimeMillis() + " a ERROR log message", new IllegalArgumentException("error " +
-//                    "args"));
-            Thread.sleep(100);
-            if (count > 1000) {
-                break;
-            }
+
+        Thread.sleep(5000);
+
+        for (int i = 0; i < 1000; i++) {
+            testClass.info(++count + " a INFO log message");
+            System.out.println(i);
         }
+
+//        while (true) {
+////            testClass.debug(" a DEBUG log message");
+//            testClass.warn(++count + " a WARN log message");
+//            testClass.info(++count + " a INFO log message");
+//            testClass.warn(++count + " a WARN log message");
+////            testClass.error(System.currentTimeMillis() + " a ERROR log message", new IllegalArgumentException
+//// ("error " +
+////                    "args"));
+//            Thread.sleep(100);
+//            if (count > 1000) {
+//                break;
+//            }
+//        }
 
         System.out.println("end....");
 
