@@ -5,8 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tbm.common.Connection;
 import org.tbm.common.Processor;
-import org.tbm.common.bean.MachineBinding;
 import org.tbm.common.bean.PacketLite;
+import org.tbm.common.bean.WorkNode;
 
 /**
  * Created by Jason.Xia on 17/6/1.
@@ -20,9 +20,9 @@ public class HandshakeProcessor implements Processor {
             return PacketLite.createException("payload no data", packetLite.seq);
         }
 
-        MachineBinding machineInfo;
+        WorkNode workNode;
         try {
-            machineInfo = JSON.parseObject(packetLite.payload, MachineBinding.class);
+            workNode = JSON.parseObject(packetLite.payload, WorkNode.class);
         } catch (Exception e) {
             if (logger.isDebugEnabled()) {
                 logger.error("handshake json parse error.{}", e);
@@ -31,6 +31,6 @@ public class HandshakeProcessor implements Processor {
             return PacketLite.createException("payload format illegal", packetLite.seq);
         }
 
-        return PacketLite.createHandshakeAck(packetLite.seq, connection.auth(machineInfo));
+        return PacketLite.createHandshakeAck(packetLite.seq, connection.auth(workNode));
     }
 }

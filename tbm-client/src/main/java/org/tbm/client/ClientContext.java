@@ -1,73 +1,98 @@
 package org.tbm.client;
 
-import org.tbm.common.AppContext;
-import org.tbm.common.bean.MachineBinding;
-import org.tbm.common.bean.vo.JvmBaseInfo;
-import org.tbm.common.utils.StringUtils;
+import org.tbm.common.bean.WorkNode;
+import org.tbm.common.util.Utils;
 
 import java.util.Properties;
 
 /**
  * Created by Jason.Xia on 17/6/1.
  */
-public class ClientContext extends AppContext {
-    public static String OS;
-    public static String ARCH;
-    public static String VERSION;
-    public static int AVAILABLE_PROCESSORS;
-    public static long JVM_START;
-    public static long JVM_UPTIME;
-    public static String JVM_BOOTSTRAP;
-    public static String JVM_CLASS_PATH;
-    public static String JVM_LIB_PATH;
-    protected static String IP;
-    protected static int PORT;
+public class ClientContext {
+    public static String IDENTITY;
+    public static String HOST;
+    public static String LOCAL;
+    private static Properties config = new Properties();
+    private static WorkNode localNode;
+    private static boolean contextEnable;
 
     public ClientContext() {
     }
 
-    @Deprecated
-    public static void load(String path) {
-        AppContext.load(path);
-
-        setSystemId();
+    public static void init(String host, String identity) {
+        HOST = host;
+        IDENTITY = identity;
+        LOCAL = Utils.getAddress();
     }
 
-    public static void setProperties(Properties properties) {
-        AppContext.setProperties(properties);
-
-        setSystemId();
-    }
-
-    private static void setSystemId() {
-        if (StringUtils.isEmpty(AppContext.getString("system.id"))) {
-            throw new IllegalArgumentException("not found properties:system.id");
+    public static WorkNode getWorkNode() {
+        if (null == localNode) {
+            localNode = new WorkNode();
+            localNode.setIdentity(IDENTITY);
+            localNode.setHost(Utils.getHost());
+            localNode.setAddress(LOCAL);
+            localNode.setOs(System.getProperty("os.name"));
+            localNode.setVersion(System.getProperty("os.version"));
+            localNode.setArch(System.getProperty("os.arch"));
+            localNode.setUserName(System.getProperty("user.name"));
+            localNode.setUserHome(System.getProperty("user.home"));
+            localNode.setUserDir(System.getProperty("user.dir"));
+            localNode.setJavaVersion(System.getProperty("java.version"));
+            localNode.setJavaHome(System.getProperty("java.home"));
         }
 
-        SYSTEM_ID = Long.valueOf(AppContext.getString("system.id"));
+        return localNode;
     }
 
-    public static void initJvmBaseInfo(JvmBaseInfo jvmBaseInfo) {
-        OS = jvmBaseInfo.getOs();
-        ARCH = jvmBaseInfo.getArch();
-        VERSION = jvmBaseInfo.getVersion();
-        AVAILABLE_PROCESSORS = jvmBaseInfo.getAvailableProcessors();
+    public static boolean getBoolean(String key, boolean defaultValue) {
+        String p = config.getProperty(key);
+        if (null == p || 0 == p.length()) {
+            return defaultValue;
+        }
 
-        JVM_START = jvmBaseInfo.getStart();
-        JVM_UPTIME = jvmBaseInfo.getUptime();
-        JVM_BOOTSTRAP = jvmBaseInfo.getBootstrap();
-        JVM_CLASS_PATH = jvmBaseInfo.getClassPath();
-        JVM_LIB_PATH = jvmBaseInfo.getLibPath();
+        return Boolean.valueOf(p);
     }
 
-    public static MachineBinding getMachineInfo() {
-        MachineBinding info = new MachineBinding(SYSTEM_ID);
-        info.setBindingId(AppContext.getBindingId());
-        info.setOs(OS);
-        info.setVersion(VERSION);
-        info.setArch(ARCH);
-        info.setAvailableProcessors(AVAILABLE_PROCESSORS);
-        info.setJvmStart(JVM_START);
-        return info;
+    public static int getInt(String key, int defaultValue) {
+        String p = config.getProperty(key);
+        if (null == p || 0 == p.length()) {
+            return defaultValue;
+        }
+
+        return Integer.valueOf(p);
+    }
+
+    public static int getInt(String key) {
+        return getInt(key, 0);
+    }
+
+    public static long getLong(String key, long defaultValue) {
+        String p = config.getProperty(key);
+        if (null == p || 0 == p.length()) {
+            return defaultValue;
+        }
+
+        return Long.valueOf(p);
+    }
+
+    public static String getString(String key, String defaultValue) {
+        String p = config.getProperty(key);
+        if (null == p || 0 == p.length()) {
+            return defaultValue;
+        }
+
+        return p;
+    }
+
+    public static String getString(String key) {
+        return config.getProperty(key);
+    }
+
+    public static boolean isContextEnable() {
+        return contextEnable;
+    }
+
+    public static void setContextEnable(boolean contextEnable) {
+        ClientContext.contextEnable = contextEnable;
     }
 }

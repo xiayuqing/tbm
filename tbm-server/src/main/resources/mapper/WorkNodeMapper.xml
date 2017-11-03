@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.tbm.server.access.WorkNodeMapper">
+    <resultMap id="BaseResultMap" type="org.tbm.common.bean.WorkNode">
+        <id column="identity" property="identity" jdbcType="CHAR"/>
+        <result column="host" property="host" jdbcType="VARCHAR"/>
+        <result column="address" property="address" jdbcType="CHAR"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="os" property="os" jdbcType="VARCHAR"/>
+        <result column="version" property="version" jdbcType="VARCHAR"/>
+        <result column="arch" property="arch" jdbcType="VARCHAR"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="user_home" property="userHome" jdbcType="VARCHAR"/>
+        <result column="user_dir" property="userDir" jdbcType="VARCHAR"/>
+        <result column="java_version" property="javaVersion" jdbcType="VARCHAR"/>
+        <result column="java_home" property="javaHome" jdbcType="VARCHAR"/>
+        <result column="created_at" property="createdAt" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="BASE_COLUMN">`identity`,host,address,`status`,os,version,arch,user_name,user_home,user_dir,java_version,java_home,`created_at`</sql>
+
+    <sql id="INSERT_COLUMN">`identity`,host,address,`status`,os,version,arch,user_name,user_home,user_dir,java_version,java_home</sql>
+
+    <select id="select" resultMap="BaseResultMap">
+        SELECT
+        <include refid="BASE_COLUMN"/>
+        FROM `work_node` WHERE `identity`=#{identity}
+    </select>
+
+    <insert id="insert">
+        INSERT INTO `work_node` (<include refid="INSERT_COLUMN"/>)
+        VALUES
+        (#{node.identity},#{node.host},#{node.address},#{node.status},#{node.os},#{node.version},#{node.arch},#{node.userName},#{node.userHome},#{node.userDir},#{node.javaVersion},#{node.javaHome})
+    </insert>
+
+    <update id="updateStatus">
+        UPDATE `work_node` set `status`=#{status} where `identity`=#{identity}
+    </update>
+
+    <update id="create" parameterType="org.tbm.server.access.WorkNodeAccessor">
+        ${schema.currentSchema}
+    </update>
+</mapper>

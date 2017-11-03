@@ -3,15 +3,7 @@ package org.tbm.server.sharding;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tbm.common.State;
-import org.tbm.common.access.DataAccessor;
-import org.tbm.common.access.DataAccessorFactory;
-import org.tbm.common.access.ShardingUnits;
-import org.tbm.common.access.Table;
-import org.tbm.common.utils.ObjectUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -23,11 +15,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ShardingScheduleExecutor {
     private static AtomicInteger status = new AtomicInteger(State.STOP);
     private final Logger logger = LoggerFactory.getLogger(ShardingScheduleExecutor.class);
-    private final DataAccessor dataAccessor = DataAccessorFactory.getInstance();
-    private ShardingConfig shardingConfig;
     private ScheduledExecutorService executor;
 
-    public void start(String cfgPath) {
+    public void start() {
         if (!status.compareAndSet(State.STOP, State.STARTING)) {
             logger.info("[tbm] ShardingScheduleExecutor is already started");
             return;
@@ -36,30 +26,23 @@ public class ShardingScheduleExecutor {
         executor = Executors.newScheduledThreadPool(1);
 
         try {
-            this.shardingConfig = ShardingConfig.getConfig(cfgPath);
-            Map<String/*currentName*/, String/*currentSql*/> tables = new HashMap<>();
-            for (Map.Entry<String, Table> item : shardingConfig.getTableMap().entrySet()) {
-                if (!item.getValue().isEnable()) {
-                    continue;
-                }
 
-                tables.put(item.getValue().getCurrentName(), item.getValue().getCurrentSql());
-
+            for (Operation item : ShardingInventory.getShardingInventory()) {
                 long period;
-                if (ShardingUnits.HOUR == item.getValue().getUnits()) {
+                if (ShardingUnits.HOUR == item.getUnits()) {
                     period = 60 * 60;
                 } else {
                     period = 60 * 60 * 24;
                 }
 
-                if (ShardingUnits.SINGLETON != item.getValue().getUnits()) {
-                    executor.scheduleAtFixedRate(new CreateTableTask(item.getValue()), 0, period, TimeUnit
+                if (ShardingUnits.SINGLETON != item.getUnits() && ShardingUnits.HASH != item.getUnits()) {
+                    executor.scheduleAtFixedRate(new CreateTableTask(item), 0, period, TimeUnit
                             .SECONDS);
                 }
-            }
 
-            dataAccessor.createTable(new ArrayList<>(tables.values()));
-            logger.info("[tbm] Initial Table:{}", tables.keySet());
+                item.create(false);
+                logger.info("[tbm] Initial Table:{}", item.getCurrentName());
+            }
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
@@ -67,23 +50,42 @@ public class ShardingScheduleExecutor {
         logger.info("[tbm] Sharding Schedule Executor Started");
     }
 
-    private class CreateTableTask implements Runnable {
-        private Table table;
+    public void stop() {
+        if (State.STOP == status.get()) {
+            return;
+        }
 
-        CreateTableTask(Table table) {
-            this.table = table;
+        executor.shutdown();
+        try {
+            if (!executor.awaitTermination(60000, TimeUnit.MILLISECONDS)) {
+                executor.shutdownNow();
+                if (!executor.awaitTermination(60000, TimeUnit.MILLISECONDS)) {
+                    logger.error("ShardingScheduleExecutor did not terminate");
+                }
+            }
+
+        } catch (InterruptedException e) {
+            executor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private class CreateTableTask implements Runnable {
+        private Operation operation;
+
+        CreateTableTask(Operation op) {
+            this.operation = op;
         }
 
         @Override
         public void run() {
             try {
-                logger.info("[tbm] Run Create Table Task for [{}]", table.getBaseName());
-                dataAccessor.createTable(ObjectUtils.singleObjectConvertToList(table.getNextSql()));
-                logger.info("[tbm] Success to Create Table: [{}]", table.getNextName());
+                logger.info("[tbm] Run Create Table Task for [{}]", operation.getBaseName());
+                operation.create(true);
+                logger.info("[tbm] Success to Create Table: [{}]", operation.getNextName());
             } catch (Exception e) {
-                logger.error("Create Table Failed.table:{},msg:{},trace:{}", table, e.getMessage(), e.getStackTrace());
+                logger.error("Create Table " + operation.getNextName() + " Failed.", e);
             }
         }
     }
-
 }

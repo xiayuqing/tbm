@@ -1,13 +1,11 @@
 package org.tbm.common.bean;
 
+import com.alibaba.fastjson.JSONObject;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.util.CharsetUtil;
-import org.tbm.common.AppContext;
-import org.tbm.common.bean.vo.BizData;
-import org.tbm.common.bean.vo.JvmData;
-import org.tbm.common.utils.DigestUtils;
-import org.tbm.common.utils.NetUtils;
+import org.tbm.common.Serialize;
+import org.tbm.common.util.Utils;
 
 import java.util.List;
 
@@ -16,8 +14,8 @@ import java.util.List;
  */
 public class PacketLite extends Serialize {
     public static final ByteBuf HEARTBEAT_PACKET = Unpooled.unreleasableBuffer(Unpooled.copiedBuffer(new PacketLite
-            (PACKET_TYPE.HEARTBEAT, NetUtils.getLocalAddress().toString() + AppContext.SYSTEM_ID, DigestUtils
-                    .getUUIDWithoutStrike()).toString() + "\r\n", CharsetUtil.UTF_8));
+            (PACKET_TYPE.HEARTBEAT, Utils.getLocalAddress().toString(), Utils.getUUIDWithoutStrike()).toString() +
+            "\r\n", CharsetUtil.UTF_8));
 
     public int type;
     public String seq;
@@ -37,21 +35,15 @@ public class PacketLite extends Serialize {
         this.payload = msg;
     }
 
-    public static PacketLite createJvmDataPackage(List<JvmData> data) {
-        PacketLite packetLite = new PacketLite(PACKET_TYPE.JVM_DATA, DigestUtils.getUUIDWithoutStrike());
-        packetLite.payload = data.toString();
-        return packetLite;
-    }
-
-    public static PacketLite createHandshake(MachineBinding machineInfo) {
+    public static PacketLite createHandshake(WorkNode machineInfo) {
         PacketLite packetLite = new PacketLite();
         packetLite.type = PACKET_TYPE.HANDSHAKE;
         packetLite.payload = machineInfo.toString();
-        packetLite.seq = DigestUtils.getUUIDWithoutStrike();
+        packetLite.seq = Utils.getUUIDWithoutStrike();
         return packetLite;
     }
 
-    public static PacketLite createHandshakeAck(String seq, MachineBinding hostInfo) {
+    public static PacketLite createHandshakeAck(String seq, WorkNode hostInfo) {
         PacketLite packetLite = new PacketLite();
         packetLite.type = PACKET_TYPE.HANDSHAKE;
         packetLite.payload = hostInfo.toString();
@@ -59,8 +51,8 @@ public class PacketLite extends Serialize {
         return packetLite;
     }
 
-    public static PacketLite createBizDataPackage(List<BizData> data) {
-        PacketLite lite = new PacketLite(PACKET_TYPE.BIZ_DATA, DigestUtils.getUUIDWithoutStrike());
+    public static PacketLite createLogDataPackage(JSONObject data) {
+        PacketLite lite = new PacketLite(PACKET_TYPE.LOG_DATA, Utils.getUUIDWithoutStrike());
         lite.payload = data.toString();
         return lite;
     }
@@ -84,7 +76,6 @@ public class PacketLite extends Serialize {
         int EXCEPTION = 3;
         // 服务器错误
         int ERROR = 4;
-        int JVM_DATA = 5;
-        int BIZ_DATA = 6;
+        int LOG_DATA = 5;
     }
 }

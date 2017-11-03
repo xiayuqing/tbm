@@ -2,7 +2,7 @@ package org.tbm.common;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
-import org.tbm.common.bean.MachineBinding;
+import org.tbm.common.bean.WorkNode;
 
 /**
  * Created by Jason.Xia on 17/6/30.
@@ -14,19 +14,21 @@ public interface Connection {
     int SUSPEND = 3;
     int DISCONNECTED = 4;
 
-    void init(CollectorPool pool);
+    void init();
 
     int status();
 
     ChannelFuture close();
 
-    MachineBinding auth(MachineBinding machine);
+    WorkNode auth(WorkNode node);
+
+    String getIdentity();
 
     void updateLastReadTime();
 
     void updateLastWriteTime();
 
-    MachineBinding getMachineBinding();
+    WorkNode getWorkNode();
 
     Channel getChannel();
 }

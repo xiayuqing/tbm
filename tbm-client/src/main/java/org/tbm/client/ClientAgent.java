@@ -13,11 +13,10 @@ import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.HashedWheelTimer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tbm.client.execute.LogExecutor;
-import org.tbm.client.handler.ClientHandler;
-import org.tbm.client.handler.ClientIdleStateTrigger;
-import org.tbm.client.handler.ConnectWatcher;
-import org.tbm.common.AppContext;
+import org.tbm.client.channel.ClientHandler;
+import org.tbm.client.channel.ClientIdleStateTrigger;
+import org.tbm.client.channel.ConnectWatcher;
+import org.tbm.client.executor.MonitorExecutor;
 import org.tbm.common.State;
 
 import java.nio.charset.Charset;
@@ -35,19 +34,18 @@ public class ClientAgent {
     private int port = 9411;
     private ChannelFuture future;
     private Bootstrap bootstrap;
-    private LogExecutor jvmStatExecutor;
+    private MonitorExecutor monitorExecutor;
 
-    public ChannelFuture start(String host, int port, LogExecutor jvmStatExecutor) {
+    public ChannelFuture start(String host, MonitorExecutor monitorExecutor) {
         if (!state.compareAndSet(State.STOP, State.STARTING)) {
             throw new IllegalStateException("client already started.");
         }
 
         this.host = host;
-        this.port = port;
-        this.jvmStatExecutor = jvmStatExecutor;
+        this.monitorExecutor = monitorExecutor;
         ChannelFuture future = create();
-        if (null != jvmStatExecutor) {
-            jvmStatExecutor.updateFuture(future);
+        if (null != monitorExecutor) {
+            monitorExecutor.updateFuture(future);
         }
 
         return future;
@@ -59,7 +57,7 @@ public class ClientAgent {
                 this.worker = new NioEventLoopGroup();
             }
 
-            worker.setIoRatio(AppContext.getInt("io.ratio ", 70));
+            worker.setIoRatio(ClientContext.getInt("io.ratio ", 70));
             if (null == bootstrap) {
                 bootstrap = new Bootstrap();
             }
@@ -67,7 +65,7 @@ public class ClientAgent {
 
         bootstrap.group(worker).channel(NioSocketChannel.class);
 
-        initialHandler(new ConnectWatcher(new HashedWheelTimer(), this, host, port, jvmStatExecutor) {
+        initialHandler(new ConnectWatcher(new HashedWheelTimer(), this, host, port, monitorExecutor) {
 
             @Override
             public ChannelHandler[] getHandlers() {
@@ -99,7 +97,7 @@ public class ClientAgent {
     }
 
     private void initialDefaultChannel(ChannelPipeline pipeline) {
-        pipeline.addLast("framer", new DelimiterBasedFrameDecoder(AppContext.getInt("frame" +
+        pipeline.addLast("framer", new DelimiterBasedFrameDecoder(ClientContext.getInt("frame" +
                 ".length.max", 32768), Delimiters.lineDelimiter()));
         pipeline.addLast("decoder", new StringDecoder(Charset.forName("utf-8")));
         pipeline.addLast("encoder", new StringEncoder(Charset.forName("utf-8")));
@@ -131,8 +129,8 @@ public class ClientAgent {
     }
 
     private void initialOption(Bootstrap bootstrap) {
-        bootstrap.option(ChannelOption.SO_SNDBUF, AppContext.getInt("so.send.buf", 32 * 1024));
-        bootstrap.option(ChannelOption.SO_RCVBUF, AppContext.getInt("so.receive.buf", 32 * 1024));
+        bootstrap.option(ChannelOption.SO_SNDBUF, ClientContext.getInt("so.send.buf", 32 * 1024));
+        bootstrap.option(ChannelOption.SO_RCVBUF, ClientContext.getInt("so.receive.buf", 32 * 1024));
 
         // 限制写缓冲水位
         bootstrap.option(ChannelOption.WRITE_BUFFER_WATER_MARK, WriteBufferWaterMark.DEFAULT);

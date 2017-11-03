@@ -13,6 +13,8 @@ import java.sql.SQLException;
 public class TestMain {
     public static void main(String[] args) throws InterruptedException, SQLException, IOException {
         ClientAgentStartup startup = new ClientAgentStartup();
+        startup.setHost("localhost");
+        startup.setIdentity("abctest");
         startup.start();
 
         Logger testClass = LoggerFactory.getLogger(TestMain.class);
@@ -20,26 +22,21 @@ public class TestMain {
 
         Thread.sleep(5000);
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 10; i++) {
             testClass.info(++count + " a INFO log message");
-            System.out.println(i);
         }
 
-//        while (true) {
-////            testClass.debug(" a DEBUG log message");
-//            testClass.warn(++count + " a WARN log message");
-//            testClass.info(++count + " a INFO log message");
-//            testClass.warn(++count + " a WARN log message");
-////            testClass.error(System.currentTimeMillis() + " a ERROR log message", new IllegalArgumentException
-//// ("error " +
-////                    "args"));
-//            Thread.sleep(100);
-//            if (count > 1000) {
-//                break;
-//            }
-//        }
+        while (true) {
+            testClass.debug(" a DEBUG log message");
+            testClass.warn(++count + " a WARN log message");
+            testClass.info(++count + " a INFO log message");
+            testClass.warn(++count + " a WARN log message");
+            testClass.error(System.currentTimeMillis() + " a ERROR log message", new IllegalArgumentException
+                    ("error args"));
+            Thread.sleep(100);
+        }
 
-        System.out.println("end....");
+//        System.out.println("end....");
 
     }
 }

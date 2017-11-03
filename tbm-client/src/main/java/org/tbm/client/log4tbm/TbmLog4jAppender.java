@@ -5,10 +5,10 @@ import org.apache.log4j.spi.ErrorCode;
 import org.apache.log4j.spi.LocationInfo;
 import org.apache.log4j.spi.LoggingEvent;
 import org.tbm.client.ClientContext;
-import org.tbm.client.execute.ExecutorFactory;
-import org.tbm.client.execute.LogExecutor;
-import org.tbm.common.bean.vo.BizData;
-import org.tbm.common.utils.CollectionUtils;
+import org.tbm.client.executor.ExecutorFactory;
+import org.tbm.client.executor.MonitorExecutor;
+import org.tbm.common.bean.LogData;
+import org.tbm.common.util.Utils;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class TbmLog4jAppender extends AppenderSkeleton {
     private boolean initialized = false;
-    private volatile LogExecutor logExecutor;
+    private volatile MonitorExecutor logExecutor;
     private Shaper shaper = new Shaper();
 
     @Override
@@ -34,8 +34,8 @@ public class TbmLog4jAppender extends AppenderSkeleton {
             return;
         }
 
-        List<BizData> shaping = shaper.shaping(event);
-        if (CollectionUtils.isEmpty(shaping)) {
+        List<LogData> shaping = shaper.shaping(event);
+        if (Utils.isEmpty(shaping)) {
             return;
         }
 

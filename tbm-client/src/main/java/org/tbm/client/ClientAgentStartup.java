@@ -1,19 +1,11 @@
 package org.tbm.client;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.EncodedResource;
-import org.springframework.core.io.support.PropertiesLoaderUtils;
-import org.tbm.client.execute.ExecutorFactory;
-import org.tbm.client.execute.LocalJvmAccessor;
-import org.tbm.client.execute.LogExecutor;
+import org.springframework.util.Assert;
+import org.tbm.client.executor.ExecutorFactory;
+import org.tbm.client.executor.MonitorExecutor;
+import org.tbm.common.util.Utils;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -22,71 +14,52 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ClientAgentStartup {
     private static AtomicBoolean start = new AtomicBoolean(false);
 
-    private final Logger logger = LoggerFactory.getLogger(ClientAgentStartup.class);
+    private MonitorExecutor monitorExecutor;
 
-    private Resource location;
+    private String host;
 
-    private boolean ignoreResourceNotFound = false;
+    private String identity;
 
-    public void start() throws IOException {
+    public MonitorExecutor start() throws IOException {
         if (!start.compareAndSet(false, true)) {
-            return;
+            return monitorExecutor;
         }
 
-        Properties properties = new Properties();
-        if (this.location == null) {
-            String file = ClientAgentStartup.class.getResource("/tbm-config.cfg").getFile();
-            logger.info("[tbm]Loading tbm properties file from:" + file);
-            properties.load(new FileInputStream(new File(file)));
-        } else {
-            logger.info("[tbm]Loading tbm properties file from:" + location);
-            try {
-                PropertiesLoaderUtils.fillProperties(properties, new EncodedResource(location, Charset.defaultCharset
-                        ()));
-            } catch (IOException e) {
-                if (this.ignoreResourceNotFound) {
-                    logger.warn("[tbm]Could not load properties from" + location + ":" + e.getMessage());
-                } else {
-                    throw e;
-                }
+        Assert.notNull(host, "ClientAgentStartup 'host' Cannot be null");
+        if (Utils.isEmpty(identity)) {
+            String id = System.getProperty("identity");
+            if (Utils.isEmpty(id)) {
+                throw new IllegalArgumentException("ClientAgentStartup identity Cannot be null");
+            } else {
+                identity = id;
             }
         }
 
-        ClientContext.setProperties(properties);
+        ClientContext.init(host, identity);
+        monitorExecutor = ExecutorFactory.getInstance();
+        monitorExecutor.initAndStart();
 
-        final LogExecutor logExecutor = ExecutorFactory.getInstance();
-        logExecutor.initAndStart();
-
-        ClientContext.initJvmBaseInfo(new LocalJvmAccessor().getJvmInfo());
-        String host = null == ClientContext.getString("host") ? "localhost" : ClientContext.getString("host");
-        int port = ClientContext.getInt("port", 9411);
         final ClientAgent clientAgent = new ClientAgent();
-        clientAgent.start(host, port, logExecutor);
+        clientAgent.start(ClientContext.HOST, monitorExecutor);
 
+        ClientContext.setContextEnable(true);
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
             public void run() {
-                logExecutor.stop();
+                monitorExecutor.stop();
 
                 clientAgent.stop();
             }
         }));
+
+        return monitorExecutor;
     }
 
-
-    public Resource getLocation() {
-        return location;
+    public void setHost(String host) {
+        this.host = host;
     }
 
-    public void setLocation(Resource location) {
-        this.location = location;
-    }
-
-    public boolean isIgnoreResourceNotFound() {
-        return ignoreResourceNotFound;
-    }
-
-    public void setIgnoreResourceNotFound(boolean ignoreResourceNotFound) {
-        this.ignoreResourceNotFound = ignoreResourceNotFound;
+    public void setIdentity(String identity) {
+        this.identity = identity;
     }
 }

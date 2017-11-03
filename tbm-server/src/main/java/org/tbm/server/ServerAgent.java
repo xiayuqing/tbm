@@ -7,17 +7,17 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.Delimiters;
-import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.handler.traffic.GlobalChannelTrafficShapingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tbm.common.AppContext;
 import org.tbm.common.State;
-import org.tbm.server.collect.CollectorPoolManager;
 import org.tbm.server.connection.ConnectionManager;
+import org.tbm.server.support.TrafficCollectWorker;
 
 import java.nio.charset.Charset;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -30,44 +30,43 @@ public class ServerAgent {
     private AtomicInteger state = new AtomicInteger(State.STOP);
     private NioEventLoopGroup boss;
     private NioEventLoopGroup worker;
-    private ConnectionManager connectionManager;
 
-    public void start() {
+    public void start(ConnectionManager connectionManager, TrafficCollectWorker trafficCollectWorker) {
         if (!state.compareAndSet(State.STOP, State.STARTING)) {
             throw new IllegalStateException("server already started.");
         }
 
-        this.port = AppContext.getInt("port", 9411);
-        create();
+        create(connectionManager, trafficCollectWorker);
     }
 
-    private void create() {
-        if (null == connectionManager) {
-            connectionManager = new ConnectionManager();
-            connectionManager.init(CollectorPoolManager.getTaskPool());
-        }
+    private void create(final ConnectionManager connectionManager, final TrafficCollectWorker trafficCollectWorker) {
 
         this.boss = new NioEventLoopGroup();
         this.worker = new NioEventLoopGroup();
-        worker.setIoRatio(AppContext.getInt("io.ratio ", 70));
+        worker.setIoRatio(TbmContext.getInt("io.ratio ", 70));
         ServerBootstrap bootstrap = new ServerBootstrap();
         bootstrap.group(boss, worker)
                 .channel(NioServerSocketChannel.class)
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     protected void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast("framer", new DelimiterBasedFrameDecoder(AppContext.getInt("frame" +
+                        ch.pipeline().addLast("framer", new DelimiterBasedFrameDecoder(TbmContext.getInt("frame" +
                                 ".length.max", 32768), Delimiters.lineDelimiter()));
-                        ch.pipeline().addLast("decoder", new StringDecoder(Charset.forName("utf-8")));
+                        ch.pipeline().addLast("decoder", new TrafficDecoder(Charset.forName("utf-8"),
+                                trafficCollectWorker));
                         ch.pipeline().addLast("encoder", new StringEncoder(Charset.forName("utf-8")));
-                        ch.pipeline().addLast(new IdleStateHandler(AppContext.getInt("idle.read.time", 40), 0, 0,
-                                TimeUnit.SECONDS));
+                        ch.pipeline().addLast(new IdleStateHandler(40, 0, 0, TimeUnit.SECONDS));
                         ch.pipeline().addLast(new ServerIdleStateTrigger());
                         ch.pipeline().addLast(new ServerChannelHandler(connectionManager));
+                        ch.pipeline().addLast(new GlobalChannelTrafficShapingHandler(new ScheduledThreadPoolExecutor
+                                (3), TbmContext.getInt("traffic.shaping.write.global.limit"), TbmContext.getInt
+                                ("traffic.shaping.read.global.limit"), TbmContext.getInt("traffic.shaping.write" +
+                                ".channel.limit"), TbmContext.getInt("traffic.shaping.read.channel.limit"), TbmContext
+                                .getInt("traffic.shaping.check.interval")));
                     }
                 });
 
-        bootstrap.childOption(ChannelOption.SO_SNDBUF, AppContext.getInt("so.send.buf", 32 * 1024));
-        bootstrap.childOption(ChannelOption.SO_RCVBUF, AppContext.getInt("so.receive.buf", 32 * 1024));
+        bootstrap.childOption(ChannelOption.SO_SNDBUF, TbmContext.getInt("so.send.buf", 32 * 1024));
+        bootstrap.childOption(ChannelOption.SO_RCVBUF, TbmContext.getInt("so.receive.buf", 32 * 1024));
 
         // 限制写缓冲水位
         bootstrap.childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, WriteBufferWaterMark.DEFAULT);

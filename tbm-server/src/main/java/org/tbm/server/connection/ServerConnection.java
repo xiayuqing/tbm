@@ -5,13 +5,11 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tbm.common.CollectorPool;
 import org.tbm.common.Connection;
-import org.tbm.common.bean.MachineBinding;
-import org.tbm.server.OpsFactory;
-import org.tbm.server.operation.MachineBindingOp;
+import org.tbm.common.bean.WorkNode;
+import org.tbm.server.SpringContainer;
+import org.tbm.server.access.WorkNodeAccessor;
 
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -20,19 +18,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ServerConnection implements Connection, ChannelFutureListener {
     private static Logger logger = LoggerFactory.getLogger(ServerConnection.class);
 
-    private final MachineBindingOp machineBindingOp = (MachineBindingOp) OpsFactory.get(MachineBindingOp.class);
+    private WorkNodeAccessor accessor;
 
     private Channel channel;
 
-    private MachineBinding machineBinding;
+    private WorkNode workNode;
 
     private AtomicInteger status = new AtomicInteger(Connection.NEW);
 
     private volatile long lastReadTime;
 
     private volatile long lastWriteTime;
-
-    private CollectorPool pool;
 
     public ServerConnection(Channel channel) {
         this.channel = channel;
@@ -46,11 +42,10 @@ public class ServerConnection implements Connection, ChannelFutureListener {
     }
 
     @Override
-    public void init(CollectorPool pool) {
-//        this.channel = channel;
+    public void init() {
+        this.accessor = (WorkNodeAccessor) SpringContainer.getBean(WorkNodeAccessor.class);
         this.lastReadTime = System.currentTimeMillis();
         this.status.set(Connection.CONNECTED);
-        this.pool = pool;
     }
 
     @Override
@@ -61,42 +56,42 @@ public class ServerConnection implements Connection, ChannelFutureListener {
     @Override
     public ChannelFuture close() {
         status.set(Connection.DISCONNECTED);
-        if (null != machineBinding) {
+        if (null != workNode) {
             try {
-                machineBindingOp.UPDATE_MACHINE_BINDING_STATUS(machineBinding.getSystemId(), machineBinding.getIp());
+                accessor.updateStatus(workNode.getIdentity(), 0);
             } catch (Exception e) {
-                logger.error("failure to update machine connection status", e);
+                logger.error("failure to update monitor node connection status", e);
                 throw new IllegalStateException(e);
             }
-
-            pool.removeScheduleJob(String.valueOf(machineBinding.getBindingId()));
         }
 
         return this.channel.close();
     }
 
     @Override
-    public MachineBinding auth(MachineBinding param) {
+    public WorkNode auth(WorkNode node) {
         try {
-            List<MachineBinding> select = machineBindingOp.SELECT_MACHINE_BINDING(param.getSystemId(), param
-                    .getIp());
-            if (null == select || 0 == select.size()) {
-                machineBinding = param;
-                machineBinding.setBindingId(System.currentTimeMillis());
-                machineBindingOp.INSERT_MACHINE_BINDING(machineBinding);
+            WorkNode select = accessor.select(node.getIdentity());
+            if (null == select) {
+                node.setStatus(1);
+                accessor.insert(node);
             } else {
-                machineBinding = select.get(0);
-                machineBindingOp.UPDATE_MACHINE_BINDING_STATUS(machineBinding.getSystemId(), machineBinding.getIp());
+                accessor.updateStatus(node.getIdentity(), 1);
             }
 
             status.set(Connection.AUTHORIZED);
-            pool.addScheduleJob(String.valueOf(machineBinding.getBindingId()));
-            ConnectionManager.bind(String.valueOf(machineBinding.getBindingId()), this);
-            return machineBinding;
+            workNode = node;
+            ConnectionManager.bind(node.getIdentity(), this);
+            return node;
         } catch (Exception e) {
             logger.error("auth error", e);
-            return param;
+            return node;
         }
+    }
+
+    @Override
+    public String getIdentity() {
+        return null == workNode ? "Unknown" : workNode.getIdentity();
     }
 
     @Override
@@ -110,8 +105,8 @@ public class ServerConnection implements Connection, ChannelFutureListener {
     }
 
     @Override
-    public MachineBinding getMachineBinding() {
-        return this.machineBinding;
+    public WorkNode getWorkNode() {
+        return this.workNode;
     }
 
     @Override
@@ -121,7 +116,7 @@ public class ServerConnection implements Connection, ChannelFutureListener {
 
     @Override
     public String toString() {
-        return "[channel=" + channel + ", machine=" + machineBinding + ", status=" + status + ", lastReadTime=" +
+        return "[channel=" + channel + ", workNode=" + workNode + ", status=" + status + ", lastReadTime=" +
                 lastReadTime + ", lastWriteTime=" + lastWriteTime + "]";
     }
 }

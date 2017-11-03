@@ -1,9 +1,9 @@
 package org.tbm.server.connection;
 
 import io.netty.channel.Channel;
-import org.tbm.common.CollectorPool;
 import org.tbm.common.Connection;
-import org.tbm.common.utils.StringUtils;
+import org.tbm.common.util.Utils;
+import org.tbm.server.support.MonitorCollectWorker;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -11,27 +11,30 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by Jason.Xia on 17/6/28.
  */
 public class ConnectionManager {
-    private static final ConcurrentHashMap<String/*bindingId*/, String/*channelShortId*/> bundles = new
+    private static final ConcurrentHashMap<String/*@MonitorNode.getIdentity*/, String/*channelShortId*/> bundles = new
             ConcurrentHashMap<>();
-    private ConcurrentHashMap<String/*channelId*/, Connection> connections = new ConcurrentHashMap<>();
-    private CollectorPool collectorPool;
 
-    public static void bind(String bindingId, Connection connection) {
-        bundles.putIfAbsent(bindingId, connection.getChannel().id().asShortText());
+    private static MonitorCollectWorker monitorCollectWorker;
+
+    private ConcurrentHashMap<String/*channelId*/, Connection> connections = new ConcurrentHashMap<>();
+
+    static void bind(String identity, Connection connection) {
+        bundles.putIfAbsent(identity, connection.getChannel().id().asShortText());
+        monitorCollectWorker.addScheduleJob(identity);
     }
 
-    public void init(CollectorPool collectorPool) {
-        this.collectorPool = collectorPool;
+    public void init(MonitorCollectWorker worker) {
+        monitorCollectWorker = worker;
     }
 
     public void add(Connection connection) {
-        connection.init(collectorPool);
+        connection.init();
         this.connections.putIfAbsent(connection.getChannel().id().asShortText(), connection);
     }
 
     public Connection get(String bindingId) {
         String s = bundles.get(bindingId);
-        if (StringUtils.isEmpty(s)) {
+        if (Utils.isEmpty(s)) {
             return null;
         }
 
@@ -42,14 +45,13 @@ public class ConnectionManager {
         return connections.get(channel.id().asShortText());
     }
 
-    public Connection removeAndClose(final Channel channel) {
+    public void removeAndClose(final Channel channel) {
         Connection connection = this.connections.remove(channel.id().asShortText());
         if (null != connection) {
             connection.close();
-            bundles.remove(String.valueOf(connection.getMachineBinding().getBindingId()));
+            monitorCollectWorker.removeScheduleJob(connection.getWorkNode().getIdentity());
+            bundles.remove(connection.getWorkNode().getIdentity());
         }
-
-        return connection;
     }
 
     public void destroy() {

@@ -1,12 +1,11 @@
 package org.tbm.client;
 
 import com.alibaba.fastjson.JSON;
-import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tbm.common.Connection;
 import org.tbm.common.Dispatcher;
-import org.tbm.common.bean.MachineBinding;
+import org.tbm.common.bean.WorkNode;
 import org.tbm.common.bean.PacketLite;
 
 
@@ -28,12 +27,11 @@ public class ClientDispatcher implements Dispatcher {
         }
 
         if (PacketLite.PACKET_TYPE.HANDSHAKE == packet.type) {
-            MachineBinding hostInfo = JSON.parseObject(packet.payload, MachineBinding.class);
+            WorkNode hostInfo = JSON.parseObject(packet.payload, WorkNode.class);
             if (null == hostInfo) {
                 throw new IllegalStateException("tbm client handshake error.cause:server receive binding info is null");
             }
 
-            ClientContext.updateBindingId(hostInfo.getBindingId());
             return;
         }
 

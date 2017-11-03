@@ -5,10 +5,10 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tbm.common.Connection;
 import org.tbm.common.Dispatcher;
 import org.tbm.common.bean.PacketLite;
-import org.tbm.common.utils.DigestUtils;
-import org.tbm.common.Connection;
+import org.tbm.common.util.Utils;
 import org.tbm.server.connection.ConnectionManager;
 import org.tbm.server.connection.ServerConnection;
 
@@ -23,8 +23,6 @@ public class ServerChannelHandler extends SimpleChannelInboundHandler<String> {
 
     private Dispatcher dispatcher;
 
-    private AtomicInteger count = new AtomicInteger(0);
-
     private ConnectionManager connectionManager;
 
     public ServerChannelHandler(ConnectionManager connectionManager) {
@@ -36,15 +34,14 @@ public class ServerChannelHandler extends SimpleChannelInboundHandler<String> {
         if (logger.isDebugEnabled()) {
             logger.debug("{} received msg from:{}", new Date(), ctx.channel().remoteAddress());
             logger.debug("msg content:{}", msg);
-            logger.debug("{}===================================================", count.getAndIncrement());
         }
 
         PacketLite lite = null;
         try {
             lite = JSON.parseObject(msg, PacketLite.class);
         } catch (Exception e) {
-            ctx.channel().writeAndFlush(PacketLite.createException("packet format error", DigestUtils
-                    .getUUIDWithoutStrike()) + "\r\n");
+            ctx.channel().writeAndFlush(PacketLite.createException("packet format error", Utils.getUUIDWithoutStrike
+                    ()) + "\r\n");
         }
 
         if (null == lite) {

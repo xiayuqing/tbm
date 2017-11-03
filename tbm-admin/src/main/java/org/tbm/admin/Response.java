@@ -1,6 +1,6 @@
 package org.tbm.admin;
 
-import org.tbm.common.bean.Serialize;
+import org.tbm.common.Serialize;
 
 /**
  * Created by Jason.Xia on 17/7/13.

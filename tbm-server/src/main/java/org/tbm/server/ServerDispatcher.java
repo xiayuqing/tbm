@@ -1,14 +1,13 @@
 package org.tbm.server;
 
-import org.tbm.common.AppContext;
 import org.tbm.common.Connection;
 import org.tbm.common.Dispatcher;
 import org.tbm.common.Processor;
 import org.tbm.common.bean.PacketLite;
-import org.tbm.server.processor.BizDataCollectProcessor;
+import org.tbm.server.datasource.RedisOperator;
 import org.tbm.server.processor.HandshakeProcessor;
 import org.tbm.server.processor.HeartbeatProcessor;
-import org.tbm.server.processor.JvmDataCollectProcessor;
+import org.tbm.server.processor.LogDataProcessor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,9 +22,7 @@ public class ServerDispatcher implements Dispatcher {
     public ServerDispatcher() {
         processors.put(PacketLite.PACKET_TYPE.HEARTBEAT, new HeartbeatProcessor());
         processors.put(PacketLite.PACKET_TYPE.HANDSHAKE, new HandshakeProcessor());
-        processors.put(PacketLite.PACKET_TYPE.JVM_DATA, new JvmDataCollectProcessor());
-        processors.put(PacketLite.PACKET_TYPE.BIZ_DATA, new BizDataCollectProcessor(AppContext.getBoolean("redis" +
-                ".enable", true)));
+        processors.put(PacketLite.PACKET_TYPE.LOG_DATA, new LogDataProcessor(RedisOperator.getRedisCache()));
     }
 
     public void dispatch(Connection connection, PacketLite packet) {
@@ -33,7 +30,6 @@ public class ServerDispatcher implements Dispatcher {
         if (null == processor) {
             return;
         }
-
 
         PacketLite lite = processor.process(packet, connection);
         if (null != lite) {

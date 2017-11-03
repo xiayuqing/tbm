@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.tbm.server.access.LogDataMapper">
+    <resultMap id="BaseResultMap" type="org.tbm.common.bean.LogData">
+        <result column="identity" property="identity" jdbcType="CHAR"/>
+        <result column="time" property="time" jdbcType="TIMESTAMP"/>
+        <result column="host" property="host" jdbcType="CHAR"/>
+        <result column="level" property="level" jdbcType="INTEGER"/>
+        <result column="trace" property="trace" jdbcType="CHAR"/>
+        <result column="clazz" property="clazz" jdbcType="VARCHAR"/>
+        <result column="method" property="method" jdbcType="VARCHAR"/>
+        <result column="line" property="line" jdbcType="INTEGER"/>
+        <result column="content" property="content" jdbcType="VARCHAR"/>
+        <result column="persist_time" property="persistTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="BASE_COLUMN">
+        `identity`,`time`,`host`,`level`,`trace`,`clazz`,`method`,`line`,`content`,`persist_time`
+    </sql>
+    <sql id="INSERT_COLUMN">
+        `identity`,`time`,`host`,`level`,`trace`,`clazz`,`method`,`line`,`content`
+    </sql>
+
+    <insert id="insert">
+        INSERT INTO ${table} (<include refid="INSERT_COLUMN"/>)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.identity},#{item.time},#{item.host},#{item.level},#{item.trace},#{item.clazz},#{item.method},#{item.line},#{item.content})
+        </foreach>
+    </insert>
+
+    <update id="create" parameterType="org.tbm.server.access.LogDataAccessor">
+        ${schema.currentSchema}
+    </update>
+
+    <update id="createNext" parameterType="org.tbm.server.access.LogDataAccessor">
+        ${schema.nextSchema}
+    </update>
+</mapper>

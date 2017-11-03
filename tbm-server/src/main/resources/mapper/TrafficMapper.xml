@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.tbm.server.access.TrafficMapper">
+    <resultMap id="BaseResultMap" type="org.tbm.common.bean.Traffic">
+        <result column="channel" property="channel" jdbcType="VARCHAR"/>
+        <result column="identity" property="identity" jdbcType="VARCHAR"/>
+        <result column="time" property="time" jdbcType="TIMESTAMP"/>
+        <result column="type" property="type" jdbcType="TINYINT"/>
+        <result column="flow" property="flow" jdbcType="BIGINT"/>
+        <result column="period" property="period" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="BASE_COLUMN">channel,`identity`,`type`,flow,period</sql>
+
+    <sql id="INSERT_COLUMN">channel,`identity`,`type`,flow,period</sql>
+
+    <insert id="insert">
+        INSERT INTO ${table} (<include refid="INSERT_COLUMN"/>)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.channel},#{item.identity},#{item.type},#{item.flow},#{item.period})
+        </foreach>
+    </insert>
+
+    <update id="create" parameterType="org.tbm.server.access.TrafficAccessor">
+        ${schema.currentSchema}
+    </update>
+
+    <update id="createNext" parameterType="org.tbm.server.access.TrafficAccessor">
+        ${schema.nextSchema}
+    </update>
+</mapper>
