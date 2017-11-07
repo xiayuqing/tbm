@@ -1,5 +1,7 @@
 package org.tbm.client;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 import org.tbm.client.executor.ExecutorFactory;
 import org.tbm.client.executor.MonitorExecutor;
@@ -12,13 +14,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Created by Jason.Xia on 17/6/14.
  */
 public class ClientAgentStartup {
+    private static final Logger logger = LoggerFactory.getLogger(ClientAgentStartup.class);
     private static AtomicBoolean start = new AtomicBoolean(false);
-
     private MonitorExecutor monitorExecutor;
 
     private String host;
 
     private String identity;
+
+    private String excludedPackage = "com.alibaba.dubbo.registry";
 
     public MonitorExecutor start() throws IOException {
         if (!start.compareAndSet(false, true)) {
@@ -35,14 +39,15 @@ public class ClientAgentStartup {
             }
         }
 
-        ClientContext.init(host, identity);
+        ClientContext.init(host, identity, excludedPackage);
         monitorExecutor = ExecutorFactory.getInstance();
         monitorExecutor.initAndStart();
 
         final ClientAgent clientAgent = new ClientAgent();
         clientAgent.start(ClientContext.HOST, monitorExecutor);
-
         ClientContext.setContextEnable(true);
+
+        logger.info("TBM Client Started!");
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
             public void run() {
@@ -61,5 +66,9 @@ public class ClientAgentStartup {
 
     public void setIdentity(String identity) {
         this.identity = identity;
+    }
+
+    public void setExcludedPackage(String excludedPackage) {
+        this.excludedPackage = excludedPackage;
     }
 }

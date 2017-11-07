@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ServerAgent {
     private static final Logger logger = LoggerFactory.getLogger(ServerAgent.class);
-    private int port = 9411;
+    private int port = 9413;
     private AtomicInteger state = new AtomicInteger(State.STOP);
     private NioEventLoopGroup boss;
     private NioEventLoopGroup worker;

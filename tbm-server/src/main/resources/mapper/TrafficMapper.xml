@@ -4,21 +4,23 @@
     <resultMap id="BaseResultMap" type="org.tbm.common.bean.Traffic">
         <result column="channel" property="channel" jdbcType="VARCHAR"/>
         <result column="identity" property="identity" jdbcType="VARCHAR"/>
+        <result column="host" property="host" jdbcType="VARCHAR"/>
+        <result column="address" property="address" jdbcType="CHAR"/>
         <result column="time" property="time" jdbcType="TIMESTAMP"/>
         <result column="type" property="type" jdbcType="TINYINT"/>
         <result column="flow" property="flow" jdbcType="BIGINT"/>
         <result column="period" property="period" jdbcType="INTEGER"/>
     </resultMap>
 
-    <sql id="BASE_COLUMN">channel,`identity`,`type`,flow,period</sql>
+    <sql id="BASE_COLUMN">channel,`identity`,`host`,`address`,`type`,flow,period</sql>
 
-    <sql id="INSERT_COLUMN">channel,`identity`,`type`,flow,period</sql>
+    <sql id="INSERT_COLUMN">channel,`identity`,`host`,`address`,`type`,flow,period</sql>
 
     <insert id="insert">
         INSERT INTO ${table} (<include refid="INSERT_COLUMN"/>)
         VALUES
         <foreach collection="list" item="item" separator=",">
-            (#{item.channel},#{item.identity},#{item.type},#{item.flow},#{item.period})
+            (#{item.channel},#{item.identity},#{item.host},#{item.address},#{item.type},#{item.flow},#{item.period})
         </foreach>
     </insert>
 

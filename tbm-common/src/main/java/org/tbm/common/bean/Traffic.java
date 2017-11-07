@@ -11,6 +11,8 @@ import java.util.Date;
 public class Traffic extends Serialize {
     private String channel;
     private String identity;
+    private String host;
+    private String address;
     private Date time;
     // 1:read ;2:write
     private int type;
@@ -19,6 +21,22 @@ public class Traffic extends Serialize {
     // second
     private int period;
 
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
 
     public String getChannel() {
         return channel;

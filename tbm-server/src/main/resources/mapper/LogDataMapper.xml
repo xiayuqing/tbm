@@ -10,7 +10,7 @@
         <result column="clazz" property="clazz" jdbcType="VARCHAR"/>
         <result column="method" property="method" jdbcType="VARCHAR"/>
         <result column="line" property="line" jdbcType="INTEGER"/>
-        <result column="content" property="content" jdbcType="VARCHAR"/>
+        <result column="content" property="content" jdbcType="CLOB"/>
         <result column="persist_time" property="persistTime" jdbcType="TIMESTAMP"/>
     </resultMap>
 

@@ -16,6 +16,7 @@ import java.util.List;
  * Created by Jason.Xia on 17/7/5.
  */
 public class TbmLog4jAppender extends AppenderSkeleton {
+    private static String[] excludedPackage;
     private boolean initialized = false;
     private volatile MonitorExecutor logExecutor;
     private Shaper shaper = new Shaper();
@@ -31,6 +32,10 @@ public class TbmLog4jAppender extends AppenderSkeleton {
         LocationInfo location = event.getLocationInformation();
         // 自身的日志不上传
         if (location.getClassName().startsWith("org.tbm")) {
+            return;
+        }
+
+        if (isExclude(location.getClassName())) {
             return;
         }
 
@@ -63,6 +68,7 @@ public class TbmLog4jAppender extends AppenderSkeleton {
                 synchronized (this) {
                     if (null == logExecutor) {
                         logExecutor = ExecutorFactory.getInstance();
+                        excludedPackage = ClientContext.getExcludedPackage();
                         initialized = true;
                     }
                 }
@@ -71,5 +77,17 @@ public class TbmLog4jAppender extends AppenderSkeleton {
         }
 
         return initialized;
+    }
+
+    private boolean isExclude(String location) {
+        if (excludedPackage != null) {
+            for (String item : excludedPackage) {
+                if (location.startsWith(item)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

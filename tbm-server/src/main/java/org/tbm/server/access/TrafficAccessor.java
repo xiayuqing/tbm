@@ -25,8 +25,9 @@ public class TrafficAccessor extends Operation {
         this.setBaseName("traffic");
         this.setUnits(ShardingUnits.valueOf(TbmContext.getString("table.traffic.unit")));
         this.setSchema("CREATE TABLE IF NOT EXISTS ${tableName} ( `channel` varchar(100) NOT NULL,  `identity` " +
-                "varchar(100) NOT NULL,  `time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,  `type` tinyint(4) NOT " +
-                "NULL, `flow` bigint(20) NOT NULL,  `period` int(11) NOT NULL ) ENGINE = ARCHIVE CHARSET = utf8");
+                "varchar(100) NOT NULL, `host` varchar(100) NOT NULL,`address` char(15) NOT NULL, `time` datetime NOT" +
+                " NULL DEFAULT CURRENT_TIMESTAMP,  `type` tinyint(4) NOT NULL, `flow` bigint(20) NOT NULL,  `period` " +
+                "int(11) NOT NULL ) ENGINE = ARCHIVE CHARSET = utf8");
     }
 
     public int insert(List<Traffic> list) {

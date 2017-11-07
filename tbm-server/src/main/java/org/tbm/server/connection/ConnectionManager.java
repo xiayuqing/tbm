@@ -32,8 +32,8 @@ public class ConnectionManager {
         this.connections.putIfAbsent(connection.getChannel().id().asShortText(), connection);
     }
 
-    public Connection get(String bindingId) {
-        String s = bundles.get(bindingId);
+    public Connection get(String identity) {
+        String s = bundles.get(identity);
         if (Utils.isEmpty(s)) {
             return null;
         }

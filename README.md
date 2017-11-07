@@ -15,11 +15,10 @@ maven dependency
 import tbm client and start
 ```xml
     <bean id="tbmClient" class="org.tbm.client.ClientAgentStartup" init-method="start">
-        <property name="location" value="classpath:tbm-config.cfg"/>
-        <property name="ignoreResourceNotFound" value="true"/>
+        <property name="host" value="127.0.0.1"/>
+        <property name="identity" value="123abc"/>
     </bean>
 ```
-
 
 
 add log4j appender

@@ -15,14 +15,18 @@ public class ClientContext {
     private static Properties config = new Properties();
     private static WorkNode localNode;
     private static boolean contextEnable;
+    private static String[] excludedPackage;
 
     public ClientContext() {
     }
 
-    public static void init(String host, String identity) {
+    public static void init(String host, String identity, String excludedPackage) {
         HOST = host;
         IDENTITY = identity;
         LOCAL = Utils.getAddress();
+        if (!Utils.isEmpty(excludedPackage)) {
+            ClientContext.excludedPackage = excludedPackage.split(",");
+        }
     }
 
     public static WorkNode getWorkNode() {
@@ -94,5 +98,9 @@ public class ClientContext {
 
     public static void setContextEnable(boolean contextEnable) {
         ClientContext.contextEnable = contextEnable;
+    }
+
+    public static String[] getExcludedPackage() {
+        return excludedPackage;
     }
 }

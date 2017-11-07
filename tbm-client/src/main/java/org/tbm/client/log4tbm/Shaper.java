@@ -32,39 +32,22 @@ public class Shaper {
         logData.safeSetMethod(location.getMethodName());
         logData.setLine(Integer.valueOf(location.getLineNumber()));
 
-        logData.safeSetContent(event.getMessage().toString().trim());
-        result.add(logData);
+        // 使用 text 存储content部分,但是为了保证一定安全,还是限定最大长度为2W.
+        StringBuilder content = new StringBuilder();
+        content.append(event.getMessage().toString().trim());
 
         if (null != event.getThrowableInformation()) {
+            content.append(" [EXCEPTION_STACK]:");
             String[] strRep = event.getThrowableInformation().getThrowableStrRep();
-            List<StringBuilder> list = new ArrayList<>();
-            StringBuilder s = new StringBuilder();
-            for (String item : strRep) {
-                if (s.length() + item.length() <= LogData.MAX_LEN_CONTENT) {
-                    s.append(item.trim());
-                } else {
-                    list.add(s);
-                    s = new StringBuilder();
-                    s.append(item);
+            if (null != strRep) {
+                for (String item : strRep) {
+                    content.append(item.trim());
                 }
-            }
-
-            list.add(s);
-            try {
-                for (StringBuilder item : list) {
-                    if (0 == item.length()) {
-                        continue;
-                    }
-
-                    LogData clone = logData.clone();
-                    clone.setContent(item.toString());
-                    result.add(clone);
-                }
-            } catch (CloneNotSupportedException e) {
-                e.printStackTrace();
             }
         }
 
+        logData.safeSetContent(content.toString());
+        result.add(logData);
         return result;
     }
 }

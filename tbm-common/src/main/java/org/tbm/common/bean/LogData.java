@@ -15,7 +15,7 @@ public class LogData extends Serialize implements Cloneable {
 
     public static final int MAX_LEN_METHOD = 100;
 
-    public static final int MAX_LEN_CONTENT = 1000;
+    public static final int MAX_LEN_CONTENT = 20000;
 
     private String identity;
 
@@ -33,7 +33,7 @@ public class LogData extends Serialize implements Cloneable {
 
     private int line;
 
-    private String content;
+    private String content = "empty";
 
     private Date persistTime;
 

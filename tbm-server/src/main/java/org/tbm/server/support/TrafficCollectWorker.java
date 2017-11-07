@@ -3,8 +3,10 @@ package org.tbm.server.support;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tbm.common.Connection;
 import org.tbm.common.bean.Traffic;
 import org.tbm.common.bean.ValuePair;
+import org.tbm.common.bean.WorkNode;
 import org.tbm.common.util.Utils;
 import org.tbm.server.SpringContainer;
 import org.tbm.server.TbmContext;
@@ -91,7 +93,12 @@ public class TrafficCollectWorker {
     private Traffic assemble(Map.Entry<String, ValuePair<String, AtomicLong>> entry, boolean isRead) {
         Traffic item = new Traffic();
         item.setChannel(entry.getKey());
-        item.setIdentity(entry.getValue().getKey());
+        String identity = entry.getValue().getKey();
+        Connection connection = connectionManager.get(identity);
+        WorkNode workNode = connection.getWorkNode();
+        item.setIdentity(identity);
+        item.setHost(null == workNode ? "Unknown" : workNode.getHost());
+        item.setAddress(null == workNode ? "Unknown" : workNode.getAddress());
         item.setType(isRead ? 1 : 2);
         item.setFlow(entry.getValue().getValue().getAndSet(0));
         item.setPeriod(period);

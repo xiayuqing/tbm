@@ -31,7 +31,7 @@ public class ClientAgent {
     private AtomicInteger state = new AtomicInteger(State.STOP);
     private NioEventLoopGroup worker;
     private String host = "127.0.0.1";
-    private int port = 9411;
+    private int port = 9413;
     private ChannelFuture future;
     private Bootstrap bootstrap;
     private MonitorExecutor monitorExecutor;
@@ -98,7 +98,7 @@ public class ClientAgent {
 
     private void initialDefaultChannel(ChannelPipeline pipeline) {
         pipeline.addLast("framer", new DelimiterBasedFrameDecoder(ClientContext.getInt("frame" +
-                ".length.max", 32768), Delimiters.lineDelimiter()));
+                ".length.max", 1048576), Delimiters.lineDelimiter()));
         pipeline.addLast("decoder", new StringDecoder(Charset.forName("utf-8")));
         pipeline.addLast("encoder", new StringEncoder(Charset.forName("utf-8")));
     }
