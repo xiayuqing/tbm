@@ -41,7 +41,7 @@ public class Shaper {
             String[] strRep = event.getThrowableInformation().getThrowableStrRep();
             if (null != strRep) {
                 for (String item : strRep) {
-                    content.append(item.trim());
+                    content.append(item);
                 }
             }
         }

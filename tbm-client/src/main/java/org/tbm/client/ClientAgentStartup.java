@@ -7,6 +7,7 @@ import org.tbm.client.executor.ExecutorFactory;
 import org.tbm.client.executor.MonitorExecutor;
 import org.tbm.common.util.Utils;
 
+import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -17,7 +18,7 @@ public class ClientAgentStartup {
     private static final Logger logger = LoggerFactory.getLogger(ClientAgentStartup.class);
     private static AtomicBoolean start = new AtomicBoolean(false);
     private MonitorExecutor monitorExecutor;
-
+    private ClientAgent clientAgent;
     private String host;
 
     private String identity;
@@ -43,7 +44,7 @@ public class ClientAgentStartup {
         monitorExecutor = ExecutorFactory.getInstance();
         monitorExecutor.initAndStart();
 
-        final ClientAgent clientAgent = new ClientAgent();
+        clientAgent = new ClientAgent();
         clientAgent.start(ClientContext.HOST, monitorExecutor);
         ClientContext.setContextEnable(true);
 
@@ -58,6 +59,17 @@ public class ClientAgentStartup {
         }));
 
         return monitorExecutor;
+    }
+
+    @PreDestroy
+    public void destroy() {
+        if (null != monitorExecutor) {
+            monitorExecutor.stop();
+        }
+
+        if (null != clientAgent) {
+            clientAgent.stop();
+        }
     }
 
     public void setHost(String host) {
