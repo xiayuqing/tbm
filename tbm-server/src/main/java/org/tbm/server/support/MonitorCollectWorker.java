@@ -20,13 +20,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class MonitorCollectWorker {
     private static final Logger logger = LoggerFactory.getLogger(MonitorCollectWorker.class);
-
+    private final Set<String/*identity-address*/> removedSet = new HashSet<>();
     private ScheduledExecutorService cacheScheduledExecutor;
-
     private Map<String/*identity-address*/, ScheduledFuture> jobFuture = new ConcurrentHashMap<>();
-
-    private Set<String/*identity-address*/> removedSet = new HashSet<>();
-
     private AtomicBoolean start = new AtomicBoolean(false);
 
     private long cacheFlushDelay;
@@ -49,9 +45,13 @@ public class MonitorCollectWorker {
     // 添加一个工作线程,单独负责一个队列
     public void addScheduleJob(String identity) {
         ScheduledFuture<?> future = cacheScheduledExecutor.scheduleWithFixedDelay(new FlushJob(identity,
-                (LogDataAccessor) SpringContainer.getBean(LogDataAccessor.class)), 0, cacheFlushDelay, TimeUnit
-                .SECONDS);
+                (LogDataAccessor) SpringContainer.getBean(LogDataAccessor.class)), new Random().nextInt
+                (10), cacheFlushDelay, TimeUnit.SECONDS);
         jobFuture.put(identity, future);
+        synchronized (removedSet) {
+            removedSet.remove(identity);
+        }
+
         logger.info("添加flush任务, Identity:{}", identity);
     }
 
@@ -99,6 +99,8 @@ public class MonitorCollectWorker {
         @Override
         public void run() {
             try {
+                int total = 0;
+
                 RedisTemplate<String, String> redisCache = RedisOperator.getRedisCache();
                 int unitSize;
                 while (true) {
@@ -109,7 +111,7 @@ public class MonitorCollectWorker {
                         break;
                     }
 
-                    logger.info("{} lrange num:{}", identity, lrange.size());
+                    total += lrange.size();
                     unitSize = lrange.size();
                     List<LogData> data = new ArrayList<>();
                     for (String item : lrange) {
@@ -120,6 +122,7 @@ public class MonitorCollectWorker {
                     redisCache.opsForList().trim(identity, unitSize, -1);
                 }
 
+                logger.info("{} total num:{}", identity, total);
             } catch (Exception e) {
                 logger.error("flush cache error", e);
             }

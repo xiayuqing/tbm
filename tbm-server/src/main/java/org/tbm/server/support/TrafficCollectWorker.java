@@ -99,7 +99,7 @@ public class TrafficCollectWorker {
         String identity = entry.getValue().getKey();
         Connection connection = connectionManager.get(identity);
         if (null == connection) {
-            logger.warn("Unknown WorkNode.identity:{}", identity);
+            logger.warn("Connection Already Closed.identity:{}", identity);
             return null;
         }
 
