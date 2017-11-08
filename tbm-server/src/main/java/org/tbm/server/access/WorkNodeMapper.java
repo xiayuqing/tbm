@@ -12,7 +12,7 @@ public interface WorkNodeMapper {
 
     int insert(@Param("node") WorkNode node);
 
-    int updateStatus(@Param("identity") String identity, @Param("status") int status);
+    int updateStatus(@Param("identity") String identity, @Param("status") int status, @Param("path") String path);
 
     void create(@Param("schema") WorkNodeAccessor schema);
 }

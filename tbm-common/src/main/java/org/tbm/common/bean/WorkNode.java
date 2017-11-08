@@ -9,6 +9,7 @@ import java.util.Date;
  */
 public class WorkNode extends Serialize {
     private String identity;
+    private String path = "Unknown";
     private String host;
     private String address;
     private int status;
@@ -124,5 +125,13 @@ public class WorkNode extends Serialize {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 }

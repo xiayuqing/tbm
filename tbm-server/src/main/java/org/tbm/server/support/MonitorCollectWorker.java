@@ -105,7 +105,7 @@ public class MonitorCollectWorker {
 
                     List<String> lrange = redisCache.opsForList().range(identity, 0, cacheFlushBatch - 1);
                     if (Utils.isEmpty(lrange)) {
-                        logger.info("{} lrange size is 0,exit task.", identity);
+                        logger.debug("{} lrange size is 0,exit task.", identity);
                         break;
                     }
 

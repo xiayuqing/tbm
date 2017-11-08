@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Created by Jason.Xia on 17/10/29.
  */
 public class TrafficCollectWorker {
-    private static final Logger logger = LoggerFactory.getLogger(MonitorCollectWorker.class);
+    private static final Logger logger = LoggerFactory.getLogger(TrafficCollectWorker.class);
 
     private ScheduledExecutorService executor;
 
@@ -70,7 +70,7 @@ public class TrafficCollectWorker {
                             accessor.insert(insert);
                         }
                     } catch (Exception e) {
-                        logger.error("Insert Traffic Statistic Error.", e);
+                        logger.error("Insert Traffic Statistic Error.{},trace:{}", e, e.getStackTrace());
                     }
                 }
             }, 0, period, TimeUnit.SECONDS);

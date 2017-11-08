@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.tbm.server.access.NodeLogMapper">
+    <resultMap id="BaseResultMap" type="org.tbm.common.bean.NodeLog">
+        <id column="identity" property="identity" jdbcType="CHAR"/>
+        <id column="path" property="path" jdbcType="CHAR"/>
+        <result column="host" property="host" jdbcType="VARCHAR"/>
+        <result column="address" property="address" jdbcType="CHAR"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="time" property="time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="BASE_COLUMN">`identity`,path,host,address,`status`,`time`</sql>
+
+    <sql id="INSERT_COLUMN">`identity`,path,host,address,`status`</sql>
+
+    <select id="select" resultMap="BaseResultMap">
+        SELECT
+        <include refid="BASE_COLUMN"/>
+        FROM `work_node` WHERE `identity`=#{identity}
+    </select>
+
+    <insert id="insert">
+        INSERT INTO `work_node` (<include refid="INSERT_COLUMN"/>)
+        VALUES
+        (#{node.identity},#{node.path},#{node.host},#{node.address},#{node.status})
+    </insert>
+
+    <update id="create" parameterType="org.tbm.server.access.WorkNodeAccessor">
+        ${schema.currentSchema}
+    </update>
+</mapper>

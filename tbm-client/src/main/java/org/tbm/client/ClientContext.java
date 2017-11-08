@@ -12,6 +12,7 @@ public class ClientContext {
     public static String IDENTITY;
     public static String HOST;
     public static String LOCAL;
+    public static String LOCAL_PATH="Unknown";
     private static Properties config = new Properties();
     private static WorkNode localNode;
     private static boolean contextEnable;
@@ -27,12 +28,16 @@ public class ClientContext {
         if (!Utils.isEmpty(excludedPackage)) {
             ClientContext.excludedPackage = excludedPackage.split(",");
         }
+
+        String property = System.getProperty("kangaroo.node.path");
+        LOCAL_PATH = Utils.isEmpty(property) ? "Unknown" : property;
     }
 
     public static WorkNode getWorkNode() {
         if (null == localNode) {
             localNode = new WorkNode();
             localNode.setIdentity(IDENTITY);
+            localNode.setPath(LOCAL_PATH);
             localNode.setHost(Utils.getHost());
             localNode.setAddress(LOCAL);
             localNode.setOs(System.getProperty("os.name"));

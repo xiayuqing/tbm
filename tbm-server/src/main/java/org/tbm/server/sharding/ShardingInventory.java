@@ -3,6 +3,7 @@ package org.tbm.server.sharding;
 
 import org.tbm.server.SpringContainer;
 import org.tbm.server.access.LogDataAccessor;
+import org.tbm.server.access.NodeLogAccessor;
 import org.tbm.server.access.TrafficAccessor;
 import org.tbm.server.access.WorkNodeAccessor;
 
@@ -18,6 +19,7 @@ public class ShardingInventory {
 
     static {
         shardingInventory.add((WorkNodeAccessor) SpringContainer.getBean(WorkNodeAccessor.class));
+        shardingInventory.add((NodeLogAccessor) SpringContainer.getBean(NodeLogAccessor.class));
         shardingInventory.add((LogDataAccessor) SpringContainer.getBean(LogDataAccessor.class));
         shardingInventory.add((TrafficAccessor) SpringContainer.getBean(TrafficAccessor.class));
     }

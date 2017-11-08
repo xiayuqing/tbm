@@ -6,8 +6,10 @@ import io.netty.channel.ChannelFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tbm.common.Connection;
+import org.tbm.common.bean.NodeLog;
 import org.tbm.common.bean.WorkNode;
 import org.tbm.server.SpringContainer;
+import org.tbm.server.access.NodeLogAccessor;
 import org.tbm.server.access.WorkNodeAccessor;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,7 +21,7 @@ public class ServerConnection implements Connection, ChannelFutureListener {
     private static Logger logger = LoggerFactory.getLogger(ServerConnection.class);
 
     private WorkNodeAccessor accessor;
-
+    private NodeLogAccessor logAccessor;
     private Channel channel;
 
     private WorkNode workNode;
@@ -44,6 +46,7 @@ public class ServerConnection implements Connection, ChannelFutureListener {
     @Override
     public void init() {
         this.accessor = (WorkNodeAccessor) SpringContainer.getBean(WorkNodeAccessor.class);
+        this.logAccessor = (NodeLogAccessor) SpringContainer.getBean(NodeLogAccessor.class);
         this.lastReadTime = System.currentTimeMillis();
         this.status.set(Connection.CONNECTED);
     }
@@ -58,7 +61,9 @@ public class ServerConnection implements Connection, ChannelFutureListener {
         status.set(Connection.DISCONNECTED);
         if (null != workNode) {
             try {
-                accessor.updateStatus(workNode.getIdentity(), 0);
+                accessor.updateStatus(workNode.getIdentity(), 0, workNode.getPath());
+                logAccessor.insert(new NodeLog(workNode.getIdentity(), workNode.getPath(), workNode.getHost(),
+                        workNode.getAddress(), 0));
             } catch (Exception e) {
                 logger.error("failure to update monitor node connection status", e);
                 throw new IllegalStateException(e);
@@ -76,7 +81,9 @@ public class ServerConnection implements Connection, ChannelFutureListener {
                 node.setStatus(1);
                 accessor.insert(node);
             } else {
-                accessor.updateStatus(node.getIdentity(), 1);
+                accessor.updateStatus(node.getIdentity(), 1, node.getPath());
+                logAccessor.insert(new NodeLog(node.getIdentity(), node.getPath(), node.getHost(), node.getAddress(),
+                        1));
             }
 
             status.set(Connection.AUTHORIZED);

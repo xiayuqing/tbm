@@ -3,6 +3,7 @@
 <mapper namespace="org.tbm.server.access.WorkNodeMapper">
     <resultMap id="BaseResultMap" type="org.tbm.common.bean.WorkNode">
         <id column="identity" property="identity" jdbcType="CHAR"/>
+        <id column="path" property="path" jdbcType="CHAR"/>
         <result column="host" property="host" jdbcType="VARCHAR"/>
         <result column="address" property="address" jdbcType="CHAR"/>
         <result column="status" property="status" jdbcType="TINYINT"/>
@@ -17,9 +18,9 @@
         <result column="created_at" property="createdAt" jdbcType="TIMESTAMP"/>
     </resultMap>
 
-    <sql id="BASE_COLUMN">`identity`,host,address,`status`,os,version,arch,user_name,user_home,user_dir,java_version,java_home,`created_at`</sql>
+    <sql id="BASE_COLUMN">`identity`,path,host,address,`status`,os,version,arch,user_name,user_home,user_dir,java_version,java_home,`created_at`</sql>
 
-    <sql id="INSERT_COLUMN">`identity`,host,address,`status`,os,version,arch,user_name,user_home,user_dir,java_version,java_home</sql>
+    <sql id="INSERT_COLUMN">`identity`,path,host,address,`status`,os,version,arch,user_name,user_home,user_dir,java_version,java_home</sql>
 
     <select id="select" resultMap="BaseResultMap">
         SELECT
@@ -30,11 +31,11 @@
     <insert id="insert">
         INSERT INTO `work_node` (<include refid="INSERT_COLUMN"/>)
         VALUES
-        (#{node.identity},#{node.host},#{node.address},#{node.status},#{node.os},#{node.version},#{node.arch},#{node.userName},#{node.userHome},#{node.userDir},#{node.javaVersion},#{node.javaHome})
+        (#{node.identity},#{node.path},#{node.host},#{node.address},#{node.status},#{node.os},#{node.version},#{node.arch},#{node.userName},#{node.userHome},#{node.userDir},#{node.javaVersion},#{node.javaHome})
     </insert>
 
     <update id="updateStatus">
-        UPDATE `work_node` set `status`=#{status} where `identity`=#{identity}
+        UPDATE `work_node` set `status`=#{status},`path`=#{path} where `identity`=#{identity}
     </update>
 
     <update id="create" parameterType="org.tbm.server.access.WorkNodeAccessor">

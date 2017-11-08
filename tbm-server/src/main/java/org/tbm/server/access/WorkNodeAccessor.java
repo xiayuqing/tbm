@@ -22,14 +22,14 @@ public class WorkNodeAccessor extends Operation {
     public void init() {
         this.setBaseName("work_node");
         this.setUnits(ShardingUnits.SINGLETON);
-        this.setSchema("CREATE TABLE IF NOT EXISTS ${tableName} ( `identity` char(32) NOT NULL DEFAULT '0',  `host` " +
-                "varchar(50) NOT NULL DEFAULT '0',  `address` char(15) NOT NULL DEFAULT '127.0.0.1',  `status` " +
-                "tinyint(4) NOT NULL DEFAULT '0' COMMENT '0:offline;1:online',  `os` varchar(100) NOT NULL DEFAULT " +
-                "'0',  `version` varchar(50) NOT NULL DEFAULT '0',  `arch` varchar(100) NOT NULL DEFAULT '0',  " +
-                "`user_name` varchar(100) NOT NULL,  `user_home` varchar(300) NOT NULL,  `user_dir` varchar(300) NOT " +
-                "NULL,  `java_version` varchar(300) NOT NULL,  `java_home` varchar(300) NOT NULL,  `created_at` " +
-                "datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,  PRIMARY KEY (`identity`, `host`, `address`) ) ENGINE =" +
-                " InnoDB CHARSET = utf8");
+        this.setSchema("CREATE TABLE IF NOT EXISTS ${tableName} ( `identity` char(32) NOT NULL DEFAULT '0', `path` " +
+                "varchar(200) NOT NULL DEFAULT 'Unknown', `host` varchar(50) NOT NULL DEFAULT '0',  `address` char" +
+                "(15) NOT NULL DEFAULT '127.0.0.1',  `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0:offline;" +
+                "1:online',  `os` varchar(100) NOT NULL DEFAULT '0',  `version` varchar(50) NOT NULL DEFAULT '0',  " +
+                "`arch` varchar(100) NOT NULL DEFAULT '0', `user_name` varchar(100) NOT NULL,  `user_home` varchar" +
+                "(300) NOT NULL,  `user_dir` varchar(300) NOT NULL,  `java_version` varchar(300) NOT NULL,  " +
+                "`java_home` varchar(300) NOT NULL,  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,  " +
+                "PRIMARY KEY (`identity`, `host`, `address`) ) ENGINE = InnoDB CHARSET = utf8");
     }
 
     public WorkNode select(String identity) {
@@ -40,8 +40,8 @@ public class WorkNodeAccessor extends Operation {
         return this.mapper.insert(node);
     }
 
-    public int updateStatus(String identity, int status) {
-        return this.mapper.updateStatus(identity, status);
+    public int updateStatus(String identity, int status, String path) {
+        return this.mapper.updateStatus(identity, status, path);
     }
 
     @Override
