@@ -32,16 +32,16 @@ public class WorkNodeAccessor extends Operation {
                 "PRIMARY KEY (`identity`, `host`, `address`) ) ENGINE = InnoDB CHARSET = utf8");
     }
 
-    public WorkNode select(String identity) {
-        return this.mapper.select(identity);
+    public WorkNode select(String identity, String address) {
+        return this.mapper.select(identity, address);
     }
 
     public int insert(WorkNode node) {
         return this.mapper.insert(node);
     }
 
-    public int updateStatus(String identity, int status, String path) {
-        return this.mapper.updateStatus(identity, status, path);
+    public int updateStatus(String identity, String address, int status, String path) {
+        return this.mapper.updateStatus(identity, address, status, path);
     }
 
     @Override

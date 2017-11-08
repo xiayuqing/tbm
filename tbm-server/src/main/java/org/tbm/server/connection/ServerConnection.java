@@ -61,7 +61,7 @@ public class ServerConnection implements Connection, ChannelFutureListener {
         status.set(Connection.DISCONNECTED);
         if (null != workNode) {
             try {
-                accessor.updateStatus(workNode.getIdentity(), 0, workNode.getPath());
+                accessor.updateStatus(workNode.getIdentity(), workNode.getAddress(), 0, workNode.getPath());
                 logAccessor.insert(new NodeLog(workNode.getIdentity(), workNode.getPath(), workNode.getHost(),
                         workNode.getAddress(), 0));
             } catch (Exception e) {
@@ -76,12 +76,12 @@ public class ServerConnection implements Connection, ChannelFutureListener {
     @Override
     public WorkNode auth(WorkNode node) {
         try {
-            WorkNode select = accessor.select(node.getIdentity());
+            WorkNode select = accessor.select(node.getIdentity(), node.getAddress());
             if (null == select) {
                 node.setStatus(1);
                 accessor.insert(node);
             } else {
-                accessor.updateStatus(node.getIdentity(), 1, node.getPath());
+                accessor.updateStatus(node.getIdentity(), node.getAddress(), 1, node.getPath());
                 logAccessor.insert(new NodeLog(node.getIdentity(), node.getPath(), node.getHost(), node.getAddress(),
                         1));
             }

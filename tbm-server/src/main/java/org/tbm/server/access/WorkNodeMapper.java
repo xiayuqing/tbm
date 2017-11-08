@@ -8,11 +8,12 @@ import org.tbm.common.bean.WorkNode;
  */
 public interface WorkNodeMapper {
 
-    WorkNode select(@Param("identity") String identity);
+    WorkNode select(@Param("identity") String identity, @Param("address") String address);
 
     int insert(@Param("node") WorkNode node);
 
-    int updateStatus(@Param("identity") String identity, @Param("status") int status, @Param("path") String path);
+    int updateStatus(@Param("identity") String identity, @Param("address") String address, @Param("status") int
+            status, @Param("path") String path);
 
     void create(@Param("schema") WorkNodeAccessor schema);
 }

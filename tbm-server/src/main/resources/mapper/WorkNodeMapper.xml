@@ -25,7 +25,7 @@
     <select id="select" resultMap="BaseResultMap">
         SELECT
         <include refid="BASE_COLUMN"/>
-        FROM `work_node` WHERE `identity`=#{identity}
+        FROM `work_node` WHERE `identity`=#{identity} AND `address`=#{address}
     </select>
 
     <insert id="insert">
@@ -35,7 +35,7 @@
     </insert>
 
     <update id="updateStatus">
-        UPDATE `work_node` set `status`=#{status},`path`=#{path} where `identity`=#{identity}
+        UPDATE `work_node` set `status`=#{status},`path`=#{path} where `identity`=#{identity} AND `address`=#{address}
     </update>
 
     <update id="create" parameterType="org.tbm.server.access.WorkNodeAccessor">
