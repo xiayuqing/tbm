@@ -17,16 +17,16 @@
     <select id="select" resultMap="BaseResultMap">
         SELECT
         <include refid="BASE_COLUMN"/>
-        FROM `work_node` WHERE `identity`=#{identity}
+        FROM `node_log` WHERE `identity`=#{identity}
     </select>
 
     <insert id="insert">
-        INSERT INTO `work_node` (<include refid="INSERT_COLUMN"/>)
+        INSERT INTO `node_log` (<include refid="INSERT_COLUMN"/>)
         VALUES
         (#{node.identity},#{node.path},#{node.host},#{node.address},#{node.status})
     </insert>
 
-    <update id="create" parameterType="org.tbm.server.access.WorkNodeAccessor">
+    <update id="create" parameterType="org.tbm.server.access.NodeLogAccessor">
         ${schema.currentSchema}
     </update>
 </mapper>

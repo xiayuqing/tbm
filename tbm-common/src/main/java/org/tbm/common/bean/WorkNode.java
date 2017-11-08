@@ -13,12 +13,12 @@ public class WorkNode extends Serialize {
     private String host;
     private String address;
     private int status;
-    private String os;
-    private String version;
-    private String arch;
-    private String userName;
-    private String userHome;
-    private String userDir;
+    private String os= "Unknown";
+    private String version= "Unknown";
+    private String arch= "Unknown";
+    private String userName= "Unknown";
+    private String userHome= "Unknown";
+    private String userDir= "Unknown";
     private String javaVersion;
     private String javaHome;
     private Date createdAt;
