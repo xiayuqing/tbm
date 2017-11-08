@@ -88,7 +88,7 @@ public class ServerConnection implements Connection, ChannelFutureListener {
 
             status.set(Connection.AUTHORIZED);
             workNode = node;
-            ConnectionManager.bind(node.getIdentity(), this);
+            ConnectionManager.bind(node.getIdentity() + "-" + node.getAddress(), this);
             return node;
         } catch (Exception e) {
             logger.error("auth error", e);

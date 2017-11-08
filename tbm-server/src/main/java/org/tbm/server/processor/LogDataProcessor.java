@@ -8,6 +8,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.tbm.common.Connection;
 import org.tbm.common.Processor;
 import org.tbm.common.bean.PacketLite;
+import org.tbm.common.bean.WorkNode;
 import org.tbm.common.util.Utils;
 
 import java.util.ArrayList;
@@ -33,7 +34,14 @@ public class LogDataProcessor implements Processor {
         }
 
         try {
-            String identity = payload.getString("identity");
+            WorkNode workNode = connection.getWorkNode();
+            if (null == workNode) {
+                logger.warn("Unknown WorkNode.Discard LogData.channel:{}", connection.getChannel().id().asShortText());
+                return PacketLite.createAck(packetLite.seq);
+            }
+
+//            String identity = payload.getString("identity");
+            String identity = workNode.getIdentity() + "-" + workNode.getAddress();
             List<String> insert = new ArrayList<>();
             for (Object item : payload.getJSONArray("data")) {
                 insert.add(item.toString());

@@ -23,9 +23,9 @@ public class MonitorCollectWorker {
 
     private ScheduledExecutorService cacheScheduledExecutor;
 
-    private Map<String/*identity*/, ScheduledFuture> jobFuture = new ConcurrentHashMap<>();
+    private Map<String/*identity-address*/, ScheduledFuture> jobFuture = new ConcurrentHashMap<>();
 
-    private Set<String/*identity*/> removedSet = new HashSet<>();
+    private Set<String/*identity-address*/> removedSet = new HashSet<>();
 
     private AtomicBoolean start = new AtomicBoolean(false);
 

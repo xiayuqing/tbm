@@ -30,10 +30,10 @@ public class TrafficCollectWorker {
 
     private ConnectionManager connectionManager;
 
-    private Map<String/*channelShortId*/, ValuePair<String/*identity*/, AtomicLong>> trafficReadCounter = new
+    private Map<String/*channelShortId*/, ValuePair<String/*identity-address*/, AtomicLong>> trafficReadCounter = new
             HashMap<>();
 
-    private Map<String/*channelShortId*/, ValuePair<String/*identity*/, AtomicLong>> trafficWriteCounter = new
+    private Map<String/*channelShortId*/, ValuePair<String/*identity-address*/, AtomicLong>> trafficWriteCounter = new
             HashMap<>();
 
     private TrafficAccessor accessor;
@@ -85,7 +85,10 @@ public class TrafficCollectWorker {
             if (0 == next.getValue().getValue().get()) {
                 iterator.remove();
             } else {
-                insertSet.add(assemble(next, isRead));
+                Traffic assemble = assemble(next, isRead);
+                if (null != assemble) {
+                    insertSet.add(assemble);
+                }
             }
         }
     }
@@ -95,6 +98,11 @@ public class TrafficCollectWorker {
         item.setChannel(entry.getKey());
         String identity = entry.getValue().getKey();
         Connection connection = connectionManager.get(identity);
+        if (null == connection) {
+            logger.warn("Unknown WorkNode.identity:{}", identity);
+            return null;
+        }
+
         WorkNode workNode = connection.getWorkNode();
         item.setIdentity(identity);
         item.setHost(null == workNode ? "Unknown" : workNode.getHost());
@@ -107,13 +115,14 @@ public class TrafficCollectWorker {
 
     public void count(Channel channel, long num, boolean isRead) {
         String key = channel.id().asShortText();
-        String identity = connectionManager.get(channel).getIdentity();
-        if ("Unknown".equals(identity)) {
+        WorkNode workNode = connectionManager.get(channel).getWorkNode();
+        if (null == workNode || "Unknown".equals(workNode.getIdentity())) {
             logger.warn("Discard Read Traffic Count Cause by Unknown Identity. channel:{},num:{},isRead:{}", key,
                     num, isRead);
             return;
         }
 
+        String identity = workNode.getIdentity() + "-" + workNode.getAddress();
         if (isRead) {
             if (trafficReadCounter.containsKey(key)) {
                 trafficReadCounter.get(key).getValue().addAndGet(num);

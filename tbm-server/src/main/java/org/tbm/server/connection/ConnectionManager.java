@@ -2,6 +2,7 @@ package org.tbm.server.connection;
 
 import io.netty.channel.Channel;
 import org.tbm.common.Connection;
+import org.tbm.common.bean.WorkNode;
 import org.tbm.common.util.Utils;
 import org.tbm.server.support.MonitorCollectWorker;
 
@@ -11,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by Jason.Xia on 17/6/28.
  */
 public class ConnectionManager {
-    private static final ConcurrentHashMap<String/*@MonitorNode.getIdentity*/, String/*channelShortId*/> bundles = new
+    private static final ConcurrentHashMap<String/*identity-address*/, String/*channelShortId*/> bundles = new
             ConcurrentHashMap<>();
 
     private static MonitorCollectWorker monitorCollectWorker;
@@ -49,8 +50,9 @@ public class ConnectionManager {
         Connection connection = this.connections.remove(channel.id().asShortText());
         if (null != connection) {
             connection.close();
-            monitorCollectWorker.removeScheduleJob(connection.getWorkNode().getIdentity());
-            bundles.remove(connection.getWorkNode().getIdentity());
+            WorkNode workNode = connection.getWorkNode();
+            monitorCollectWorker.removeScheduleJob(workNode.getIdentity() + "-" + workNode.getAddress());
+            bundles.remove(workNode.getIdentity() + "-" + workNode.getAddress());
         }
     }
 
