@@ -67,7 +67,7 @@ public class DingTalkWebHook {
 
     public void sendNow(DingMsg msg) {
         try {
-            MarkdownMessage message = createMsg(msg.getTopic(), Utils.singleObjectConvertToList(msg));
+            MarkdownMessage message = createMsg("TBM-Monitor", Utils.singleObjectConvertToList(msg));
             if (null == message) {
                 return;
             }
@@ -124,7 +124,7 @@ public class DingTalkWebHook {
         MarkdownMessage message = new MarkdownMessage();
         message.setTitle(title);
         for (DingMsg item : msgs) {
-            message.add(MarkdownMessage.getBoldText(item.getTopic()));
+            message.add(MarkdownMessage.getBoldText("TBM" + item.getTopic()));
             message.add("\n\n");
             message.add(item.getContent());
             message.add("\n\n");
