@@ -3,7 +3,7 @@ package org.tbm.server;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.string.StringDecoder;
-import org.tbm.server.support.TrafficCollectWorker;
+import org.tbm.server.worker.TrafficCollectWorker;
 
 import java.nio.charset.Charset;
 import java.util.List;

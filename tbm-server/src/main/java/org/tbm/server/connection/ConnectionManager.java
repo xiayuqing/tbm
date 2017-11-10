@@ -4,7 +4,7 @@ import io.netty.channel.Channel;
 import org.tbm.common.Connection;
 import org.tbm.common.bean.WorkNode;
 import org.tbm.common.util.Utils;
-import org.tbm.server.support.MonitorCollectWorker;
+import org.tbm.server.worker.MonitorCollectWorker;
 
 import java.util.concurrent.ConcurrentHashMap;
 

@@ -2,13 +2,14 @@ package org.tbm.server;
 
 import org.tbm.server.connection.ConnectionManager;
 import org.tbm.server.sharding.ShardingScheduleExecutor;
-import org.tbm.server.support.MonitorCollectWorker;
-import org.tbm.server.support.TrafficCollectWorker;
+import org.tbm.server.support.DingTalkWebHook;
+import org.tbm.server.worker.MonitorCollectWorker;
+import org.tbm.server.worker.TrafficCollectWorker;
 
 /**
  * Created by Jason.Xia on 17/5/24.
  */
-public class Main {
+public class TbmMain {
 
     public static void main(String[] args) {
         try {
@@ -26,6 +27,7 @@ public class Main {
     private static void start(String path) {
         try {
             TbmContext.init(path);
+            plugin();
 
             final SpringContainer container = new SpringContainer();
             container.start("classpath*:/tbm-server.xml");
@@ -57,5 +59,9 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static void plugin() {
+        DingTalkWebHook.init(TbmContext.getString("plugin.dingtalk.webhook"));
     }
 }

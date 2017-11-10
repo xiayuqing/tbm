@@ -1,4 +1,4 @@
-package org.tbm.server.support;
+package org.tbm.server.worker;
 
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
@@ -12,6 +12,8 @@ import org.tbm.server.SpringContainer;
 import org.tbm.server.TbmContext;
 import org.tbm.server.access.TrafficAccessor;
 import org.tbm.server.connection.ConnectionManager;
+import org.tbm.server.support.DingMsg;
+import org.tbm.server.support.DingTalkWebHook;
 
 import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
@@ -42,6 +44,8 @@ public class TrafficCollectWorker {
 
     private int period;
 
+    private DingTalkWebHook dingTalkWebHook;
+
     public void run(ConnectionManager connectionManager) {
         init(connectionManager);
     }
@@ -49,6 +53,9 @@ public class TrafficCollectWorker {
     public void init(ConnectionManager connectionManager) {
 
         if (start.compareAndSet(false, true)) {
+
+            dingTalkWebHook = DingTalkWebHook.getInstance();
+
             this.connectionManager = connectionManager;
 
             this.accessor = (TrafficAccessor) SpringContainer.getBean(TrafficAccessor.class);
@@ -71,6 +78,8 @@ public class TrafficCollectWorker {
                         }
                     } catch (Exception e) {
                         logger.error("Insert Traffic Statistic Error.{},trace:{}", e, e.getStackTrace());
+                        dingTalkWebHook.send(new DingMsg("TrafficCollectWorker", "Insert Traffic Error", e));
+
                     }
                 }
             }, 0, period, TimeUnit.SECONDS);

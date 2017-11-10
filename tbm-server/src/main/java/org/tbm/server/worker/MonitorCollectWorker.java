@@ -1,4 +1,4 @@
-package org.tbm.server.support;
+package org.tbm.server.worker;
 
 import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
@@ -10,6 +10,8 @@ import org.tbm.server.SpringContainer;
 import org.tbm.server.TbmContext;
 import org.tbm.server.access.LogDataAccessor;
 import org.tbm.server.datasource.RedisOperator;
+import org.tbm.server.support.DingMsg;
+import org.tbm.server.support.DingTalkWebHook;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -29,12 +31,16 @@ public class MonitorCollectWorker {
 
     private int cacheFlushBatch;
 
+    private DingTalkWebHook dingTalkWebHook;
+
     public void run() {
         init();
     }
 
     public void init() {
         if (start.compareAndSet(false, true)) {
+            dingTalkWebHook = DingTalkWebHook.getInstance();
+
             cacheFlushDelay = TbmContext.getInt("cache.flush.delay", 10);
             cacheFlushBatch = TbmContext.getInt("cache.flush.batch", 300);
 
@@ -122,9 +128,10 @@ public class MonitorCollectWorker {
                     redisCache.opsForList().trim(identity, unitSize, -1);
                 }
 
-                logger.info("{} total num:{}", identity, total);
+                logger.debug("{} total num:{}", identity, total);
             } catch (Exception e) {
                 logger.error("flush cache error", e);
+                dingTalkWebHook.sendNow(new DingMsg("MonitorCollectWorker", "Flush Cache Error", e));
             }
 
             if (removedSet.contains(identity)) {
