@@ -15,7 +15,11 @@ import org.tbm.server.connection.ConnectionManager;
 import org.tbm.server.support.DingMsg;
 import org.tbm.server.support.DingTalkWebHook;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -32,11 +36,11 @@ public class TrafficCollectWorker {
 
     private ConnectionManager connectionManager;
 
-    private Map<String/*channelShortId*/, ValuePair<String/*identity-address*/, AtomicLong>> trafficReadCounter = new
-            HashMap<>();
+    private ConcurrentHashMap<String/*channelShortId*/, ValuePair<String/*identity-address*/, AtomicLong>>
+            trafficReadCounter = new ConcurrentHashMap<>();
 
-    private Map<String/*channelShortId*/, ValuePair<String/*identity-address*/, AtomicLong>> trafficWriteCounter = new
-            HashMap<>();
+    private ConcurrentHashMap<String/*channelShortId*/, ValuePair<String/*identity-address*/, AtomicLong>>
+            trafficWriteCounter = new ConcurrentHashMap<>();
 
     private TrafficAccessor accessor;
 
@@ -86,8 +90,8 @@ public class TrafficCollectWorker {
         }
     }
 
-    private void iterative(Map<String, ValuePair<String, AtomicLong>> counter, boolean isRead, List<Traffic>
-            insertSet) {
+    private void iterative(ConcurrentHashMap<String, ValuePair<String, AtomicLong>> counter, boolean isRead,
+                           List<Traffic> insertSet) {
         Iterator<Map.Entry<String, ValuePair<String, AtomicLong>>> iterator = counter.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<String, ValuePair<String, AtomicLong>> next = iterator.next();

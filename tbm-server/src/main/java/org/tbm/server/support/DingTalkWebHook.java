@@ -32,7 +32,7 @@ public class DingTalkWebHook {
 
     private HttpClient httpclient = HttpClients.createDefault();
 
-    private List<DingMsg> msgQueue = new ArrayList<>();
+    private final List<DingMsg> msgQueue = new ArrayList<>();
 
     private DingTalkWebHook(String webHookUrl) {
         this.webHookUrl = webHookUrl;
@@ -67,7 +67,7 @@ public class DingTalkWebHook {
 
     public void sendNow(DingMsg msg) {
         try {
-            MarkdownMessage message = createMsg("TBM-Monitor", Utils.singleObjectConvertToList(msg));
+            MarkdownMessage message = createMsg(Utils.singleObjectConvertToList(msg));
             if (null == message) {
                 return;
             }
@@ -83,7 +83,12 @@ public class DingTalkWebHook {
 
     private void flush() {
         try {
-            MarkdownMessage message = createMsg("TBM-Monitor", msgQueue);
+            MarkdownMessage message;
+            synchronized (msgQueue) {
+                message = createMsg(msgQueue);
+                msgQueue.clear();
+            }
+
             if (null != message) {
                 SendResult post = post(webHookUrl, message);
                 if (!post.isSuccess()) {
@@ -116,15 +121,15 @@ public class DingTalkWebHook {
         return sendResult;
     }
 
-    private MarkdownMessage createMsg(String title, List<DingMsg> msgs) {
+    private MarkdownMessage createMsg(List<DingMsg> msgs) {
         if (Utils.isEmpty(msgs)) {
             return null;
         }
 
         MarkdownMessage message = new MarkdownMessage();
-        message.setTitle(title);
+        message.setTitle("TBM-Monitor");
         for (DingMsg item : msgs) {
-            message.add(MarkdownMessage.getBoldText("TBM" + item.getTopic()));
+            message.add(MarkdownMessage.getBoldText("TBM " + item.getTopic()));
             message.add("\n\n");
             message.add(item.getContent());
             message.add("\n\n");
