@@ -130,8 +130,8 @@ public class MonitorCollectWorker {
 
                 logger.debug("{} total num:{}", identity, total);
             } catch (Exception e) {
-                logger.error("flush cache error", e);
-                dingTalkWebHook.sendNow(new DingMsg("MonitorCollectWorker", "Flush Cache Error", e));
+                logger.error("{} flush cache error", identity, e);
+                dingTalkWebHook.sendNow(new DingMsg("MonitorCollectWorker", identity + " Flush Cache Error", e));
             }
 
             if (removedSet.contains(identity)) {

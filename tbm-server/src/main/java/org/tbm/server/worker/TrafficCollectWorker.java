@@ -101,6 +101,8 @@ public class TrafficCollectWorker {
                 Traffic assemble = assemble(next, isRead);
                 if (null != assemble) {
                     insertSet.add(assemble);
+                } else {
+                    iterator.remove();
                 }
             }
         }
