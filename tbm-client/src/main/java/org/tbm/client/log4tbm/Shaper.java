@@ -34,7 +34,10 @@ public class Shaper {
 
         // 使用 text 存储content部分,但是为了保证一定安全,还是限定最大长度为2W.
         StringBuilder content = new StringBuilder();
-        content.append(event.getMessage().toString().trim());
+        Object message = event.getMessage();
+        if (null != message) {
+            content.append(message.toString().trim());
+        }
 
         if (null != event.getThrowableInformation()) {
             content.append(" [EXCEPTION_STACK]:");

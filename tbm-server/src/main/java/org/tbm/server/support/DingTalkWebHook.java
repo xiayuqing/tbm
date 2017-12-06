@@ -25,14 +25,10 @@ import java.util.concurrent.TimeUnit;
 public class DingTalkWebHook {
     private static final Logger logger = LoggerFactory.getLogger(DingTalkWebHook.class);
     private static DingTalkWebHook instance;
-
-    private ScheduledExecutorService sendExecutor;
-
-    private String webHookUrl;
-
-    private HttpClient httpclient = HttpClients.createDefault();
-
     private final List<DingMsg> msgQueue = new ArrayList<>();
+    private ScheduledExecutorService sendExecutor;
+    private String webHookUrl;
+    private HttpClient httpclient = HttpClients.createDefault();
 
     private DingTalkWebHook(String webHookUrl) {
         this.webHookUrl = webHookUrl;
@@ -127,7 +123,7 @@ public class DingTalkWebHook {
         }
 
         MarkdownMessage message = new MarkdownMessage();
-        message.setTitle("TBM-Monitor");
+        message.setTitle(Utils.getHost() + " TBM");
         for (DingMsg item : msgs) {
             message.add(MarkdownMessage.getBoldText("TBM " + item.getTopic()));
             message.add("\n\n");
