@@ -71,7 +71,7 @@ public class ClientAgent {
             public ChannelHandler[] getHandlers() {
                 return new ChannelHandler[]{
                         this,
-                        new IdleStateHandler(0, ClientContext.getInt("idle.write.time", 30), 0, TimeUnit.SECONDS),
+                        new IdleStateHandler(0, ClientContext.getInt("idle.write.time", 30), 30, TimeUnit.SECONDS),
                         new ClientIdleStateTrigger(host, port),
                         new ClientHandler()
                 };

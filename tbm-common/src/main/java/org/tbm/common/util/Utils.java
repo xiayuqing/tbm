@@ -13,6 +13,13 @@ import java.util.*;
  * Created by Jason.Xia on 17/6/5.
  */
 public class Utils {
+
+    public static void main(String[] args) {
+        Date dateAfter = Utils.getDateAfter(new Date(), -29);
+        String date = Utils.getDateString(dateAfter, "yyyyMMddHH");
+        System.out.println(Long.valueOf(date));
+    }
+
     public static boolean isEmpty(Collection<?> collection) {
         return (collection == null || collection.isEmpty());
     }
@@ -44,6 +51,7 @@ public class Utils {
             throw new IllegalStateException(e);
         }
     }
+
     /***
      * key:ip
      * value:port
@@ -133,7 +141,6 @@ public class Utils {
     }
 
     /**
-     *
      * @param objects
      * @param <T>
      * @return
@@ -152,7 +159,6 @@ public class Utils {
     }
 
     /**
-     *
      * @param object
      * @param <T>
      * @return

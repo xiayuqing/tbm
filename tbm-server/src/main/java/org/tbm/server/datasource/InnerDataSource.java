@@ -7,6 +7,7 @@ import org.tbm.server.TbmContext;
  * Created by Jason.Xia on 17/10/25.
  */
 public class InnerDataSource extends DruidDataSource {
+    public static InnerDataSource ref;
 
     public void start() {
         this.setDriverClassName("com.mysql.jdbc.Driver");
@@ -20,5 +21,6 @@ public class InnerDataSource extends DruidDataSource {
         this.setTimeBetweenEvictionRunsMillis(60000);
         this.setPoolPreparedStatements(true);
         this.setMaxPoolPreparedStatementPerConnectionSize(10);
+        ref = this;
     }
 }
