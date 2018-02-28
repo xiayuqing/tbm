@@ -21,6 +21,10 @@ public class InnerDataSource extends DruidDataSource {
         this.setTimeBetweenEvictionRunsMillis(60000);
         this.setPoolPreparedStatements(true);
         this.setMaxPoolPreparedStatementPerConnectionSize(10);
+
+        this.setRemoveAbandoned(TbmContext.getBoolean("datasource.remove.abandoned", false));
+        this.setRemoveAbandonedTimeout(120);
+        this.setLogAbandoned(TbmContext.getBoolean("datasource.log.abandoned", true));
         ref = this;
     }
 }

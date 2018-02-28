@@ -9,6 +9,7 @@ import org.tbm.server.TbmContext;
 import org.tbm.server.datasource.InnerDataSource;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
@@ -108,8 +109,9 @@ public class ShardingScheduleExecutor {
         public void run() {
             logger.info("[tbm] Run Clear Table Task");
             InnerDataSource dataSource = InnerDataSource.ref;
+            DruidPooledConnection connection = null;
             try {
-                DruidPooledConnection connection = dataSource.getConnection();
+                connection = dataSource.getConnection();
                 Statement s1 = connection.createStatement();
                 ResultSet tablesRecord = s1.executeQuery("SHOW tables");
                 List<Long> tablesTime = new ArrayList<>();
@@ -154,12 +156,19 @@ public class ShardingScheduleExecutor {
                     }
 
                     s2.close();
-                    connection.close();
                 }
 
                 logger.info("[tbm] Run Clear Table Task Success");
             } catch (Exception e) {
                 logger.error("Clear Table Error", e);
+            } finally {
+                if (null != connection) {
+                    try {
+                        connection.close();
+                    } catch (SQLException e) {
+                        logger.error("Close Connection Error",e);
+                    }
+                }
             }
         }
     }
