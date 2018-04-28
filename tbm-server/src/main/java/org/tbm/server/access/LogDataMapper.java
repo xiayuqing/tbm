@@ -12,6 +12,8 @@ import java.util.List;
 public interface LogDataMapper {
     int insert(@Param("table") String table, @Param("list") List<LogData> list);
 
+    List<LogData> select(@Param("table") String table);
+
     void create(@Param("schema") LogDataAccessor schema);
 
     void createNext(@Param("schema") LogDataAccessor schema);

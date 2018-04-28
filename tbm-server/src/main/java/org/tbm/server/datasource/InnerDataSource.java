@@ -1,6 +1,7 @@
 package org.tbm.server.datasource;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import org.tbm.common.util.Utils;
 import org.tbm.server.TbmContext;
 
 /**
@@ -21,10 +22,10 @@ public class InnerDataSource extends DruidDataSource {
         this.setTimeBetweenEvictionRunsMillis(60000);
         this.setPoolPreparedStatements(true);
         this.setMaxPoolPreparedStatementPerConnectionSize(10);
-
         this.setRemoveAbandoned(TbmContext.getBoolean("datasource.remove.abandoned", false));
         this.setRemoveAbandonedTimeout(120);
         this.setLogAbandoned(TbmContext.getBoolean("datasource.log.abandoned", true));
+        this.setConnectionInitSqls(Utils.singleObjectConvertToList("set names utf8mb4"));
         ref = this;
     }
 }

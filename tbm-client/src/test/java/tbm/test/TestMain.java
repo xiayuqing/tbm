@@ -29,11 +29,11 @@ public class TestMain {
         while (true) {
             testClass.debug(" a DEBUG log message");
             testClass.warn(++count + " a WARN log message");
-            testClass.info(++count + " a INFO log message");
+            testClass.info(++count + " a INFO😂 log message");
             testClass.warn(++count + " a WARN log message");
             testClass.error(System.currentTimeMillis() + " a ERROR log message", new IllegalArgumentException
                     ("error args"));
-            Thread.sleep(100);
+            Thread.sleep(5000);
         }
 
 //        System.out.println("end....");

@@ -104,35 +104,39 @@ public class MonitorCollectWorker {
 
         @Override
         public void run() {
-            try {
-                int total = 0;
+            int total = 0;
 
-                RedisTemplate<String, String> redisCache = RedisOperator.getRedisCache();
-                int unitSize;
-                while (true) {
+            RedisTemplate<String, String> redisCache = RedisOperator.getRedisCache();
+            int unitSize;
+            while (true) {
 
-                    List<String> lrange = redisCache.opsForList().range(identity, 0, cacheFlushBatch - 1);
-                    if (Utils.isEmpty(lrange)) {
-                        logger.debug("{} lrange size is 0,exit task.", identity);
-                        break;
-                    }
-
-                    total += lrange.size();
-                    unitSize = lrange.size();
-                    List<LogData> data = new ArrayList<>();
-                    for (String item : lrange) {
-                        data.add(JSONObject.parseObject(item, LogData.class));
-                    }
-
-                    accessor.insert(data);
-                    redisCache.opsForList().trim(identity, unitSize, -1);
+                List<String> lrange = redisCache.opsForList().range(identity, 0, cacheFlushBatch - 1);
+                if (Utils.isEmpty(lrange)) {
+                    logger.debug("{} lrange size is 0,exit task.", identity);
+                    break;
                 }
 
-                logger.debug("{} total num:{}", identity, total);
-            } catch (Exception e) {
-                logger.error("{} flush cache error", identity, e);
-                dingTalkWebHook.sendNow(new DingMsg("MonitorCollectWorker", identity + " Flush Cache Error", e));
+                total += lrange.size();
+                unitSize = lrange.size();
+                List<LogData> data = new ArrayList<>();
+                for (String item : lrange) {
+                    data.add(JSONObject.parseObject(item, LogData.class));
+                }
+
+                try {
+                    accessor.insert(data);
+                } catch (Exception e) {
+                    logger.error("{} flush cache error", identity, e);
+                    dingTalkWebHook.sendNow(new DingMsg("MonitorCollectWorker", identity + " Flush Cache Error", e));
+                }
+
+                redisCache.opsForList().trim(identity, unitSize, -1);
             }
+
+            if (0 != total) {
+                logger.info("{} total num:{}", identity, total);
+            }
+
 
             if (removedSet.contains(identity)) {
                 cancelScheduleJob(identity);

@@ -29,6 +29,10 @@
         </foreach>
     </insert>
 
+    <select id="select" resultMap="BaseResultMap">
+        select * from ${table} order by `persist_time` desc limit 10
+    </select>
+
     <update id="create" parameterType="org.tbm.server.access.LogDataAccessor">
         ${schema.currentSchema}
     </update>
